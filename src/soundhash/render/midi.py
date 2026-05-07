@@ -20,13 +20,56 @@ PPQ = 480
 
 # Per-layer energy thresholds — below these the layer is silent in that bar.
 # Bass is the harmonic floor and plays whenever the song plays.
-_ENERGY_GATE = {"drums": 0.30, "comp": 0.20, "lead": 0.40, "bass": 0.0}
+_ENERGY_GATE = {"drums": 0.30, "comp": 0.20, "lead": 0.40, "bass": 0.0, "pad": 0.40}
+_PAD_ENERGY_CEILING = 0.85       # pad drops out at peak energy to keep mix open
 
 
 def _bar_energy(spec, bar_index: int) -> float:
     if spec.bar_energies and bar_index < len(spec.bar_energies):
         return spec.bar_energies[bar_index]
     return 1.0
+
+
+# Deterministic per-layer velocity-jitter stream (derived from spec.provenance.hash_hex
+# via HKDF). Cached on first use. Stream is consumed in event-emit order; render
+# is deterministic because event ordering is fixed (sorted by abs_tick).
+_VEL_JITTER_CACHE: dict[tuple[str, str], "_VelJitter"] = {}
+
+
+class _VelJitter:
+    __slots__ = ("_stream", "_pos")
+
+    def __init__(self, stream: bytes):
+        self._stream = stream
+        self._pos = 0
+
+    def next_offset(self, range_pm: int = 5) -> int:
+        if not self._stream:
+            return 0
+        b = self._stream[self._pos % len(self._stream)]
+        self._pos += 1
+        # Map byte 0..255 → -range..+range, signed.
+        return int((b / 255.0) * (2 * range_pm + 1)) - range_pm
+
+
+def _vel_jitter(spec, layer_name: str, range_pm: int = 5) -> int:
+    key = (spec.provenance.hash_hex, layer_name)
+    j = _VEL_JITTER_CACHE.get(key)
+    if j is None:
+        # Derive 256 bytes from HKDF for this layer's jitter stream.
+        import hashlib as _h, hmac as _hm
+        prk = _hm.new(b"soundhash-v1",
+                      bytes.fromhex(spec.provenance.hash_hex),
+                      _h.sha256).digest()
+        info = f"soundhash/v1/expression/velocity/L{layer_name}".encode("ascii")
+        out, t, c = b"", b"", 1
+        while len(out) < 256:
+            t = _hm.new(prk, t + info + bytes([c]), _h.sha256).digest()
+            out += t
+            c += 1
+        j = _VelJitter(out[:256])
+        _VEL_JITTER_CACHE[key] = j
+    return j.next_offset(range_pm)
 
 
 _GROOVE_CACHE: dict[str, dict] = {}
@@ -55,6 +98,8 @@ def _groove_offset(spec, role: str, step: int) -> int:
 
 
 def render_midi(spec: SongSpec) -> bytes:
+    # Reset stateful caches so render is idempotent within a process.
+    _VEL_JITTER_CACHE.clear()
     mf = MidiFile(ticks_per_beat=PPQ, type=1)
 
     num, den_pow2 = spec.time_sig
@@ -82,6 +127,9 @@ def render_midi(spec: SongSpec) -> bytes:
     lead = _lead_track(spec, ticks_per_bar)
     if lead is not None:
         mf.tracks.append(lead)
+    pad = _pad_track(spec, ticks_per_bar)
+    if pad is not None:
+        mf.tracks.append(pad)
 
     buf = io.BytesIO()
     mf.save(file=buf)
@@ -161,6 +209,7 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
             vel = vel_base
             if ghost or art == "ghost" or (bar.bass_ghost_first and ci == 0):
                 vel = max(20, vel_base - 40)
+            vel = max(1, min(127, vel + _vel_jitter(spec, "bass", 4)))
             events.append((on_tick, 0, pitch, vel))
             events.append((on_tick + dur_ticks, 1, pitch, 64))
             cursor_cell += length
@@ -282,6 +331,7 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
                           on_tick + _groove_offset(spec, "comp", step))
             dur_ticks = max(40, dur_steps * cells_to_ticks - 10)
             vel = max(20, min(120, int(vel_base * vel_factor)))
+            vel = max(1, min(127, vel + _vel_jitter(spec, "comp", 4)))
             pitches = voice_pitches_per_hit[hit_idx]
             for p in pitches:
                 events.append((on_tick, 0, p, vel))
@@ -317,6 +367,50 @@ def _comp_track_sustain(spec: SongSpec, ticks_per_bar: int, comp: MidiTrack) -> 
             comp.append(Message("note_off", channel=1, note=p, velocity=64, time=delta))
             cursor = off_tick if i == 0 else cursor
     return comp
+
+
+def _pad_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
+    layer = next((l for l in spec.layers if l.name == "pad"), None)
+    if layer is None:
+        return None
+    pad = MidiTrack()
+    pad.append(MetaMessage("track_name", name="pad", time=0))
+    pad.append(Message("program_change", channel=3,
+                       program=_layer_program(spec, "pad", default=89), time=0))
+
+    events: list[tuple[int, int, int, int]] = []
+    for bar in spec.bars:
+        e = _bar_energy(spec, bar.index)
+        # Pad fills the mid-energy zone; drops out at peak so the lead/drums
+        # are not crowded.
+        if e < _ENERGY_GATE["pad"] or e > _PAD_ENERGY_CEILING:
+            continue
+        # Voice one octave above the comp (= chord_root_midi + 36) and only
+        # use the bottom 3 chord tones — pads sit better when they are dense
+        # but quiet rather than wide and prominent.
+        voice_base = bar.chord_root_midi + 36
+        chord_pcs = bar.chord_pcs[:3] if bar.chord_pcs else (0, 4, 7)
+        pitches = sorted({voice_base + iv for iv in chord_pcs})
+        pitches = [p for p in pitches if 48 <= p <= 96]
+        if not pitches:
+            continue
+        on_tick = bar.index * ticks_per_bar
+        off_tick = on_tick + ticks_per_bar - 80     # leave a small gap to breathe
+        # Velocity below comp's, so it sits behind in the mix.
+        vel_base = max(30, min(70, int(40 + 25 * (e - 0.4))))
+        for p in pitches:
+            v = max(1, min(120, vel_base + _vel_jitter(spec, "pad", 3)))
+            events.append((on_tick, 0, p, v))
+            events.append((off_tick, 1, p, 64))
+
+    events.sort(key=lambda ev: (ev[0], ev[1], ev[2]))
+    cursor = 0
+    for abs_tick, kind, pitch, vel in events:
+        delta = max(0, abs_tick - cursor)
+        msg_type = "note_on" if kind == 0 else "note_off"
+        pad.append(Message(msg_type, channel=3, note=pitch, velocity=vel, time=delta))
+        cursor = abs_tick
+    return pad
 
 
 def _find_comp_role(role_id: str | None) -> dict | None:
@@ -421,7 +515,7 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                 abs_tick = bar_offset_ticks + step * ticks_per_step
                 abs_tick = max(bar_offset_ticks,
                                abs_tick + _groove_offset(spec, row_name, step))
-                v = max(1, min(127, int(round(ev["v"] * vel_scale))))
+                v = max(1, min(127, int(round(ev["v"] * vel_scale)) + _vel_jitter(spec, "drums", 5)))
                 events.append((abs_tick, 0, gm_key, v))
                 events.append((abs_tick + DRUM_LEN, 1, gm_key, 64))
 

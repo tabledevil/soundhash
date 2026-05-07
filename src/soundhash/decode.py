@@ -207,17 +207,17 @@ def _pick_drum_kit(byte: int, mood: str) -> dict:
 
 # (gm_program, name) — stick to widely-supported GM patches so MS Basic / GeneralUser cover them.
 _GM_PALETTE: dict[str, dict[str, tuple[int, ...]]] = {
-    "M0":  {"bass": (32,),               "comp": (88, 89, 91),       "lead": (54, 75, 73)},   # Ambient: pad-led, vocal/whistle
-    "M1":  {"bass": (32, 33),            "comp": (0, 4, 24),         "lead": (73, 71, 56)},   # Ballad: piano + flute/oboe
-    "M2":  {"bass": (33, 34, 36),        "comp": (4, 5, 11),         "lead": (80, 81, 28)},   # Hip-hop: EP + lead
-    "M3":  {"bass": (33, 36),            "comp": (4, 5, 88, 89),     "lead": (80, 73, 78)},   # Downtempo
-    "M4":  {"bass": (32, 35),            "comp": (24, 25, 32),       "lead": (56, 11, 24)},   # Latin: nylon + brass
-    "M5":  {"bass": (38, 39, 33),        "comp": (81, 89, 80),       "lead": (81, 80, 84)},   # Synthwave: synth bass + saw lead
-    "M6":  {"bass": (38, 39, 36),        "comp": (16, 17, 81),       "lead": (80, 81, 53)},   # House: synth bass + organ
-    "M7":  {"bass": (38, 39),            "comp": (81, 89, 90),       "lead": (80, 81, 87)},   # Techno
-    "M8":  {"bass": (38, 39, 87),        "comp": (89, 88, 91),       "lead": (81, 80, 87)},   # DnB
-    "M9":  {"bass": (38, 39, 87),        "comp": (90, 91, 102),      "lead": (88, 81, 102)},  # Glitch / IDM
-    "M10": {"bass": (32, 43, 44),        "comp": (48, 49, 50, 89),   "lead": (60, 73, 71)},   # Cinematic: orchestral
+    "M0":  {"bass": (32,),               "comp": (88, 89, 91),       "lead": (54, 75, 73),   "pad": (88, 89, 94)},   # Ambient
+    "M1":  {"bass": (32, 33),            "comp": (0, 4, 24),         "lead": (73, 71, 56),   "pad": (89, 91, 95)},
+    "M2":  {"bass": (33, 34, 36),        "comp": (4, 5, 11),         "lead": (80, 81, 28),   "pad": (89, 95, 91)},
+    "M3":  {"bass": (33, 36),            "comp": (4, 5, 88, 89),     "lead": (80, 73, 78),   "pad": (89, 91, 94)},
+    "M4":  {"bass": (32, 35),            "comp": (24, 25, 32),       "lead": (56, 11, 24),   "pad": (89, 91, 94)},
+    "M5":  {"bass": (38, 39, 33),        "comp": (81, 89, 80),       "lead": (81, 80, 84),   "pad": (90, 89, 94)},
+    "M6":  {"bass": (38, 39, 36),        "comp": (16, 17, 81),       "lead": (80, 81, 53),   "pad": (90, 89, 95)},
+    "M7":  {"bass": (38, 39),            "comp": (81, 89, 90),       "lead": (80, 81, 87),   "pad": (90, 94, 89)},
+    "M8":  {"bass": (38, 39, 87),        "comp": (89, 88, 91),       "lead": (81, 80, 87),   "pad": (89, 91, 94)},
+    "M9":  {"bass": (38, 39, 87),        "comp": (90, 91, 102),      "lead": (88, 81, 102),  "pad": (95, 91, 94)},
+    "M10": {"bass": (32, 43, 44),        "comp": (48, 49, 50, 89),   "lead": (60, 73, 71),   "pad": (49, 51, 94)},  # strings/choir pads
 }
 
 
@@ -486,6 +486,7 @@ def hash_to_spec(
     bass_program = _pick_gm_program(macro[14], mood, "bass", default=33)
     comp_program = _pick_gm_program(macro[16], mood, "comp", default=4)
     lead_program = _pick_gm_program(macro[21], mood, "lead", default=80)
+    pad_program  = _pick_gm_program(macro[23], mood, "pad",  default=89)
 
     # Per-section motif & contour overrides — introduces real variation between
     # form sections (A/B/C). Falls back to the macro melody picks for section A.
@@ -533,6 +534,9 @@ def hash_to_spec(
                       "contour_id": melody_contour.get("id", ""),
                       "scale_subset_id": melody_scale.get("id", ""),
                   }),
+        LayerSpec(name="pad", midi_channel=3, synth_id="pad/aux_wash",
+                  program=pad_program, pattern_id="",
+                  extra={"role": "pad_wash"}),
     )
 
     provenance = Provenance(
