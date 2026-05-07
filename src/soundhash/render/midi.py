@@ -389,12 +389,25 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         # Detect section transition: this is a fill bar if the next bar starts
         # a new section letter.
         next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
+        prev_bar = spec.bars[bar.index - 1] if bar.index > 0 else None
         is_fill_bar = (
             fill is not None and next_bar is not None
             and next_bar.section_letter != bar.section_letter
         )
+        is_section_start = (prev_bar is not None
+                            and prev_bar.section_letter != bar.section_letter)
         fill_span = fill.get("span_steps", 8) if is_fill_bar else 0
         fill_start_step = max(0, steps - fill_span) if is_fill_bar else steps
+
+        # Crash cymbal on the downbeat of a new section.
+        if is_section_start:
+            crash_key = gm_map.get("crash") or gm_map.get("crash_1") or 49
+            on_tick = bar_offset_ticks
+            on_tick = max(bar_offset_ticks,
+                          on_tick + _groove_offset(spec, "crash", 0))
+            v = max(60, min(120, int(round(110 * vel_scale))))
+            events.append((on_tick, 0, crash_key, v))
+            events.append((on_tick + DRUM_LEN * 4, 1, crash_key, 64))
 
         # Regular pattern hits (skip the fill region if this bar carries a fill).
         for row_name, hits in pat.get("rows", {}).items():
@@ -463,6 +476,16 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     track.append(MetaMessage("track_name", name="lead", time=0))
     track.append(Message("program_change", channel=2,
                          program=_layer_program(spec, "lead", default=80), time=0))
+    # CC11 expression curve: slow swell across the song to keep sustained
+    # notes from sounding static. Cosine envelope, sampled per bar.
+    cc_events: list[tuple[int, int, int]] = []  # (abs_tick, cc, value)
+    n_bars = len(spec.bars)
+    if n_bars:
+        for i in range(n_bars):
+            # Per-bar swell: 95 at bar start, 122 at midpoint, 105 at end.
+            for frac, val in ((0.0, 95), (0.5, 122), (1.0, 105)):
+                t_in_bar = int(round(frac * ticks_per_bar))
+                cc_events.append((i * ticks_per_bar + t_in_bar, 11, val))
 
     mask = subset.get("mask", 127)
     allowed_degs = [d for d in range(7) if mask & (1 << d)] or list(range(7))
@@ -473,6 +496,11 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _ENERGY_GATE["lead"]:
+            continue
+        # Lead drops out on fill bars (next section is different) so the drum
+        # fill speaks. Standard production convention.
+        next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
+        if next_bar is not None and next_bar.section_letter != bar.section_letter:
             continue
         # Per-section motif/contour — falls back to the macro pick for unknown letters.
         motif_id_b = spec.section_motif_ids.get(bar.section_letter, motif_id)
@@ -521,12 +549,21 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
             events.append((on_tick, 0, pitch, vel))
             events.append((on_tick + dur_ticks, 1, pitch, 64))
 
-    events.sort(key=lambda e: (e[0], e[1], e[2]))
+    # Merge note + CC events; sort by (tick, kind) where CC is kind=2 to order
+    # note-offs before CCs at the same tick.
+    merged = list(events) + [(t, 2, cc, val) for t, cc, val in cc_events]
+    merged.sort(key=lambda e: (e[0], e[1], e[2]))
     cursor = 0
-    for abs_tick, kind, pitch, vel in events:
+    for abs_tick, kind, *rest in merged:
         delta = max(0, abs_tick - cursor)
-        msg_type = "note_on" if kind == 0 else "note_off"
-        track.append(Message(msg_type, channel=2, note=pitch, velocity=vel, time=delta))
+        if kind == 2:
+            cc, val = rest
+            track.append(Message("control_change", channel=2,
+                                 control=cc, value=val, time=delta))
+        else:
+            pitch, vel = rest
+            msg_type = "note_on" if kind == 0 else "note_off"
+            track.append(Message(msg_type, channel=2, note=pitch, velocity=vel, time=delta))
         cursor = abs_tick
     return track
 
