@@ -237,6 +237,20 @@ def _pick_drum_pattern(byte: int, kit_id: str, time_sig: str) -> dict:
     return eligible[byte % len(eligible)]
 
 
+def _pick_drum_fill(byte: int, kit_id: str) -> str:
+    try:
+        fills = tables.load(f"drums/fills/{kit_id}")["fills"]
+    except FileNotFoundError:
+        return ""
+    if not fills:
+        return ""
+    # Prefer escalating fills (target_density > current_density) for a build-up feel.
+    eligible = [f for f in fills
+                if f.get("target_density", 0) >= f.get("current_density", 0)] or fills
+    eligible.sort(key=lambda f: f["id"])
+    return eligible[byte % len(eligible)]["id"]
+
+
 def _pick_drum_pattern_pair(byte: int, kit_id: str, time_sig: str) -> tuple[dict, dict]:
     """Pick a (low-density, high-density) pair so render can pick per-bar by energy."""
     try:
@@ -459,6 +473,7 @@ def hash_to_spec(
     drum_kit = _pick_drum_kit(macro[9], mood)
     drum_pat_low, drum_pat_high = _pick_drum_pattern_pair(macro[10], drum_kit["id"], time_sig_str)
     drum_pat = drum_pat_low or drum_pat_high or {}
+    drum_fill_id = _pick_drum_fill(macro[11], drum_kit["id"])
     bass_pat = _pick_bass_pattern(macro[13], mood, time_sig_str)
     bass_synth = _pick_bass_synth(macro[14], mood, bass_pat["id"])
     comp_role = _pick_comp_role(macro[15], mood)
@@ -504,6 +519,7 @@ def hash_to_spec(
                       "kit": drum_kit["id"],
                       "pattern_low": drum_pat_low.get("id", ""),
                       "pattern_high": drum_pat_high.get("id", ""),
+                      "fill_id": drum_fill_id,
                   }),
         LayerSpec(name="bass", midi_channel=0, synth_id=bass_synth["id"],
                   program=bass_program, pattern_id=bass_pat["id"]),

@@ -358,6 +358,16 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     if pat_low is None:
         return None
 
+    # Fill (used at section transitions).
+    fill = None
+    fill_id = layer.extra.get("fill_id")
+    if fill_id:
+        try:
+            fills = tables.load(f"drums/fills/{kit['id']}")["fills"]
+            fill = next((f for f in fills if f["id"] == fill_id), None)
+        except FileNotFoundError:
+            fill = None
+
     track = MidiTrack()
     track.append(MetaMessage("track_name", name="drums", time=0))
 
@@ -375,13 +385,25 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         ticks_per_step = (ticks_per_bar * bars_in_pat) // steps
         vel_scale = max(0.4, min(1.1, 0.55 + 0.55 * e))
         bar_offset_ticks = bar.index * ticks_per_bar
+
+        # Detect section transition: this is a fill bar if the next bar starts
+        # a new section letter.
+        next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
+        is_fill_bar = (
+            fill is not None and next_bar is not None
+            and next_bar.section_letter != bar.section_letter
+        )
+        fill_span = fill.get("span_steps", 8) if is_fill_bar else 0
+        fill_start_step = max(0, steps - fill_span) if is_fill_bar else steps
+
+        # Regular pattern hits (skip the fill region if this bar carries a fill).
         for row_name, hits in pat.get("rows", {}).items():
             gm_key = gm_map.get(row_name)
             if gm_key is None:
                 continue
             for ev in hits:
                 step = ev["s"]
-                if step >= steps:
+                if step >= steps or step >= fill_start_step:
                     continue
                 abs_tick = bar_offset_ticks + step * ticks_per_step
                 abs_tick = max(bar_offset_ticks,
@@ -389,6 +411,24 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                 v = max(1, min(127, int(round(ev["v"] * vel_scale))))
                 events.append((abs_tick, 0, gm_key, v))
                 events.append((abs_tick + DRUM_LEN, 1, gm_key, 64))
+
+        # Overlay the fill in the last fill_span cells.
+        if is_fill_bar:
+            for row_name, hits in fill.get("rows", {}).items():
+                gm_key = gm_map.get(row_name)
+                if gm_key is None:
+                    continue
+                for ev in hits:
+                    step_in_fill = ev["s"]
+                    if step_in_fill >= fill_span:
+                        continue
+                    abs_step = fill_start_step + step_in_fill
+                    abs_tick = bar_offset_ticks + abs_step * ticks_per_step
+                    abs_tick = max(bar_offset_ticks,
+                                   abs_tick + _groove_offset(spec, row_name, abs_step))
+                    v = max(1, min(127, int(round(ev["v"] * vel_scale))))
+                    events.append((abs_tick, 0, gm_key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, gm_key, 64))
     events.sort(key=lambda e: (e[0], e[1], e[2]))
     cursor = 0
     for abs_tick, kind, pitch, vel in events:
