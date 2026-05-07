@@ -153,6 +153,32 @@ def _pick_form(byte: int, n_bars: int) -> dict:
     return eligible[byte % len(eligible)]
 
 
+def _pick_form_unconstrained(byte: int, max_bars: int) -> dict:
+    """Pick a form whose min_bars fits within max_bars (the 30-second cap)."""
+    forms = tables.load("forms")["forms"]
+    eligible = [f for f in forms if f.get("min_bars", 1) <= max_bars]
+    if not eligible:
+        eligible = forms
+    eligible.sort(key=lambda f: f.get("id", 0))
+    return eligible[byte % len(eligible)]
+
+
+def _bars_from_layout(form: dict, default_n: int = 8, cap: int = 99) -> int:
+    """Sum fixed counts in form.layout; allocate `default_n` to any 'N' filler.
+
+    Result clamped to [form.min_bars, form.max_bars] then to `cap`.
+    """
+    layout = form.get("layout") or [["A", "N"]]
+    fixed = sum(c for _, c in layout if c != "N")
+    n_natural = sum(1 for _, c in layout if c == "N")
+    total = fixed + n_natural * max(2, default_n // max(1, len(layout)))
+    if not fixed and not n_natural:
+        total = default_n
+    lo = form.get("min_bars", 1)
+    hi = min(cap, form.get("max_bars", cap))
+    return max(lo, min(hi, total))
+
+
 def _pick_energy_curve(byte: int, form: dict) -> dict:
     curves = tables.load("energy_curves")["curves"]
     allowed_ids = form.get("allowed_curves") or [c["id"] for c in curves]
@@ -425,15 +451,18 @@ def hash_to_spec(
     # Resolve progression to per-bar chord entries.
     chord_entries = theory.resolve_progression(progression, key_root, mode)
 
-    # Loop the progression to ~8 bars (placeholder form pick).
-    target_bars = 8
+    # Form first — its layout determines bar count, then we cap by what fits
+    # in 30 seconds at the chosen tempo (leave 2 s for reverb tail).
+    beats_per_bar = 4
+    max_bars_for_30s = max(2, int(28.0 * tempo / (60.0 * beats_per_bar)))
+    form = _pick_form_unconstrained(macro[6], max_bars_for_30s)
+    target_bars = _bars_from_layout(form, default_n=8, cap=max_bars_for_30s)
+
+    # Loop the progression to fill target_bars.
     looped = []
     while len(looped) < target_bars:
         looped.extend(chord_entries)
     looped = looped[:target_bars]
-
-    # Form + energy curve + groove (must run before per-bar Bar construction).
-    form = _pick_form(macro[6], target_bars)
     energy_curve = _pick_energy_curve(macro[24], form)
     groove_id = _pick_groove_template(macro[5], mood)
     section_letters = _expand_form_layout(form, target_bars)
