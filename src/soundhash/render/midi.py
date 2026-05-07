@@ -149,6 +149,7 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
 
     layer = next((l for l in spec.layers if l.name == "bass"), None)
     pattern = _find_bass_pattern(layer.pattern_id) if layer else None
+    oct_window = (layer.extra.get("octave_window") if layer else None) or (24, 60)
 
     if pattern is None:
         # Fallback: root pulse on each beat.
@@ -190,8 +191,14 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
                 cursor_cell += length
                 continue
 
-            # Per-bar octave shift (clamped to bass range).
-            pitch = max(24, min(60, pitch + bar.bass_octave_shift))
+            # Per-bar octave shift, clamped to the picked synth's window.
+            pitch = pitch + bar.bass_octave_shift
+            lo, hi = oct_window
+            while pitch < lo:
+                pitch += 12
+            while pitch > hi:
+                pitch -= 12
+            pitch = max(lo, min(hi, pitch))
 
             on_tick = bar.index * ticks_per_bar + cursor_cell * cells_to_ticks
             on_tick = max(bar.index * ticks_per_bar,
@@ -225,6 +232,8 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
 
 
 def _bass_track_root_pulse(spec: SongSpec, ticks_per_bar: int, track: MidiTrack) -> MidiTrack:
+    layer = next((l for l in spec.layers if l.name == "bass"), None)
+    oct_window = (layer.extra.get("octave_window") if layer else None) or (24, 60)
     cursor = 0
     beats_per_bar = ticks_per_bar // PPQ
     for bar in spec.bars:
@@ -232,11 +241,17 @@ def _bass_track_root_pulse(spec: SongSpec, ticks_per_bar: int, track: MidiTrack)
         if e < _ENERGY_GATE["bass"]:
             continue
         vel = max(50, min(110, int(60 + 50 * e)))
+        root = bar.chord_root_midi
+        lo, hi = oct_window
+        while root < lo:
+            root += 12
+        while root > hi:
+            root -= 12
         for beat in range(beats_per_bar):
             on_tick = bar.index * ticks_per_bar + beat * PPQ
-            track.append(Message("note_on", channel=0, note=bar.chord_root_midi,
+            track.append(Message("note_on", channel=0, note=root,
                                  velocity=vel, time=on_tick - cursor))
-            track.append(Message("note_off", channel=0, note=bar.chord_root_midi,
+            track.append(Message("note_off", channel=0, note=root,
                                  velocity=64, time=PPQ - 10))
             cursor = on_tick + PPQ - 10
     return track
@@ -312,7 +327,19 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
         full_pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
         # Role-aware voicing.
         if polyphony == "monophonic_sequence":
-            voice_pitches_per_hit = [[full_pitches[i % len(full_pitches)]] for i in range(len(hits))]
+            shape = _find_arp_shape((layer.extra or {}).get("arp_shape_id", ""))
+            seq = (shape or {}).get("sequence", [0, 1, 2, 3])
+            oct_off = (shape or {}).get("octave_offsets", [0] * len(seq))
+            voice_pitches_per_hit = []
+            for hi in range(len(hits)):
+                step_idx = hi % len(seq)
+                deg_idx = seq[step_idx]
+                octs = oct_off[step_idx] if step_idx < len(oct_off) else 0
+                if 0 <= deg_idx < len(full_pitches):
+                    p = full_pitches[deg_idx] + 12 * octs
+                else:
+                    p = full_pitches[deg_idx % len(full_pitches)] + 12 * octs
+                voice_pitches_per_hit.append([max(36, min(96, p))])
         elif polyphony == "partial_voicing":
             # Drop the 5th if a 7 is present; otherwise root + third.
             if len(full_pitches) >= 4:
@@ -421,6 +448,19 @@ def _find_comp_role(role_id: str | None) -> dict | None:
     except FileNotFoundError:
         return None
     return next((r for r in roles if r.get("id") == role_id), None)
+
+
+def _find_arp_shape(shape_id: str) -> dict | None:
+    if not shape_id:
+        return None
+    try:
+        data = tables.load("comp/arp_shapes")
+    except FileNotFoundError:
+        return None
+    shapes = data.get("shapes", data.get("arp_shapes", data))
+    if isinstance(shapes, dict):
+        shapes = list(shapes.values())
+    return next((s for s in shapes if s.get("id") == shape_id), None)
 
 
 def _find_comp_pattern(pattern_id: str) -> dict | None:

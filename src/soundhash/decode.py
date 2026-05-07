@@ -301,6 +301,16 @@ def _pick_comp_synth(byte: int, mood: str, role_id: str) -> dict:
     return eligible[byte % len(eligible)]
 
 
+def _pick_arp_shape(byte: int, mood: str) -> dict:
+    data = tables.load("comp/arp_shapes")
+    shapes = data.get("shapes", data.get("arp_shapes", data))
+    if isinstance(shapes, dict):
+        shapes = list(shapes.values())
+    eligible = [sh for sh in shapes if mood in sh.get("mood_tags", [])] or shapes
+    eligible = sorted(eligible, key=lambda sh: sh.get("id", ""))
+    return eligible[byte % len(eligible)]
+
+
 def _pick_comp_pattern(byte: int, mood: str, time_sig: str) -> dict:
     pats = tables.load("comp/chord_rhythm_patterns")["patterns"]
     eligible = [p for p in _filter_by_mood(pats, mood) if time_sig in p.get("time_sigs", [])]
@@ -479,6 +489,7 @@ def hash_to_spec(
     comp_role = _pick_comp_role(macro[15], mood)
     comp_synth = _pick_comp_synth(macro[16], mood, comp_role["id"])
     comp_pat = _pick_comp_pattern(macro[17], mood, time_sig_str)
+    arp_shape = _pick_arp_shape(macro[17], mood)
     melody_motif = _pick_melody_motif(macro[19], time_sig_str)
     melody_contour = _pick_contour(macro[20])
     melody_scale = _pick_scale_subset(macro[18], mode)
@@ -523,10 +534,11 @@ def hash_to_spec(
                       "fill_id": drum_fill_id,
                   }),
         LayerSpec(name="bass", midi_channel=0, synth_id=bass_synth["id"],
-                  program=bass_program, pattern_id=bass_pat["id"]),
+                  program=bass_program, pattern_id=bass_pat["id"],
+                  extra={"octave_window": tuple(bass_synth.get("octave_window_midi", [28, 52]))}),
         LayerSpec(name="comp", midi_channel=1, synth_id=comp_synth["id"],
                   program=comp_program, pattern_id=comp_pat["id"],
-                  extra={"role": comp_role["id"]}),
+                  extra={"role": comp_role["id"], "arp_shape_id": arp_shape["id"]}),
         LayerSpec(name="lead", midi_channel=2, synth_id="lead/placeholder",
                   program=lead_program, pattern_id=melody_motif.get("id", ""),
                   extra={
