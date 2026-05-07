@@ -43,6 +43,9 @@ class Bar:
     chord_quality: str = "maj"      # quality string from progression
     melody_transpose: int = 0       # per-bar scale-degree shift from HKDF mutation seed
     melody_invert: bool = False     # mirror the contour around its mean
+    bass_octave_shift: int = 0      # +12/-12 transpose for bass this bar
+    bass_skip_last: bool = False    # rest the last bass cell (fill-style breath)
+    bass_ghost_first: bool = False  # play first cell at ghost velocity
     notes: tuple[Note, ...] = ()
     ccs: tuple[CCEvent, ...] = ()
     bends: tuple[PitchBend, ...] = ()
@@ -89,6 +92,7 @@ class SongSpec:
     form_id: str
     energy_curve_id: str
     activation_matrix_id: str
+    groove_template_id: str = "straight_4_4"
     bars: tuple[Bar, ...] = ()
     layers: tuple[LayerSpec, ...] = ()
     bar_energies: tuple[float, ...] = ()  # one 0..1 per bar from the energy curve

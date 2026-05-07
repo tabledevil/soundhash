@@ -29,6 +29,31 @@ def _bar_energy(spec, bar_index: int) -> float:
     return 1.0
 
 
+_GROOVE_CACHE: dict[str, dict] = {}
+
+
+def _groove_template(spec) -> dict:
+    """Return the picked groove template, cached. Empty dict means 'no offsets'."""
+    gid = getattr(spec, "groove_template_id", "straight_4_4")
+    if gid in _GROOVE_CACHE:
+        return _GROOVE_CACHE[gid]
+    try:
+        templates = tables.load("groove_templates")["templates"]
+        tpl = next((t for t in templates if t["id"] == gid), {})
+    except FileNotFoundError:
+        tpl = {}
+    _GROOVE_CACHE[gid] = tpl
+    return tpl
+
+
+def _groove_offset(spec, role: str, step: int) -> int:
+    """Return PPQ-480 tick offset for role at grid step. 0 if no template / null."""
+    offsets = (_groove_template(spec).get("offsets") or {}).get(role)
+    if not offsets:
+        return 0
+    return int(offsets[step % len(offsets)])
+
+
 def render_midi(spec: SongSpec) -> bytes:
     mf = MidiFile(ticks_per_beat=PPQ, type=1)
 
@@ -96,11 +121,17 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
                           if bar.index + 1 < len(spec.bars) else bar.chord_root_midi)
 
         cursor_cell = 0
-        for cell in grid:
+        last_idx = len(grid) - 1
+        for ci, cell in enumerate(grid):
             deg = cell.get("deg", "R")
             length = cell.get("len", 1)
             art = cell.get("art", "tenuto")
             ghost = cell.get("ghost", False)
+
+            # Per-bar mutation: skip the last cell (breath / fill).
+            if bar.bass_skip_last and ci == last_idx:
+                cursor_cell += length
+                continue
 
             if deg in (".", "~"):
                 cursor_cell += length
@@ -111,8 +142,12 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
                 cursor_cell += length
                 continue
 
+            # Per-bar octave shift (clamped to bass range).
+            pitch = max(24, min(60, pitch + bar.bass_octave_shift))
+
             on_tick = bar.index * ticks_per_bar + cursor_cell * cells_to_ticks
-            # Articulation → fraction of the cell duration.
+            on_tick = max(bar.index * ticks_per_bar,
+                          on_tick + _groove_offset(spec, "bass", cursor_cell))
             length_ticks = length * cells_to_ticks
             if art == "staccato":
                 dur_ticks = max(60, length_ticks // 3)
@@ -124,7 +159,7 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
                 dur_ticks = max(60, length_ticks - 20)
 
             vel = vel_base
-            if ghost or art == "ghost":
+            if ghost or art == "ghost" or (bar.bass_ghost_first and ci == 0):
                 vel = max(20, vel_base - 40)
             events.append((on_tick, 0, pitch, vel))
             events.append((on_tick + dur_ticks, 1, pitch, 64))
@@ -238,6 +273,8 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
             dur_steps = hit.get("duration_steps", 1)
             vel_factor = hit.get("vel_factor", 1.0)
             on_tick = bar.index * ticks_per_bar + step * cells_to_ticks
+            on_tick = max(bar.index * ticks_per_bar,
+                          on_tick + _groove_offset(spec, "comp", step))
             dur_ticks = max(40, dur_steps * cells_to_ticks - 10)
             vel = max(20, min(120, int(vel_base * vel_factor)))
             pitches = voice_pitches_per_hit[hit_idx]
@@ -342,6 +379,8 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                 if step >= steps:
                     continue
                 abs_tick = bar_offset_ticks + step * ticks_per_step
+                abs_tick = max(bar_offset_ticks,
+                               abs_tick + _groove_offset(spec, row_name, step))
                 v = max(1, min(127, int(round(ev["v"] * vel_scale))))
                 events.append((abs_tick, 0, gm_key, v))
                 events.append((abs_tick + DRUM_LEN, 1, gm_key, 64))

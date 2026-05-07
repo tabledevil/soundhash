@@ -94,6 +94,32 @@ def _pick_mode(byte: int, mood: str) -> str:
     return mood_modes[byte % len(mood_modes)]
 
 
+_MOOD_GROOVE_POOL: dict[str, tuple[str, ...]] = {
+    "M0":  ("straight_4_4", "neo_soul"),
+    "M1":  ("straight_4_4", "neo_soul"),
+    "M2":  ("dilla_feel", "mpc60_swing", "neo_soul"),
+    "M3":  ("neo_soul", "mpc60_swing", "straight_4_4"),
+    "M4":  ("straight_4_4", "mpc60_swing"),
+    "M5":  ("straight_4_4",),
+    "M6":  ("house_pocket", "straight_4_4"),
+    "M7":  ("techno_push", "straight_4_4"),
+    "M8":  ("straight_4_4",),
+    "M9":  ("trap_pocket", "straight_4_4"),
+    "M10": ("straight_4_4", "neo_soul"),
+}
+
+
+def _pick_groove_template(byte: int, mood: str) -> str:
+    pool = _MOOD_GROOVE_POOL.get(mood, ("straight_4_4",))
+    try:
+        templates = tables.load("groove_templates")["templates"]
+    except FileNotFoundError:
+        return pool[0]
+    available = {t["id"] for t in templates}
+    pool = tuple(p for p in pool if p in available) or ("straight_4_4",)
+    return pool[byte % len(pool)]
+
+
 def _pick_form(byte: int, n_bars: int) -> dict:
     forms = tables.load("forms")["forms"]
     eligible = [f for f in forms if f.get("min_bars", 1) <= n_bars <= f.get("max_bars", 99)]
@@ -331,15 +357,21 @@ def hash_to_spec(
 
     bars = []
     for i, e in enumerate(looped):
-        # Per-bar mutation seed from HKDF (DESIGN.md label `perbar/melody/<i>`).
-        seed = s.take(f"perbar/melody/{i}", 4)
-        op = seed[0] % 8
-        # Skip mutating bar 0 so the hook is heard cleanly first.
+        # Per-bar mutation seeds from HKDF.
+        mel_seed = s.take(f"perbar/melody/{i}", 4)
+        bass_seed = s.take(f"perbar/bass/{i}", 2)
+        mel_op = mel_seed[0] % 8
+        bass_op = bass_seed[0] % 8
+        # Bar 0 is always identity so the hook + groove land cleanly first.
         if i == 0:
             transpose, invert = 0, False
+            octave_shift, skip_last, ghost_first = 0, False, False
         else:
-            transpose = {2: +1, 3: -1, 4: +2, 5: -2, 6: 0, 7: 0}.get(op, 0)
-            invert = (op == 6)
+            transpose = {2: +1, 3: -1, 4: +2, 5: -2}.get(mel_op, 0)
+            invert = (mel_op == 6)
+            octave_shift = {2: +12, 3: -12}.get(bass_op, 0)
+            skip_last = (bass_op == 4)
+            ghost_first = (bass_op == 5)
         bars.append(Bar(
             index=i,
             chord=f"{theory.name_for_pc(e['root_pc'])}{e['quality']}",
@@ -349,12 +381,16 @@ def hash_to_spec(
             chord_quality=e["quality"],
             melody_transpose=transpose,
             melody_invert=invert,
+            bass_octave_shift=octave_shift,
+            bass_skip_last=skip_last,
+            bass_ghost_first=ghost_first,
         ))
     bars = tuple(bars)
 
-    # Form + energy curve.
+    # Form + energy curve + groove.
     form = _pick_form(macro[6], target_bars)
     energy_curve = _pick_energy_curve(macro[24], form)
+    groove_id = _pick_groove_template(macro[5], mood)
     if target_bars > 1:
         bar_energies = tuple(
             _sample_energy_curve(energy_curve, (i + 0.5) / target_bars)
@@ -424,6 +460,7 @@ def hash_to_spec(
         form_id=form.get("name", progression["id"]),
         energy_curve_id=energy_curve.get("name", "arc"),
         activation_matrix_id="band_basic",
+        groove_template_id=groove_id,
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,
