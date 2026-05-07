@@ -95,17 +95,17 @@ def _pick_mode(byte: int, mood: str) -> str:
 
 
 _MOOD_GROOVE_POOL: dict[str, tuple[str, ...]] = {
-    "M0":  ("straight_4_4", "neo_soul"),
-    "M1":  ("straight_4_4", "neo_soul"),
-    "M2":  ("dilla_feel", "mpc60_swing", "neo_soul"),
-    "M3":  ("neo_soul", "mpc60_swing", "straight_4_4"),
-    "M4":  ("straight_4_4", "mpc60_swing"),
-    "M5":  ("straight_4_4",),
-    "M6":  ("house_pocket", "straight_4_4"),
+    "M0":  ("ambient_drift", "neo_soul", "straight_4_4"),
+    "M1":  ("straight_4_4", "neo_soul", "gospel_12_8"),
+    "M2":  ("boom_bap_60", "dilla_feel", "mpc60_swing"),
+    "M3":  ("neo_soul", "mpc60_swing", "dilla_feel", "straight_4_4"),
+    "M4":  ("latin_clave_pocket", "dembow_pocket", "mpc60_swing"),
+    "M5":  ("synthwave_tight", "straight_4_4"),
+    "M6":  ("house_pocket", "amapiano_pocket", "straight_4_4"),
     "M7":  ("techno_push", "straight_4_4"),
-    "M8":  ("straight_4_4",),
-    "M9":  ("trap_pocket", "straight_4_4"),
-    "M10": ("straight_4_4", "neo_soul"),
+    "M8":  ("dnb_amen_lean", "straight_4_4"),
+    "M9":  ("trap_triplet_hat", "straight_4_4"),
+    "M10": ("straight_4_4", "gospel_12_8", "ambient_drift"),
 }
 
 
@@ -296,6 +296,14 @@ def _pick_comp_pattern(byte: int, mood: str, time_sig: str) -> dict:
     return eligible[byte % len(eligible)]
 
 
+def _all_comp_patterns(mood: str, time_sig: str) -> list[dict]:
+    pats = tables.load("comp/chord_rhythm_patterns")["patterns"]
+    eligible = [p for p in pats if mood in p.get("mood_tags", []) and time_sig in p.get("time_sigs", [])]
+    if not eligible:
+        eligible = [p for p in pats if time_sig in p.get("time_sigs", [])] or pats
+    return sorted(eligible, key=lambda p: p["id"])
+
+
 def _all_motifs_for_time_sig(time_sig: str) -> list[dict]:
     data = tables.load("melody/motif_rhythms")
     pools = data.get("pools", data)
@@ -468,19 +476,26 @@ def hash_to_spec(
     # form sections (A/B/C). Falls back to the macro melody picks for section A.
     motif_pool = _all_motifs_for_time_sig(time_sig_str)
     contour_pool = _all_contours()
+    comp_pattern_pool = _all_comp_patterns(mood, time_sig_str)
     section_motifs: dict[str, str] = {}
     section_contours: dict[str, str] = {}
+    section_comp_pats: dict[str, str] = {}
     unique_letters = list(dict.fromkeys(section_letters))
     for li, letter in enumerate(unique_letters):
-        if li == 0 and motif_pool:
-            section_motifs[letter] = melody_motif.get("id", motif_pool[0]["id"])
-            section_contours[letter] = melody_contour.get("id", contour_pool[0]["id"])
+        if li == 0:
+            if motif_pool:
+                section_motifs[letter] = melody_motif.get("id", motif_pool[0]["id"])
+            if contour_pool:
+                section_contours[letter] = melody_contour.get("id", contour_pool[0]["id"])
+            section_comp_pats[letter] = comp_pat.get("id", "")
         else:
             seed = s.take(f"form/section/{letter}", 4)
             if motif_pool:
                 section_motifs[letter] = motif_pool[seed[0] % len(motif_pool)]["id"]
             if contour_pool:
                 section_contours[letter] = contour_pool[seed[1] % len(contour_pool)]["id"]
+            if comp_pattern_pool:
+                section_comp_pats[letter] = comp_pattern_pool[seed[2] % len(comp_pattern_pool)]["id"]
 
     layers = (
         LayerSpec(name="drums", midi_channel=9, synth_id=f"drumkit/{drum_kit['id']}",
@@ -531,5 +546,6 @@ def hash_to_spec(
         bar_energies=bar_energies,
         section_motif_ids=section_motifs,
         section_contour_ids=section_contours,
+        section_comp_pattern_ids=section_comp_pats,
         render=RenderHints(),
     )

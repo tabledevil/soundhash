@@ -99,6 +99,7 @@ class SongSpec:
     bar_energies: tuple[float, ...] = ()  # one 0..1 per bar from the energy curve
     section_motif_ids: dict[str, str] = field(default_factory=dict)
     section_contour_ids: dict[str, str] = field(default_factory=dict)
+    section_comp_pattern_ids: dict[str, str] = field(default_factory=dict)
     render: RenderHints = field(default_factory=RenderHints)
 
     def total_duration_seconds(self) -> float:

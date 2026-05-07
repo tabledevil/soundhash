@@ -235,24 +235,29 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
                         program=_layer_program(spec, "comp", default=4), time=0))
 
     layer = next((l for l in spec.layers if l.name == "comp"), None)
-    pattern = _find_comp_pattern(layer.pattern_id) if layer else None
     role = _find_comp_role(layer.extra.get("role")) if layer else None
 
     polyphony = (role or {}).get("polyphony_mode", "full_voicing")
     if polyphony == "silent":
         return comp                          # no_comp role → just program-change track
-    if pattern is None:
-        return _comp_track_sustain(spec, ticks_per_bar, comp)
 
-    grid_steps = pattern.get("grid_steps", 16)
-    cells_to_ticks = ticks_per_bar // grid_steps
-    hits = pattern.get("hits", [])
+    default_pattern = _find_comp_pattern(layer.pattern_id) if layer else None
+    if default_pattern is None and not spec.section_comp_pattern_ids:
+        return _comp_track_sustain(spec, ticks_per_bar, comp)
 
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _ENERGY_GATE["comp"]:
             continue
+        # Per-section comp pattern, falling back to the macro pick.
+        pat_id = spec.section_comp_pattern_ids.get(bar.section_letter, layer.pattern_id if layer else "")
+        pattern = _find_comp_pattern(pat_id) or default_pattern
+        if pattern is None:
+            continue
+        grid_steps = pattern.get("grid_steps", 16)
+        cells_to_ticks = ticks_per_bar // grid_steps
+        hits = pattern.get("hits", [])
         vel_base = max(45, min(95, int(45 + 50 * e)))
         voice_base = bar.chord_root_midi + 24
         full_pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
