@@ -201,6 +201,11 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
 
     layer = next((l for l in spec.layers if l.name == "comp"), None)
     pattern = _find_comp_pattern(layer.pattern_id) if layer else None
+    role = _find_comp_role(layer.extra.get("role")) if layer else None
+
+    polyphony = (role or {}).get("polyphony_mode", "full_voicing")
+    if polyphony == "silent":
+        return comp                          # no_comp role → just program-change track
     if pattern is None:
         return _comp_track_sustain(spec, ticks_per_bar, comp)
 
@@ -215,14 +220,27 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
             continue
         vel_base = max(45, min(95, int(45 + 50 * e)))
         voice_base = bar.chord_root_midi + 24
-        pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
-        for hit in hits:
+        full_pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
+        # Role-aware voicing.
+        if polyphony == "monophonic_sequence":
+            voice_pitches_per_hit = [[full_pitches[i % len(full_pitches)]] for i in range(len(hits))]
+        elif polyphony == "partial_voicing":
+            # Drop the 5th if a 7 is present; otherwise root + third.
+            if len(full_pitches) >= 4:
+                voice_pitches_per_hit = [[full_pitches[0], full_pitches[1], full_pitches[3]]] * len(hits)
+            else:
+                voice_pitches_per_hit = [full_pitches[:2]] * len(hits)
+        else:
+            voice_pitches_per_hit = [full_pitches] * len(hits)
+
+        for hit_idx, hit in enumerate(hits):
             step = hit.get("step", 0)
             dur_steps = hit.get("duration_steps", 1)
             vel_factor = hit.get("vel_factor", 1.0)
             on_tick = bar.index * ticks_per_bar + step * cells_to_ticks
             dur_ticks = max(40, dur_steps * cells_to_ticks - 10)
             vel = max(20, min(120, int(vel_base * vel_factor)))
+            pitches = voice_pitches_per_hit[hit_idx]
             for p in pitches:
                 events.append((on_tick, 0, p, vel))
                 events.append((on_tick + dur_ticks, 1, p, 64))
@@ -257,6 +275,16 @@ def _comp_track_sustain(spec: SongSpec, ticks_per_bar: int, comp: MidiTrack) -> 
             comp.append(Message("note_off", channel=1, note=p, velocity=64, time=delta))
             cursor = off_tick if i == 0 else cursor
     return comp
+
+
+def _find_comp_role(role_id: str | None) -> dict | None:
+    if not role_id:
+        return None
+    try:
+        roles = tables.load("comp/comp_roles")["roles"]
+    except FileNotFoundError:
+        return None
+    return next((r for r in roles if r.get("id") == role_id), None)
 
 
 def _find_comp_pattern(pattern_id: str) -> dict | None:
@@ -359,6 +387,7 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     # Build (abs_tick, kind, pitch, vel) events; deltas computed at the end.
     events = []
+    samples_mean = sum(samples) / len(samples) if samples else 0.0
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _ENERGY_GATE["lead"]:
@@ -376,6 +405,10 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
             t = i / max(1, n_onsets - 1) if n_onsets > 1 else 0.0
             sample_idx = min(len(samples) - 1, int(round(t * (len(samples) - 1))))
             scale_degree_1 = samples[sample_idx]
+            # Per-bar mutation: invert (mirror about mean) then transpose.
+            if bar.melody_invert and samples_mean:
+                scale_degree_1 = int(round(2 * samples_mean - scale_degree_1))
+            scale_degree_1 = max(1, scale_degree_1 + bar.melody_transpose)
             deg_idx = (scale_degree_1 - 1) % 7
             octave_shift = (scale_degree_1 - 1) // 7
             if deg_idx not in allowed_degs:

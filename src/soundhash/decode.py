@@ -329,17 +329,28 @@ def hash_to_spec(
         looped.extend(chord_entries)
     looped = looped[:target_bars]
 
-    bars = tuple(
-        Bar(
+    bars = []
+    for i, e in enumerate(looped):
+        # Per-bar mutation seed from HKDF (DESIGN.md label `perbar/melody/<i>`).
+        seed = s.take(f"perbar/melody/{i}", 4)
+        op = seed[0] % 8
+        # Skip mutating bar 0 so the hook is heard cleanly first.
+        if i == 0:
+            transpose, invert = 0, False
+        else:
+            transpose = {2: +1, 3: -1, 4: +2, 5: -2, 6: 0, 7: 0}.get(op, 0)
+            invert = (op == 6)
+        bars.append(Bar(
             index=i,
             chord=f"{theory.name_for_pc(e['root_pc'])}{e['quality']}",
             chord_root_pc=e["root_pc"],
             chord_root_midi=e["root_midi"],
             chord_pcs=tuple(e["chord_pcs"]),
             chord_quality=e["quality"],
-        )
-        for i, e in enumerate(looped)
-    )
+            melody_transpose=transpose,
+            melody_invert=invert,
+        ))
+    bars = tuple(bars)
 
     # Form + energy curve.
     form = _pick_form(macro[6], target_bars)

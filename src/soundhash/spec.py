@@ -41,6 +41,8 @@ class Bar:
     chord_root_midi: int = 36       # MIDI pitch of the bass-octave root
     chord_pcs: tuple[int, ...] = () # semitone offsets-from-root (chord-tone PC set)
     chord_quality: str = "maj"      # quality string from progression
+    melody_transpose: int = 0       # per-bar scale-degree shift from HKDF mutation seed
+    melody_invert: bool = False     # mirror the contour around its mean
     notes: tuple[Note, ...] = ()
     ccs: tuple[CCEvent, ...] = ()
     bends: tuple[PitchBend, ...] = ()
