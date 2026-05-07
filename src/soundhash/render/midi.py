@@ -20,7 +20,8 @@ PPQ = 480
 
 # Per-layer energy thresholds — below these the layer is silent in that bar.
 # Bass is the harmonic floor and plays whenever the song plays.
-_ENERGY_GATE = {"drums": 0.30, "comp": 0.20, "lead": 0.40, "bass": 0.0, "pad": 0.40}
+_ENERGY_GATE = {"drums": 0.30, "comp": 0.20, "lead": 0.40, "bass": 0.0,
+                "pad": 0.40, "counter": 0.65}
 _PAD_ENERGY_CEILING = 0.85       # pad drops out at peak energy to keep mix open
 
 
@@ -130,6 +131,9 @@ def render_midi(spec: SongSpec) -> bytes:
     pad = _pad_track(spec, ticks_per_bar)
     if pad is not None:
         mf.tracks.append(pad)
+    counter = _counter_track(spec, ticks_per_bar)
+    if counter is not None:
+        mf.tracks.append(counter)
 
     buf = io.BytesIO()
     mf.save(file=buf)
@@ -394,6 +398,87 @@ def _comp_track_sustain(spec: SongSpec, ticks_per_bar: int, comp: MidiTrack) -> 
             comp.append(Message("note_off", channel=1, note=p, velocity=64, time=delta))
             cursor = off_tick if i == 0 else cursor
     return comp
+
+
+def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
+    """Parallel-3rd harmony of the lead motif, only on high-energy bars."""
+    layer = next((l for l in spec.layers if l.name == "counter"), None)
+    if layer is None:
+        return None
+    motif_id = layer.extra.get("motif_id")
+    contour_id = layer.extra.get("contour_id")
+    subset_id = layer.extra.get("scale_subset_id")
+    if not (motif_id and contour_id and subset_id):
+        return None
+    transpose = int(layer.extra.get("transpose_degrees", 2))
+
+    ts_str = f"{spec.time_sig[0]}/{spec.time_sig[1]}"
+    contours_list = tables.load("melody/contours")["contours"]
+    subsets = tables.load("melody/scale_subsets").get("subsets")
+    subset = next((s for s in subsets if s["id"] == subset_id), None) if subsets else None
+    default_motif = _find_motif(motif_id, ts_str)
+    default_contour = next((c for c in contours_list if c["id"] == contour_id), None)
+    if not (default_motif and default_contour and subset):
+        return None
+
+    track = MidiTrack()
+    track.append(MetaMessage("track_name", name="counter", time=0))
+    track.append(Message("program_change", channel=4,
+                         program=_layer_program(spec, "counter", default=73), time=0))
+
+    mask = subset.get("mask", 127)
+    allowed_degs = [d for d in range(7) if mask & (1 << d)] or list(range(7))
+    base_octave_midi = 72                       # C5
+
+    events: list[tuple[int, int, int, int]] = []
+    for bar in spec.bars:
+        e = _bar_energy(spec, bar.index)
+        if e < _ENERGY_GATE["counter"]:
+            continue
+        # Drop on fill bars too, so the fill speaks.
+        next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
+        if next_bar is not None and next_bar.section_letter != bar.section_letter:
+            continue
+        motif_id_b = spec.section_motif_ids.get(bar.section_letter, motif_id)
+        contour_id_b = spec.section_contour_ids.get(bar.section_letter, contour_id)
+        motif = _find_motif(motif_id_b, ts_str) or default_motif
+        contour = next((c for c in contours_list if c["id"] == contour_id_b),
+                       default_contour)
+        samples = contour["samples"]
+        onsets = motif["onsets"]
+        bar_tick = bar.index * ticks_per_bar
+        n_onsets = len(onsets)
+        for i, (start_beat, dur_beat) in enumerate(onsets):
+            t = i / max(1, n_onsets - 1) if n_onsets > 1 else 0.0
+            sample_idx = min(len(samples) - 1, int(round(t * (len(samples) - 1))))
+            scale_degree_1 = samples[sample_idx]
+            # Apply per-bar lead mutation, then add the harmony transpose.
+            scale_degree_1 = max(1, scale_degree_1 + bar.melody_transpose + transpose)
+            deg_idx = (scale_degree_1 - 1) % 7
+            octave_shift = (scale_degree_1 - 1) // 7
+            if deg_idx not in allowed_degs:
+                deg_idx = min(allowed_degs, key=lambda d: abs(d - deg_idx))
+            interval = theory.MODES[spec.mode][deg_idx]
+            pitch = base_octave_midi + spec.key_root + interval + 12 * octave_shift
+            pitch = max(48, min(96, pitch))
+
+            on_tick = bar_tick + int(round(start_beat * PPQ))
+            dur_ticks = max(60, int(round(dur_beat * PPQ)) - 20)
+            vel = max(40, min(95, int(50 + 40 * e) - 15))    # always behind the lead
+            vel = max(1, min(127, vel + _vel_jitter(spec, "counter", 4)))
+            events.append((on_tick, 0, pitch, vel))
+            events.append((on_tick + dur_ticks, 1, pitch, 64))
+
+    if not events:
+        return None
+    events.sort(key=lambda ev: (ev[0], ev[1], ev[2]))
+    cursor = 0
+    for abs_tick, kind, pitch, vel in events:
+        delta = max(0, abs_tick - cursor)
+        msg_type = "note_on" if kind == 0 else "note_off"
+        track.append(Message(msg_type, channel=4, note=pitch, velocity=vel, time=delta))
+        cursor = abs_tick
+    return track
 
 
 def _pad_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
