@@ -283,34 +283,57 @@ soundhash/
 
 ## 13. Implementation status (current)
 
-End-to-end pipeline working: SHA-256 → SongSpec → MIDI (5 tracks) → WAV.
+End-to-end pipeline working: SHA-256 → SongSpec → MIDI (5 tracks) → WAV. 15 tests passing across 9 commits since milestone-1.
 
 ### Wired in `src/soundhash/`
 
-- **`decode.hash_to_spec(hash, mime)`** — pure HKDF-driven walker over the 32-byte budget. Picks: mood (MIME-family-filtered), tempo (with ±0.5% nudge), key root, mode, progression (mood ∩ mode), drum kit + drum pattern, bass pattern + synth, comp role + synth + chord-rhythm pattern, melody motif + contour + scale-subset.
-- **`theory.resolve_progression`** — Roman numeral → (root_pc, root_midi, chord_pcs, quality) per bar.
-- **`render.midi`** — emits Type-1 PPQ-480 MIDI with 5 tracks (meta + bass + comp + drums on ch10 + lead). All events sorted by absolute tick before delta computation. Strong-beat (beats 0 and 2 in 4/4) chord-tone snap on the lead.
-- **`render.audio`** — shells out to `fluidsynth -ni`, reads back the WAV, then trims to ≤30 s and applies a 5 ms fade-in + 200 ms cosine fade-out. Output is 16-bit/44.1 kHz stereo, deterministic across runs of the same hash.
-- **`mime.detect_mime` / `family_for_mime`** — pinned to `python-magic` with extension fallback for `octet-stream`. (Not yet enforcing the strict SHA-pinning of `magic.mgc`; that lands with the determinism-contract iteration.)
+**Decode (`decode.hash_to_spec`)** — pure HKDF-driven walker over the 32-byte macro budget plus per-bar / per-section sub-streams. Picks:
+
+- macro byte 0–4: mood (MIME-family-filtered), tempo (mood pool + ±0.5% nudge), key root, mode (mood-filtered)
+- byte 5: groove template per mood (M2→boom_bap_60/dilla/mpc60_swing, M5→synthwave_tight, M9→trap_triplet_hat, …)
+- byte 6: form (filtered by min/max bar count)
+- byte 7–8: chord progression (mood ∩ mode) + voicing-style metadata
+- byte 9–12: drum kit + low/high density pattern pair + escalation fill
+- byte 13–14: bass pattern + synth (with octave-window pre-filter)
+- byte 15–17: comp role + synth + chord-rhythm pattern + arp shape
+- byte 18–22: melody scale subset, motif rhythm, contour, phrase, tessitura+lead synth
+- byte 23: aux pad-wash layer enable/synth
+- byte 24–25: energy curve + section-perturb seed
+- byte 27: humanization profile
+- HKDF substreams: `perbar/melody/<i>` (4B), `perbar/bass/<i>` (2B), `form/section/<letter>` (4B), `expression/velocity/L<name>` (256B), `groove/microtiming` (implicit)
+
+**Theory (`theory.resolve_progression`)** — Roman numeral + quality → (root_pc, root_midi, chord_pcs).
+
+**Render (`render.midi`)** — Type-1 PPQ-480 MIDI with up to 6 tracks (meta + bass + comp + drums + lead + pad). All events sorted by absolute tick before delta computation:
+
+- **Bass**: reads pattern.grid (degree-rhythm cells) and emits R/3/5/7/CH per cell with articulation-driven duration; respects synth octave window; per-bar HKDF mutation (octave shift / skip-last / ghost-first); per-role groove timing offsets.
+- **Comp**: reads chord-rhythm pattern hits per section letter; voicing follows comp role's polyphony_mode (full_voicing / partial_voicing / monophonic_sequence using arp_shape.sequence + octave_offsets); silent on `no_comp`.
+- **Drums**: density-aware pair (low for energy<0.55, high for ≥0.55); section-transition fill in last span_steps cells; crash on each new-section downbeat; per-row groove timing offsets; deterministic ±5 velocity jitter.
+- **Lead**: motif onsets × contour scale-degrees × scale-subset bitmask; strong-beat chord-tone snap on beats 0/2; per-bar mutation (transpose ±1/±2 / invert about mean); silent on fill bars; per-bar CC11 expression swell (95→122→105); pitch-bend "fall" (0 → -8192) on phrase-end notes.
+- **Pad**: 5th layer, mood-keyed pad GM program; voices bottom 3 chord tones one octave above comp; energy-gated to mid-range (0.40–0.85) so peak bars stay open.
+
+**Audio (`render.audio`)** — shells out to `fluidsynth -ni` with cpu-cores=1, reverb/chorus off; reads the WAV back; applies 5 ms fade-in + 200 ms cosine fade-out, ≤30 s length cap, LUFS normalization to -16 (pyloudnorm ITU-R BS.1770-4) and peak ceiling at -1.5 dBFS. Deterministic across runs.
+
+**MIME (`mime.family_for_mime`)** — pinned to `python-magic` with extension fallback for `octet-stream`.
 
 ### Verified contract (within-arch byte-identity)
 
-- Same hash → same SongSpec.
-- Same SongSpec → same MIDI bytes.
-- Same MIDI → same WAV bytes (under bundled VintageDreamsWaves-v2.sf2 + fluidsynth 2.5.4 + Apple Silicon).
-- 16 tests pass (10 decoder invariants + 5 MIDI render + 1 audio render).
+- Same hash → same SongSpec → same MIDI → same WAV bytes (under bundled `MS-Basic.sf3` + fluidsynth 2.5.4 + Apple Silicon).
+- Test corpus: 1024 random-hash pairs all pass byte-identity.
+- 1000-hash audit shows all 11 moods reachable, all 15 groove templates used, 24 distinct forms appearing.
 
 ### Known gaps before v1 freeze
 
-- Audio render pinning is host-bound (Mac Apple Silicon / fluidsynth 2.5.4 / brew-bundled SoundFont). Cross-arch will require either Docker canonical or per-arch wheel testing. Currently the contract is "byte-identical *for me right now*", not "byte-identical universally".
-- LUFS normalization not yet applied; the WAV is whatever FluidSynth produces minus reverb/chorus.
-- Drum/bass/comp patterns play their *own* rhythms on top of each other without an energy curve filtering them — every section is "full density".
-- Form selection is a constant (8 bars, loop progression). Form-table (`forms.json`) is on disk but not consumed.
-- Mood-keyed synth selection (`synth_pool.json`) not consumed; layer programs are fixed (33/4/80) regardless of pick.
-- HKDF labels beyond `macro` are reserved but not yet consumed (per-bar mutation, ear-candy, expression, dither).
+- Audio render pinning is host-bound (Mac Apple Silicon / fluidsynth 2.5.4 / MS-Basic SF3). Cross-arch will require either Docker canonical or per-arch wheel testing.
+- Bass synth declares synth program but render still uses GM palette — synth_id↔asset wiring deferred.
+- Aux layers other than pad (counter-melody, drone, ad-libs, risers, ear-candy) not yet wired.
+- Form layout still always loops the picked progression to 8 bars; bar count doesn't yet derive from form.layout.
+- Strict `magic.mgc` SHA pinning + provenance metadata in WAV / MIDI not yet wired.
+- HKDF labels reserved but not yet consumed: `earcandy/positions`, `earcandy/types`, `harmony/substitutions`, `harmony/modulation`, `dither`, etc.
 
 ### Repo footprint
 
-- 58 JSON tables under `assets/v1/` (all valid).
-- ~700 LOC of Python in `src/soundhash/`.
+- 58 JSON tables under `assets/v1/` (all valid; one curated `MS-Basic.sf3` SoundFont 49 MB, gitignored).
+- ~1100 LOC of Python in `src/soundhash/`.
 - 14 dimensions of research findings in `research/`.
+- 9 commits on `main` since initial scaffold.
