@@ -66,8 +66,21 @@ def main(argv: list[str] | None = None) -> int:
         if args.audio:
             from .render.audio import render_wav
             wav_path = args.file + ".soundhash.wav"
+            prov = {
+                "hash_hex": spec.provenance.hash_hex,
+                "mood": spec.provenance.mood,
+                "mode": spec.mode,
+                "key_root": spec.key_root,
+                "tempo_bpm": f"{spec.tempo_bpm:.2f}",
+                "form_id": spec.form_id,
+                "bars": len(spec.bars),
+                "groove_template_id": spec.groove_template_id,
+                "energy_curve_id": spec.energy_curve_id,
+            }
             with open(wav_path, "wb") as fh:
-                fh.write(render_wav(midi_bytes, sample_rate=spec.render.sample_rate))
+                fh.write(render_wav(midi_bytes,
+                                    sample_rate=spec.render.sample_rate,
+                                    provenance=prov))
             print(f"  wrote   {wav_path}", file=sys.stderr)
 
     # TODO: render via render.midi / render.audio

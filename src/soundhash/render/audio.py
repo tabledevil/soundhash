@@ -56,8 +56,9 @@ def _find_soundfont() -> str:
     )
 
 
-def render_wav(midi_bytes: bytes, sample_rate: int = 44100) -> bytes:
-    """Run fluidsynth on the MIDI, return the WAV bytes."""
+def render_wav(midi_bytes: bytes, sample_rate: int = 44100,
+               provenance: dict | None = None) -> bytes:
+    """Run fluidsynth on the MIDI, return the WAV bytes (with optional metadata)."""
     if shutil.which("fluidsynth") is None:
         raise RuntimeError("fluidsynth CLI not found on PATH")
     sf2 = _find_soundfont()
@@ -84,7 +85,66 @@ def render_wav(midi_bytes: bytes, sample_rate: int = 44100) -> bytes:
             raise RuntimeError(
                 f"fluidsynth exited {proc.returncode}: {proc.stderr.decode(errors='replace')[:400]}"
             )
-        return _postprocess_wav(wav_path.read_bytes())
+        wav = _postprocess_wav(wav_path.read_bytes())
+        if provenance:
+            wav = _embed_wav_provenance(wav, provenance)
+        return wav
+
+
+def _embed_wav_provenance(wav_bytes: bytes, prov: dict) -> bytes:
+    """Insert a RIFF LIST/INFO chunk carrying provenance after `fmt `.
+
+    Sub-chunks (4-byte IDs) used:
+        ISFT  software identifier
+        ICMT  free-form comment with full provenance
+        ICOP  copyright / license
+    """
+    if wav_bytes[:4] != b"RIFF" or wav_bytes[8:12] != b"WAVE":
+        return wav_bytes  # not a WAV; bail.
+
+    # Build INFO sub-chunks.
+    def _info(tag: bytes, text: str) -> bytes:
+        data = text.encode("utf-8") + b"\x00"
+        if len(data) % 2:
+            data += b"\x00"
+        return tag + struct.pack("<I", len(data)) + data
+
+    sw = "soundhash/v1"
+    comment = (
+        f"soundhash/v1 sha={prov.get('hash_hex','?')[:64]} "
+        f"mood={prov.get('mood','?')} mode={prov.get('mode','?')} "
+        f"key={prov.get('key_root','?')} tempo={prov.get('tempo_bpm','?')} "
+        f"form={prov.get('form_id','?')} bars={prov.get('bars','?')} "
+        f"groove={prov.get('groove_template_id','?')} "
+        f"curve={prov.get('energy_curve_id','?')}"
+    )
+    info_payload = b"INFO" + _info(b"ISFT", sw) + _info(b"ICMT", comment) \
+                            + _info(b"ICOP", "deterministic — see DESIGN.md")
+    list_chunk = b"LIST" + struct.pack("<I", len(info_payload)) + info_payload
+
+    # Walk existing chunks and insert LIST right after `fmt `.
+    out = bytearray()
+    out += wav_bytes[:12]                      # RIFF<size>WAVE; size patched at end
+    pos = 12
+    inserted = False
+    while pos + 8 <= len(wav_bytes):
+        chunk_id = wav_bytes[pos:pos + 4]
+        chunk_size = struct.unpack("<I", wav_bytes[pos + 4:pos + 8])[0]
+        chunk_total = 8 + chunk_size + (chunk_size & 1)
+        out += wav_bytes[pos:pos + chunk_total]
+        pos += chunk_total
+        if not inserted and chunk_id == b"fmt ":
+            out += list_chunk
+            inserted = True
+
+    if not inserted:
+        # No fmt chunk found — append before EOF as safe fallback.
+        out += list_chunk
+
+    # Patch RIFF size (= total length of out minus 8 bytes for "RIFF"+size).
+    new_size = len(out) - 8
+    out[4:8] = struct.pack("<I", new_size)
+    return bytes(out)
 
 
 def _postprocess_wav(wav_bytes: bytes) -> bytes:
