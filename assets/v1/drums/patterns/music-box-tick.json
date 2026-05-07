@@ -1,0 +1,375 @@
+{
+  "version": "soundhash/v1/drums/patterns/music-box-tick",
+  "kit": "music-box-tick",
+  "patterns": [
+    {
+      "id": "mb-d0-tick",
+      "kit": "music-box-tick",
+      "density": 0,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "hat_closed": [
+          {
+            "s": 0,
+            "v": 50
+          },
+          {
+            "s": 8,
+            "v": 48
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4",
+        "3/4"
+      ],
+      "style_tag": "box-texture"
+    },
+    {
+      "id": "mb-d1-pulse",
+      "kit": "music-box-tick",
+      "density": 1,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 68
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 2,
+            "v": 50
+          },
+          {
+            "s": 6,
+            "v": 50
+          },
+          {
+            "s": 10,
+            "v": 50
+          },
+          {
+            "s": 14,
+            "v": 50
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "box-skel"
+    },
+    {
+      "id": "mb-d2-waltz-3-4",
+      "kit": "music-box-tick",
+      "density": 2,
+      "bars": 1,
+      "steps": 12,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 84
+          },
+          {
+            "s": 4,
+            "v": 60
+          },
+          {
+            "s": 8,
+            "v": 60
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 2,
+            "v": 50
+          },
+          {
+            "s": 6,
+            "v": 50
+          },
+          {
+            "s": 10,
+            "v": 50
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "3/4"
+      ],
+      "style_tag": "waltz"
+    },
+    {
+      "id": "mb-d2-tick-tock",
+      "kit": "music-box-tick",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 78
+          },
+          {
+            "s": 8,
+            "v": 76
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 4,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 68
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 0,
+            "v": 52
+          },
+          {
+            "s": 2,
+            "v": 52
+          },
+          {
+            "s": 4,
+            "v": 52
+          },
+          {
+            "s": 6,
+            "v": 52
+          },
+          {
+            "s": 8,
+            "v": 52
+          },
+          {
+            "s": 10,
+            "v": 52
+          },
+          {
+            "s": 12,
+            "v": 52
+          },
+          {
+            "s": 14,
+            "v": 52
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "tick-tock"
+    },
+    {
+      "id": "mb-d3-busy",
+      "kit": "music-box-tick",
+      "density": 3,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 72
+          },
+          {
+            "s": 2,
+            "v": 64
+          },
+          {
+            "s": 4,
+            "v": 72
+          },
+          {
+            "s": 6,
+            "v": 64
+          },
+          {
+            "s": 8,
+            "v": 72
+          },
+          {
+            "s": 10,
+            "v": 64
+          },
+          {
+            "s": 12,
+            "v": 72
+          },
+          {
+            "s": 14,
+            "v": 64
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 1,
+            "v": 50
+          },
+          {
+            "s": 3,
+            "v": 50
+          },
+          {
+            "s": 5,
+            "v": 50
+          },
+          {
+            "s": 7,
+            "v": 50
+          },
+          {
+            "s": 9,
+            "v": 50
+          },
+          {
+            "s": 11,
+            "v": 50
+          },
+          {
+            "s": 13,
+            "v": 50
+          },
+          {
+            "s": 15,
+            "v": 50
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "box-busy"
+    },
+    {
+      "id": "mb-d4-peak",
+      "kit": "music-box-tick",
+      "density": 4,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 1,
+            "v": 70
+          },
+          {
+            "s": 2,
+            "v": 70
+          },
+          {
+            "s": 3,
+            "v": 70
+          },
+          {
+            "s": 4,
+            "v": 80
+          },
+          {
+            "s": 5,
+            "v": 70
+          },
+          {
+            "s": 6,
+            "v": 70
+          },
+          {
+            "s": 7,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 80
+          },
+          {
+            "s": 9,
+            "v": 70
+          },
+          {
+            "s": 10,
+            "v": 70
+          },
+          {
+            "s": 11,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 80
+          },
+          {
+            "s": 13,
+            "v": 70
+          },
+          {
+            "s": 14,
+            "v": 70
+          },
+          {
+            "s": 15,
+            "v": 70
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 2,
+            "v": 60
+          },
+          {
+            "s": 6,
+            "v": 60
+          },
+          {
+            "s": 10,
+            "v": 60
+          },
+          {
+            "s": 14,
+            "v": 60
+          }
+        ],
+        "crash": [
+          {
+            "s": 0,
+            "v": 70
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "box-peak"
+    }
+  ]
+}

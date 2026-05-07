@@ -1,0 +1,20 @@
+{
+  "version": "soundhash/v1/tempo_pools",
+  "comment": "Flat tempo pools per mood, aligned with moods.json. Selected by byte 2 modulo pool length. Pool sizes are powers-of-two-friendly where possible to minimize byte-budget bias; non-power-of-two is acceptable because byte 2 is uniform mod-256.",
+  "pools": {
+    "M0":  {"name": "Ambient",   "bpm": [60, 64, 68, 72, 76, 80]},
+    "M1":  {"name": "Ballad",    "bpm": [64, 68, 72, 76, 80]},
+    "M2":  {"name": "Hip-hop",   "bpm": [70, 76, 84, 88, 92, 94]},
+    "M3":  {"name": "Downtempo", "bpm": [90, 95, 100, 105]},
+    "M4":  {"name": "Latin",     "bpm": [92, 96, 100, 104, 108, 112]},
+    "M5":  {"name": "Synthwave", "bpm": [100, 105, 110, 115, 120]},
+    "M6":  {"name": "House",     "bpm": [120, 122, 124, 126, 128]},
+    "M7":  {"name": "Techno",    "bpm": [128, 130, 132, 135, 138]},
+    "M8":  {"name": "DnB",       "bpm": [85, 130, 170, 172, 174, 176]},
+    "M9":  {"name": "Glitch",    "bpm": [90, 100, 110, 120, 130, 135]},
+    "M10": {"name": "Cinematic", "bpm": [70, 80, 90, 100, 110]}
+  },
+  "half_time_gate_bpm": 130,
+  "double_time_gate_bpm": 80,
+  "notes": "half_time_gate_bpm: only tempos >= 130 may flip the half_time macro flag (snare on 3). double_time_gate_bpm: tempos <= 80 may flip a double-time hat flag (16th-driven hats). Both flags are owned by dim #05 but propagated from this file."
+}

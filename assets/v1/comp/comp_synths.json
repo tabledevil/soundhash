@@ -1,0 +1,149 @@
+{
+  "version": "soundhash/v1/comp/synths",
+  "synths": [
+    {
+      "id": "nylon_guitar",
+      "name": "Nylon-string guitar",
+      "engine_hint": "fluidsynth",
+      "gm_program": 24,
+      "register_midi": [40, 84],
+      "compatible_roles": ["guitar_strum", "piano_arp"],
+      "mood_tags": ["M1", "M4", "M10"]
+    },
+    {
+      "id": "steel_string",
+      "name": "Steel-string acoustic guitar",
+      "engine_hint": "fluidsynth",
+      "gm_program": 25,
+      "register_midi": [40, 84],
+      "compatible_roles": ["guitar_strum", "piano_arp"],
+      "mood_tags": ["M0", "M1", "M5"]
+    },
+    {
+      "id": "electric_clean",
+      "name": "Electric guitar (clean)",
+      "engine_hint": "fluidsynth",
+      "gm_program": 27,
+      "register_midi": [40, 84],
+      "compatible_roles": ["guitar_strum", "muted_skank"],
+      "mood_tags": ["M2", "M5", "M6"]
+    },
+    {
+      "id": "electric_muted",
+      "name": "Electric guitar (muted)",
+      "engine_hint": "fluidsynth",
+      "gm_program": 28,
+      "register_midi": [40, 76],
+      "compatible_roles": ["muted_skank", "guitar_strum"],
+      "mood_tags": ["M2", "M4", "M6"]
+    },
+    {
+      "id": "dist_guitar",
+      "name": "Distortion guitar",
+      "engine_hint": "fluidsynth",
+      "gm_program": 30,
+      "register_midi": [40, 76],
+      "compatible_roles": ["guitar_strum"],
+      "mood_tags": ["M7", "M8", "M9"]
+    },
+    {
+      "id": "acoustic_piano",
+      "name": "Acoustic grand piano",
+      "engine_hint": "sfizz",
+      "gm_program": 0,
+      "register_midi": [36, 96],
+      "compatible_roles": ["piano_stab", "piano_arp"],
+      "mood_tags": ["M0", "M1", "M3", "M10"]
+    },
+    {
+      "id": "electric_piano",
+      "name": "Electric piano (FM)",
+      "engine_hint": "fluidsynth",
+      "gm_program": 4,
+      "register_midi": [36, 96],
+      "compatible_roles": ["ep_comp", "piano_arp", "piano_stab"],
+      "mood_tags": ["M1", "M3", "M5", "M6"]
+    },
+    {
+      "id": "rhodes",
+      "name": "Rhodes electric piano",
+      "engine_hint": "fluidsynth",
+      "gm_program": 5,
+      "register_midi": [36, 96],
+      "compatible_roles": ["rhodes_comp", "ep_comp", "piano_arp"],
+      "mood_tags": ["M1", "M3", "M5", "M10"]
+    },
+    {
+      "id": "hammond_b3",
+      "name": "Hammond B3 organ",
+      "engine_hint": "fluidsynth",
+      "gm_program": 16,
+      "register_midi": [36, 84],
+      "compatible_roles": ["organ_pad", "ep_comp"],
+      "mood_tags": ["M1", "M3", "M6"]
+    },
+    {
+      "id": "church_organ",
+      "name": "Church organ",
+      "engine_hint": "fluidsynth",
+      "gm_program": 19,
+      "register_midi": [36, 84],
+      "compatible_roles": ["organ_pad", "pad_sustain"],
+      "mood_tags": ["M0", "M10"]
+    },
+    {
+      "id": "music_box",
+      "name": "Music box",
+      "engine_hint": "fluidsynth",
+      "gm_program": 10,
+      "register_midi": [60, 96],
+      "compatible_roles": ["piano_arp", "synth_arp"],
+      "mood_tags": ["M0", "M1", "M10"]
+    },
+    {
+      "id": "harp",
+      "name": "Orchestral harp",
+      "engine_hint": "fluidsynth",
+      "gm_program": 46,
+      "register_midi": [36, 96],
+      "compatible_roles": ["harp_gliss", "piano_arp"],
+      "mood_tags": ["M0", "M1", "M10"]
+    },
+    {
+      "id": "choir_aah",
+      "name": "Choir aahs",
+      "engine_hint": "fluidsynth",
+      "gm_program": 52,
+      "register_midi": [48, 84],
+      "compatible_roles": ["pad_sustain", "organ_pad"],
+      "mood_tags": ["M0", "M1", "M10"]
+    },
+    {
+      "id": "pad_warm",
+      "name": "Warm analog pad",
+      "engine_hint": "surge_xt",
+      "gm_program": 89,
+      "register_midi": [36, 84],
+      "compatible_roles": ["pad_sustain", "organ_pad"],
+      "mood_tags": ["M0", "M3", "M5", "M10"]
+    },
+    {
+      "id": "pad_saw",
+      "name": "Saw poly pad",
+      "engine_hint": "surge_xt",
+      "gm_program": 81,
+      "register_midi": [36, 84],
+      "compatible_roles": ["pad_sustain", "synth_arp"],
+      "mood_tags": ["M5", "M6", "M7", "M9"]
+    },
+    {
+      "id": "pad_bell",
+      "name": "Bell pad",
+      "engine_hint": "surge_xt",
+      "gm_program": 98,
+      "register_midi": [48, 96],
+      "compatible_roles": ["pad_sustain", "synth_arp", "harp_gliss"],
+      "mood_tags": ["M0", "M5", "M9", "M10"]
+    }
+  ]
+}

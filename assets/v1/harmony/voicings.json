@@ -1,0 +1,125 @@
+{
+  "version": "soundhash/v1/harmony/voicings",
+  "voicings": [
+    {
+      "id": "close_triad",
+      "name": "Close-position triad",
+      "polyphony": 3,
+      "register_low_midi": 55,
+      "register_high_midi": 79,
+      "compatible_qualities": ["maj","min","dim","aug","sus2","sus4"],
+      "compatible_moods": ["M0","M1","M3","M4","M5","M10"],
+      "requires_bass_layer": true,
+      "doubling_rules": "double root or 5th; never double 3rd in maj/min triads",
+      "spacing_rule": "all three voices within an octave; voices stacked in close 3rds/4ths"
+    },
+    {
+      "id": "open_triad",
+      "name": "Open-position triad (drop-2 of triad)",
+      "polyphony": 3,
+      "register_low_midi": 48,
+      "register_high_midi": 81,
+      "compatible_qualities": ["maj","min","dim","aug"],
+      "compatible_moods": ["M0","M1","M5","M6","M10"],
+      "requires_bass_layer": true,
+      "doubling_rules": "root or 5th doubled across octave; avoid doubled 3rd",
+      "spacing_rule": "drop the 2nd voice from top by an octave; preserve no interval > P12 between adjacent voices"
+    },
+    {
+      "id": "shell",
+      "name": "Shell voicing (R-3-7 / R-7-3)",
+      "polyphony": 3,
+      "register_low_midi": 48,
+      "register_high_midi": 72,
+      "compatible_qualities": ["maj7","m7","dom7","mMaj7","min7b5"],
+      "compatible_moods": ["M2","M3","M6","M10"],
+      "requires_bass_layer": false,
+      "doubling_rules": "no doublings; 5th omitted by definition",
+      "spacing_rule": "interval between R and 3 (or 7) ≥ M3; thumb-line stride"
+    },
+    {
+      "id": "rootless_A",
+      "name": "Rootless A (3-5-7-9)",
+      "polyphony": 4,
+      "register_low_midi": 55,
+      "register_high_midi": 79,
+      "compatible_qualities": ["maj7","m7","dom7","min7b5","mMaj7"],
+      "compatible_moods": ["M3","M6","M10"],
+      "requires_bass_layer": true,
+      "doubling_rules": "no doublings; root omitted (provided by bass)",
+      "spacing_rule": "no interval < m3 between bottom two voices; voices stacked in 3rds/4ths"
+    },
+    {
+      "id": "rootless_B",
+      "name": "Rootless B (7-9-3-5)",
+      "polyphony": 4,
+      "register_low_midi": 55,
+      "register_high_midi": 79,
+      "compatible_qualities": ["maj7","m7","dom7","min7b5","mMaj7"],
+      "compatible_moods": ["M3","M6","M10"],
+      "requires_bass_layer": true,
+      "doubling_rules": "no doublings; root omitted (provided by bass)",
+      "spacing_rule": "no interval < m3 between bottom two voices; alternates rotation of A form"
+    },
+    {
+      "id": "drop2_7th",
+      "name": "Drop-2 4-note 7th voicing",
+      "polyphony": 4,
+      "register_low_midi": 48,
+      "register_high_midi": 79,
+      "compatible_qualities": ["maj7","m7","dom7","min7b5","mMaj7"],
+      "compatible_moods": ["M2","M3","M6","M10"],
+      "requires_bass_layer": false,
+      "doubling_rules": "no doubled 3rd or 7th",
+      "spacing_rule": "drop 2nd voice from top by an octave; no interval < m3 in lower 2 voices"
+    },
+    {
+      "id": "drop3_7th",
+      "name": "Drop-3 4-note 7th voicing",
+      "polyphony": 4,
+      "register_low_midi": 45,
+      "register_high_midi": 79,
+      "compatible_qualities": ["maj7","m7","dom7","min7b5","mMaj7"],
+      "compatible_moods": ["M3","M10","M1"],
+      "requires_bass_layer": false,
+      "doubling_rules": "no doubled 3rd or 7th",
+      "spacing_rule": "drop 3rd voice from top by an octave; bottom interval ≥ P5"
+    },
+    {
+      "id": "sus_open",
+      "name": "Sus / add9 open voicing",
+      "polyphony": 4,
+      "register_low_midi": 50,
+      "register_high_midi": 84,
+      "compatible_qualities": ["maj","sus2","sus4","maj7"],
+      "compatible_moods": ["M0","M3","M5","M10"],
+      "requires_bass_layer": true,
+      "doubling_rules": "double root and/or 5th; never double 4th when present",
+      "spacing_rule": "P5 or P4 between bottom voices; 9th must sit ≥ M9 above root"
+    },
+    {
+      "id": "quartal",
+      "name": "Quartal stack (P4 stacks)",
+      "polyphony": 4,
+      "register_low_midi": 53,
+      "register_high_midi": 84,
+      "compatible_qualities": ["m7","sus4","maj7","mMaj7"],
+      "compatible_moods": ["M0","M3","M9","M10"],
+      "requires_bass_layer": true,
+      "doubling_rules": "no doublings inside the stack; 3rd may be omitted",
+      "spacing_rule": "two or three stacked perfect 4ths; tritone-quartal allowed for dom7sus"
+    },
+    {
+      "id": "power",
+      "name": "Power chord (R-5 / R-5-R)",
+      "polyphony": 2,
+      "register_low_midi": 36,
+      "register_high_midi": 72,
+      "compatible_qualities": ["maj","min","sus2"],
+      "compatible_moods": ["M5","M7","M8","M9"],
+      "requires_bass_layer": false,
+      "doubling_rules": "octave-double root only; never include 3rd",
+      "spacing_rule": "P5 between voices; optional octave-up doubled root"
+    }
+  ]
+}

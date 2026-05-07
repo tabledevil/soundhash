@@ -1,0 +1,325 @@
+{
+  "version": "soundhash/v1/drums/patterns/mallets",
+  "kit": "mallets",
+  "patterns": [
+    {
+      "id": "ml-d0-bell-bed",
+      "kit": "mallets",
+      "density": 0,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4",
+        "6/8",
+        "12/8",
+        "3/4"
+      ],
+      "style_tag": "mallet-texture"
+    },
+    {
+      "id": "ml-d1-pulse-down",
+      "kit": "mallets",
+      "density": 1,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 8,
+            "v": 76
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "mallet-skel"
+    },
+    {
+      "id": "ml-d2-arpeggio-pulse",
+      "kit": "mallets",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 4,
+            "v": 76
+          },
+          {
+            "s": 8,
+            "v": 86
+          },
+          {
+            "s": 12,
+            "v": 76
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 2,
+            "v": 60
+          },
+          {
+            "s": 10,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "mallet-pulse"
+    },
+    {
+      "id": "ml-d2-3-4-waltz",
+      "kit": "mallets",
+      "density": 2,
+      "bars": 1,
+      "steps": 12,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 92
+          },
+          {
+            "s": 4,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 74
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 4,
+            "v": 60
+          },
+          {
+            "s": 8,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "3/4"
+      ],
+      "style_tag": "waltz"
+    },
+    {
+      "id": "ml-d3-busy-marimba",
+      "kit": "mallets",
+      "density": 3,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 2,
+            "v": 70
+          },
+          {
+            "s": 4,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 80
+          },
+          {
+            "s": 10,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 80
+          },
+          {
+            "s": 14,
+            "v": 70
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 2,
+            "v": 64
+          },
+          {
+            "s": 6,
+            "v": 64
+          },
+          {
+            "s": 10,
+            "v": 64
+          },
+          {
+            "s": 14,
+            "v": 64
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "mallet-busy"
+    },
+    {
+      "id": "ml-d4-peak-roll",
+      "kit": "mallets",
+      "density": 4,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 84
+          },
+          {
+            "s": 1,
+            "v": 84
+          },
+          {
+            "s": 2,
+            "v": 84
+          },
+          {
+            "s": 3,
+            "v": 84
+          },
+          {
+            "s": 4,
+            "v": 84
+          },
+          {
+            "s": 5,
+            "v": 84
+          },
+          {
+            "s": 6,
+            "v": 84
+          },
+          {
+            "s": 7,
+            "v": 84
+          },
+          {
+            "s": 8,
+            "v": 84
+          },
+          {
+            "s": 9,
+            "v": 84
+          },
+          {
+            "s": 10,
+            "v": 84
+          },
+          {
+            "s": 11,
+            "v": 84
+          },
+          {
+            "s": 12,
+            "v": 84
+          },
+          {
+            "s": 13,
+            "v": 84
+          },
+          {
+            "s": 14,
+            "v": 84
+          },
+          {
+            "s": 15,
+            "v": 84
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 2,
+            "v": 70
+          },
+          {
+            "s": 4,
+            "v": 70
+          },
+          {
+            "s": 6,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 70
+          },
+          {
+            "s": 10,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 70
+          },
+          {
+            "s": 14,
+            "v": 70
+          }
+        ],
+        "crash": [
+          {
+            "s": 0,
+            "v": 96
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "mallet-peak"
+    }
+  ]
+}

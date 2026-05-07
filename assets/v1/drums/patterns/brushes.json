@@ -1,0 +1,392 @@
+{
+  "version": "soundhash/v1/drums/patterns/brushes",
+  "kit": "brushes",
+  "patterns": [
+    {
+      "id": "br-d0-sweep",
+      "kit": "brushes",
+      "density": 0,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "snare": [
+          {
+            "s": 0,
+            "v": 50
+          },
+          {
+            "s": 8,
+            "v": 48
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4",
+        "6/8",
+        "12/8"
+      ],
+      "style_tag": "brushed-ballad-texture"
+    },
+    {
+      "id": "br-d1-ballad-skel",
+      "kit": "brushes",
+      "density": 1,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 8,
+            "v": 88
+          }
+        ],
+        "snare": [
+          {
+            "s": 4,
+            "v": 78
+          },
+          {
+            "s": 12,
+            "v": 80
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "brushed-ballad"
+    },
+    {
+      "id": "br-d2-ballad-ride",
+      "kit": "brushes",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 92
+          },
+          {
+            "s": 8,
+            "v": 90
+          }
+        ],
+        "snare": [
+          {
+            "s": 4,
+            "v": 84
+          },
+          {
+            "s": 12,
+            "v": 86
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 2,
+            "v": 70
+          },
+          {
+            "s": 4,
+            "v": 70
+          },
+          {
+            "s": 6,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 70
+          },
+          {
+            "s": 10,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 70
+          },
+          {
+            "s": 14,
+            "v": 70
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "brushed-ballad"
+    },
+    {
+      "id": "br-d2-12-8-shuffle",
+      "kit": "brushes",
+      "density": 2,
+      "bars": 1,
+      "steps": 12,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 92
+          },
+          {
+            "s": 6,
+            "v": 90
+          }
+        ],
+        "snare": [
+          {
+            "s": 3,
+            "v": 86
+          },
+          {
+            "s": 9,
+            "v": 88
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 78
+          },
+          {
+            "s": 2,
+            "v": 60
+          },
+          {
+            "s": 3,
+            "v": 76
+          },
+          {
+            "s": 5,
+            "v": 60
+          },
+          {
+            "s": 6,
+            "v": 78
+          },
+          {
+            "s": 8,
+            "v": 60
+          },
+          {
+            "s": 9,
+            "v": 76
+          },
+          {
+            "s": 11,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "12/8",
+        "6/8"
+      ],
+      "style_tag": "shuffle"
+    },
+    {
+      "id": "br-d3-busy-fill-prep",
+      "kit": "brushes",
+      "density": 3,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 96
+          },
+          {
+            "s": 6,
+            "v": 80
+          },
+          {
+            "s": 8,
+            "v": 92
+          }
+        ],
+        "snare": [
+          {
+            "s": 4,
+            "v": 92
+          },
+          {
+            "s": 10,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 94
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 74
+          },
+          {
+            "s": 2,
+            "v": 74
+          },
+          {
+            "s": 4,
+            "v": 74
+          },
+          {
+            "s": 6,
+            "v": 74
+          },
+          {
+            "s": 8,
+            "v": 74
+          },
+          {
+            "s": 10,
+            "v": 74
+          },
+          {
+            "s": 12,
+            "v": 74
+          },
+          {
+            "s": 14,
+            "v": 74
+          }
+        ]
+      },
+      "ghost_snare": [
+        {
+          "s": 2,
+          "v": 36
+        },
+        {
+          "s": 7,
+          "v": 38
+        },
+        {
+          "s": 14,
+          "v": 36
+        }
+      ],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "brushed-busy"
+    },
+    {
+      "id": "br-d4-peak-roll",
+      "kit": "brushes",
+      "density": 4,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 104
+          },
+          {
+            "s": 8,
+            "v": 100
+          }
+        ],
+        "snare": [
+          {
+            "s": 2,
+            "v": 90
+          },
+          {
+            "s": 4,
+            "v": 90
+          },
+          {
+            "s": 6,
+            "v": 90
+          },
+          {
+            "s": 8,
+            "v": 90
+          },
+          {
+            "s": 10,
+            "v": 90
+          },
+          {
+            "s": 12,
+            "v": 90
+          },
+          {
+            "s": 14,
+            "v": 90
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 2,
+            "v": 80
+          },
+          {
+            "s": 4,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 80
+          },
+          {
+            "s": 8,
+            "v": 80
+          },
+          {
+            "s": 10,
+            "v": 80
+          },
+          {
+            "s": 12,
+            "v": 80
+          },
+          {
+            "s": 14,
+            "v": 80
+          }
+        ],
+        "crash": [
+          {
+            "s": 0,
+            "v": 110
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "brushed-peak"
+    }
+  ]
+}

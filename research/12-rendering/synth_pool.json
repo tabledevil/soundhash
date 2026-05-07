@@ -1,0 +1,59 @@
+{
+  "_comment": "Skeleton synth pool. Each role has 8-16 entries. Hash-byte modulo a mood-filtered subset selects one entry. Asset paths are repo-relative; version pinning via versions.lock.json + asset_sha256.",
+  "version": "0.1.0",
+  "drums": [
+    {"id": "drum_fs_gm_standard",      "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 128, "program": 0,  "mood_tags": ["neutral","pop","rock"], "kit_name": "Standard"},
+    {"id": "drum_fs_gm_room",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 128, "program": 8,  "mood_tags": ["warm","rock"], "kit_name": "Room"},
+    {"id": "drum_fs_gm_power",         "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 128, "program": 16, "mood_tags": ["energetic","rock"], "kit_name": "Power"},
+    {"id": "drum_fs_gm_electronic",    "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 128, "program": 24, "mood_tags": ["electronic","dance"], "kit_name": "Electronic"},
+    {"id": "drum_fs_gm_tr808",         "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 128, "program": 25, "mood_tags": ["hiphop","electronic","dark"], "kit_name": "TR-808"},
+    {"id": "drum_fs_gm_jazz",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 128, "program": 32, "mood_tags": ["jazz","calm"], "kit_name": "Jazz"},
+    {"id": "drum_fs_gm_brush",         "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 128, "program": 40, "mood_tags": ["jazz","calm","cinematic"], "kit_name": "Brush"},
+    {"id": "drum_sfz_salamander_kit",  "engine": "sfizz",      "asset": "sfz/SalamanderDrumkit/Salamander.sfz", "mood_tags": ["acoustic","cinematic","warm"]},
+    {"id": "drum_py_oneshot_lofi",     "engine": "pysamples",  "asset": "samples/drums/lofi_kit.json", "mood_tags": ["lofi","calm","warm"]},
+    {"id": "drum_py_oneshot_techno",   "engine": "pysamples",  "asset": "samples/drums/techno_kit.json", "mood_tags": ["dance","dark","electronic"]}
+  ],
+  "bass": [
+    {"id": "bass_fs_finger",           "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 33, "mood_tags": ["pop","rock","jazz"]},
+    {"id": "bass_fs_pick",             "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 34, "mood_tags": ["rock","energetic"]},
+    {"id": "bass_fs_fretless",         "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 35, "mood_tags": ["jazz","cinematic","warm"]},
+    {"id": "bass_fs_slap",             "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 36, "mood_tags": ["funk","energetic"]},
+    {"id": "bass_fs_synthbass1",       "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 38, "mood_tags": ["electronic","dance","dark"]},
+    {"id": "bass_fs_synthbass2",       "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 39, "mood_tags": ["electronic","retro"]},
+    {"id": "bass_fs_acoustic",         "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 32, "mood_tags": ["jazz","calm"]},
+    {"id": "bass_surge_subby",         "engine": "surgext",    "asset": "surge/patches/SubBass01.fxp", "mood_tags": ["dance","dark","electronic"]}
+  ],
+  "comp": [
+    {"id": "comp_fs_epiano1",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 4,  "mood_tags": ["calm","warm","jazz"]},
+    {"id": "comp_fs_epiano2",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 5,  "mood_tags": ["pop","warm"]},
+    {"id": "comp_fs_acoustic_piano",   "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 0,  "mood_tags": ["cinematic","calm","neutral"]},
+    {"id": "comp_sfz_salamander",      "engine": "sfizz",      "asset": "sfz/SalamanderGrandPianoV3.sfz", "mood_tags": ["cinematic","calm","warm"]},
+    {"id": "comp_fs_strings",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 48, "mood_tags": ["cinematic","sad"]},
+    {"id": "comp_fs_warmpad",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 89, "mood_tags": ["calm","ambient","warm"]},
+    {"id": "comp_fs_polysynth",        "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 90, "mood_tags": ["electronic","retro"]},
+    {"id": "comp_fs_organ",            "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 16, "mood_tags": ["energetic","retro","jazz"]},
+    {"id": "comp_fs_clean_guitar",     "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 27, "mood_tags": ["pop","warm"]},
+    {"id": "comp_fs_nylon_guitar",     "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 24, "mood_tags": ["calm","warm","cinematic"]}
+  ],
+  "lead": [
+    {"id": "lead_fs_square",           "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 80, "mood_tags": ["retro","energetic"]},
+    {"id": "lead_fs_saw",              "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 81, "mood_tags": ["dance","energetic"]},
+    {"id": "lead_fs_calliope",         "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 82, "mood_tags": ["dreamy","calm"]},
+    {"id": "lead_fs_voice",            "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 85, "mood_tags": ["cinematic","sad"]},
+    {"id": "lead_fs_flute",            "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 73, "mood_tags": ["calm","warm"]},
+    {"id": "lead_fs_trumpet",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 56, "mood_tags": ["energetic","jazz"]},
+    {"id": "lead_fs_distortion_gtr",   "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 30, "mood_tags": ["rock","dark","energetic"]},
+    {"id": "lead_surge_pluck",         "engine": "surgext",    "asset": "surge/patches/Pluck01.fxp", "mood_tags": ["pop","warm"]},
+    {"id": "lead_surge_wave_lead",     "engine": "surgext",    "asset": "surge/patches/WaveLead.fxp", "mood_tags": ["electronic","dance"]}
+  ],
+  "aux": [
+    {"id": "aux_fs_pad_halo",          "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 94, "mood_tags": ["cinematic","ambient"]},
+    {"id": "aux_fs_pad_sweep",         "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 95, "mood_tags": ["ambient","dreamy"]},
+    {"id": "aux_fs_fx_atmosphere",     "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 99, "mood_tags": ["ambient","dark"]},
+    {"id": "aux_fs_fx_brightness",     "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 100, "mood_tags": ["dreamy"]},
+    {"id": "aux_fs_choir",             "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 52, "mood_tags": ["cinematic","sad"]},
+    {"id": "aux_fs_bell",              "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 14, "mood_tags": ["calm","dreamy"]},
+    {"id": "aux_fs_marimba",           "engine": "fluidsynth", "asset": "sf2/GeneralUserGS.sf2", "bank": 0, "program": 12, "mood_tags": ["warm","calm"]},
+    {"id": "aux_py_riser_noise",       "engine": "pysamples",  "asset": "samples/aux/riser_white.wav", "mood_tags": ["energetic","dance"]}
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "version": "v1",
+  "_doc": "Auxiliary layer roster for soundhash dim #09. Each layer has eligibility filters (mood, section, energy), volume budget, and per-byte selectors. Activation gated by clutter_budget below.",
+  "clutter_budget": {
+    "_formula": "max_aux_active(energy)",
+    "tiers": [
+      {"energy_lt": 0.20, "max": 0},
+      {"energy_lt": 0.45, "max": 1},
+      {"energy_lt": 0.70, "max": 2},
+      {"energy_lt": 0.90, "max": 3},
+      {"energy_lt": 1.01, "max": 4}
+    ],
+    "exempt_always_on": ["texture"],
+    "exempt_event": ["riser", "downer", "fx_oneshot"],
+    "mutex_pairs": [
+      ["harmony_double", "counter_melody"],
+      ["oohs", "pad_wash"],
+      ["drone", "harmony_double"]
+    ]
+  },
+  "mood_priority": {
+    "ambient":    ["drone","pad_wash","texture","oohs","bell_sparkle","counter_melody","fx_oneshot","downer"],
+    "cinematic":  ["pad_wash","oohs","drone","counter_melody","fx_oneshot","riser","texture","bell_sparkle","ad_lib_stab"],
+    "ballad":     ["pad_wash","oohs","counter_melody","harmony_double","bell_sparkle","texture"],
+    "pop":        ["harmony_double","ad_lib_stab","pad_wash","bell_sparkle","riser","oohs","fx_oneshot"],
+    "rock":       ["harmony_double","ad_lib_stab","fx_oneshot","riser","pad_wash"],
+    "jazz":       ["counter_melody","counter_rhythm","texture","ad_lib_stab","bell_sparkle"],
+    "funk":       ["ad_lib_stab","counter_rhythm","harmony_double","fx_oneshot"],
+    "electronic": ["ad_lib_stab","riser","downer","fx_oneshot","pad_wash","bell_sparkle","drone"],
+    "hip_hop":    ["ad_lib_stab","fx_oneshot","texture","pad_wash","bell_sparkle"],
+    "lofi":       ["texture","pad_wash","bell_sparkle","ad_lib_stab"],
+    "folk":       ["counter_melody","harmony_double","drone","texture"],
+    "classical":  ["counter_melody","oohs","pad_wash","bell_sparkle"],
+    "drone":      ["drone","texture","pad_wash"],
+    "world":      ["counter_rhythm","drone","texture","ad_lib_stab","bell_sparkle"],
+    "dark":       ["drone","texture","pad_wash","fx_oneshot","downer"],
+    "dream":      ["pad_wash","bell_sparkle","texture","oohs","drone"],
+    "epic":       ["oohs","pad_wash","fx_oneshot","riser","drone","harmony_double"]
+  },
+  "layers": [
+    {
+      "id": 0, "slug": "counter_melody",
+      "moods": ["jazz","cinematic","folk","classical","ballad","pop","epic"],
+      "sections_active": ["A","Ap","B","Avar","Aresp","Aresp_p","C"],
+      "sections_blocked": ["i","o","r","d","b","f"],
+      "energy_range": [0.40, 0.85],
+      "volume_db": -9.0,
+      "pan_range": [-0.4, 0.4],
+      "register_midi": [60, 84],
+      "modes": ["parallel_3rd","parallel_6th","contrary","call_response"],
+      "selector_bits": "byte_23[4..5]",
+      "rest_threshold_beats": 1.0
+    },
+    {
+      "id": 1, "slug": "harmony_double",
+      "moods": ["pop","rock","cinematic","ballad","gospel","epic"],
+      "sections_active": ["A","Ap","B","d"],
+      "energy_range": [0.55, 1.0],
+      "volume_db": -7.0,
+      "intervals_semitones": [3, -3, 6, -6, 10, -5],
+      "follow": "lead",
+      "pan_offset_from_lead": 0.25
+    },
+    {
+      "id": 2, "slug": "drone",
+      "moods": ["ambient","drone","modal_folk","cinematic","dark","epic","world"],
+      "sections_active": ["i","A","Ap","b","o","A_l1","A_l2","A_l3","A_l4"],
+      "energy_range": [0.0, 0.7],
+      "volume_db": -16.0,
+      "register_midi": [36, 55],
+      "drone_modes": ["tonic","fifth","tonic_fifth","tonic_octave"],
+      "selector_bits_mode": "byte_24[3..4]",
+      "modulation_policy_bit": "byte_23[7]",
+      "modulation_policy": ["freeze_then_repitch","disable_during_modulation"],
+      "duck_db_on_dissonance": -12.0
+    },
+    {
+      "id": 3, "slug": "pad_wash",
+      "moods": ["ambient","cinematic","ballad","dream","ethereal","epic","dark"],
+      "sections_active_except": ["d","r"],
+      "energy_range": [0.20, 0.80],
+      "volume_db": -14.0,
+      "attack_ms_range": [400, 1200],
+      "release_ms_range": [800, 2500],
+      "voicing": "comp_chord_minus_root"
+    },
+    {
+      "id": 4, "slug": "oohs",
+      "moods": ["cinematic","ballad","gospel","sacred","epic","pop"],
+      "sections_active": ["B","Ap","d","C"],
+      "energy_range": [0.50, 1.0],
+      "volume_db": -10.0,
+      "register_midi": [55, 76],
+      "voicing_bits": "byte_24[6..7]",
+      "voicings": ["root_3rd_5th","3rd_5th_7th","root_5th_oct","sus2_voicing"]
+    },
+    {
+      "id": 5, "slug": "ad_lib_stab",
+      "moods": ["funk","hip_hop","pop","electronic","jazz","rock"],
+      "sections_active": ["A","Ap","B","d"],
+      "energy_range": [0.50, 1.0],
+      "volume_db": -8.0,
+      "placement": "ear_candy_table",
+      "off_beat_only": true,
+      "max_per_bar": 2,
+      "instrument_variants": ["synth_stab","orch_hit","vocal_chop_synth","brass_stab","glitch_stutter"]
+    },
+    {
+      "id": 6, "slug": "riser",
+      "moods_except": ["classical","sacred"],
+      "sections_active": ["r","f"],
+      "trigger": "energy_increase_gt_0.15",
+      "lookahead_bars": [1, 2],
+      "length_bit": "byte_25[0]",
+      "volume_db_peak": -6.0,
+      "variants": ["white_noise_sweep","tonal_riser","reverse_cymbal_in","drum_roll","filter_open"]
+    },
+    {
+      "id": 7, "slug": "downer",
+      "moods_except": ["classical","sacred"],
+      "sections_active": ["o","b"],
+      "trigger": "energy_decrease_gt_0.15",
+      "lookahead_bars": [1, 2],
+      "volume_db": -8.0,
+      "variants": ["reverse_cymbal","reverse_riser","filter_close","tape_stop"]
+    },
+    {
+      "id": 8, "slug": "texture",
+      "moods": ["lofi","ambient","cinematic","jazz","dream","dark","folk","drone"],
+      "sections_active": "all",
+      "energy_range": [0.0, 1.0],
+      "volume_db": -22.0,
+      "always_on": true,
+      "variants": ["vinyl_crackle","tape_hiss","room_tone","sub_rumble","wind","granular_pad","field_recording_water"],
+      "selector_bits": "byte_24[0..2]"
+    },
+    {
+      "id": 9, "slug": "fx_oneshot",
+      "moods": "all",
+      "sections_active_starts": ["d","B","A","Ap","C"],
+      "trigger": "section_start_downbeat",
+      "energy_min": 0.40,
+      "volume_db": -7.0,
+      "variants": ["impact","sub_drop","noise_hit","reverse_hit","gong","whoosh","airhorn"],
+      "variant_byte": "HKDF(\"aux/fxoneshot\")[0]"
+    },
+    {
+      "id": 10, "slug": "bell_sparkle",
+      "moods": ["dream","cinematic","ambient","ballad","christmas","lofi","epic","pop"],
+      "sections_active": ["A","Ap","B","C"],
+      "energy_range": [0.30, 0.90],
+      "volume_db": -12.0,
+      "register_midi": [72, 96],
+      "placement": "ear_candy_table",
+      "off_beat_only": true,
+      "instrument_variants": ["bell","glock","celesta","music_box","kalimba","plucked_high"]
+    },
+    {
+      "id": 11, "slug": "counter_rhythm",
+      "moods": ["latin","afro","jazz","funk","world","fusion","hip_hop"],
+      "sections_active": ["A","Ap","B","C"],
+      "energy_range": [0.40, 1.0],
+      "volume_db": -13.0,
+      "polyrhythm_4_4": "3_against_4_dotted_8th",
+      "polyrhythm_6_8": "4_against_6",
+      "enable_bit": "byte_24[5]",
+      "instruments": ["shaker","conga","clave","cabasa","tambourine","cowbell","cuica"]
+    }
+  ],
+  "ear_candy_table": {
+    "_doc": "32 rows; row index = HKDF(\"aux/earcandy/{layer_id}/{bar_idx}\")[0] % 32. Each row is a list of 16th-note positions in [1..15] excluding 0 and 8 (downbeats). Off-beat dominance: positions where pos%4==0 are <=20% of all entries.",
+    "rows": [
+      [3, 7, 14], [2, 11], [6, 10, 13], [15], [4, 7], [3, 11, 14],
+      [5, 9], [2, 6, 13], [7, 14], [3, 10], [11, 15], [2, 9, 14],
+      [5, 13], [6, 11], [3, 7, 11, 15], [14], [2, 7], [10, 13],
+      [3, 6, 14], [9], [5, 11, 15], [2, 13], [7], [6, 10, 14],
+      [3, 11], [15, 5], [9, 13], [2, 7, 14], [6], [11, 14],
+      [3, 9, 15], [13]
+    ]
+  },
+  "byte_allocation": {
+    "byte_23": {
+      "[0..3]": "aux_mask_index (16 mood-filtered masks)",
+      "[4..5]": "counter_melody mode",
+      "[6]": "harmony_double vs counter_melody tiebreaker",
+      "[7]": "drone modulation policy"
+    },
+    "byte_24": {
+      "[0..2]": "texture variant",
+      "[3..4]": "drone mode",
+      "[5]": "counter_rhythm enable",
+      "[6..7]": "oohs voicing"
+    },
+    "byte_25": {
+      "[0]": "riser length (1 vs 2 bars)",
+      "[1..3]": "ad_lib_stab variant index",
+      "[4..6]": "bell_sparkle instrument index",
+      "[7]": "fx_oneshot enable for section starts"
+    },
+    "hkdf_extensions": {
+      "aux/earcandy/{layer_id}/{bar_idx}": "1 byte per (layer,bar) for ear-candy row index",
+      "aux/fxoneshot/{section_idx}": "1 byte for variant per section"
+    }
+  }
+}

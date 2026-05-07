@@ -1,0 +1,122 @@
+{
+  "version": "soundhash/v1/melody/motif_rhythms",
+  "_doc": "Motif rhythm cells per time-sig, subdivided by idiom sub-pool. onsets are (beat_frac, duration_frac) pairs in the bar. total_beats is the bar length in beats (using the denominator's beat unit; 6/8 and 12/8 use eighth = 0.5 quarter, but here total_beats is expressed in the meter's denominator beat). meter_grouping describes asymmetric meters; null otherwise. symmetry_safe gates pitch_invert/retro_rhythm operators. mood_tags are M0..M10 IDs.",
+  "pools": {
+    "4/4": {
+      "pop_basic": [
+        {"id": "m44_pop_01", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M1","M3","M5","M10"]},
+        {"id": "m44_pop_02", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M1","M5","M10"]},
+        {"id": "m44_pop_03", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,1.5],[1.5,0.5],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M3","M5","M6"]},
+        {"id": "m44_pop_04", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,0.5],[0.5,0.5],[1.0,1.0],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M5","M6","M10"]},
+        {"id": "m44_pop_05", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,1.0],[1.0,0.5],[1.5,0.5],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M1","M3","M5"]},
+        {"id": "m44_pop_06", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,2.0],[2.0,2.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m44_pop_07", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,0.5],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M5","M6","M10"]},
+        {"id": "m44_pop_08", "time_sig": "4/4", "idiom": "pop_basic", "onsets": [[0.0,0.5],[0.5,0.5],[1.0,0.5],[1.5,0.5],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M5","M6"]}
+      ],
+      "latin_clave": [
+        {"id": "m44_lat_01", "time_sig": "4/4", "idiom": "latin_clave", "onsets": [[0.0,0.75],[0.75,0.75],[1.5,0.5],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M4","M6"]},
+        {"id": "m44_lat_02", "time_sig": "4/4", "idiom": "latin_clave", "onsets": [[0.0,0.5],[1.5,0.5],[2.0,0.5],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M4"]},
+        {"id": "m44_lat_03", "time_sig": "4/4", "idiom": "latin_clave", "onsets": [[0.0,1.5],[1.5,0.5],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M4","M6"]},
+        {"id": "m44_lat_04", "time_sig": "4/4", "idiom": "latin_clave", "onsets": [[0.5,0.5],[1.0,0.5],[2.0,0.5],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M4","M2"]},
+        {"id": "m44_lat_05", "time_sig": "4/4", "idiom": "latin_clave", "onsets": [[0.0,0.75],[0.75,0.75],[1.5,1.0],[2.5,1.5]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M4"]},
+        {"id": "m44_lat_06", "time_sig": "4/4", "idiom": "latin_clave", "onsets": [[0.0,0.5],[0.5,0.5],[1.0,1.0],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M4","M6"]}
+      ],
+      "swing_jazz": [
+        {"id": "m44_swg_01", "time_sig": "4/4", "idiom": "swing_jazz", "onsets": [[0.0,0.67],[0.67,0.33],[1.0,0.67],[1.67,0.33],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m44_swg_02", "time_sig": "4/4", "idiom": "swing_jazz", "onsets": [[0.0,0.67],[0.67,0.33],[1.0,1.0],[2.0,0.67],[2.67,0.33],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m44_swg_03", "time_sig": "4/4", "idiom": "swing_jazz", "onsets": [[0.5,0.5],[1.0,0.67],[1.67,0.33],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m44_swg_04", "time_sig": "4/4", "idiom": "swing_jazz", "onsets": [[0.0,1.0],[1.0,0.67],[1.67,0.33],[2.0,0.67],[2.67,0.33],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m44_swg_05", "time_sig": "4/4", "idiom": "swing_jazz", "onsets": [[0.0,2.0],[2.0,0.67],[2.67,0.33],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1"]},
+        {"id": "m44_swg_06", "time_sig": "4/4", "idiom": "swing_jazz", "onsets": [[0.0,0.67],[0.67,0.33],[1.0,0.67],[1.67,0.33],[2.0,0.67],[2.67,0.33],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M10"]}
+      ],
+      "funk_syncop": [
+        {"id": "m44_fnk_01", "time_sig": "4/4", "idiom": "funk_syncop", "onsets": [[0.0,0.25],[0.25,0.25],[0.75,0.25],[1.5,0.5],[2.0,0.5],[2.75,0.25],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M2","M3","M6"]},
+        {"id": "m44_fnk_02", "time_sig": "4/4", "idiom": "funk_syncop", "onsets": [[0.0,0.5],[0.75,0.25],[1.5,0.5],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M2","M6","M8"]},
+        {"id": "m44_fnk_03", "time_sig": "4/4", "idiom": "funk_syncop", "onsets": [[0.25,0.25],[0.5,0.25],[1.0,0.5],[2.25,0.25],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M2","M6"]},
+        {"id": "m44_fnk_04", "time_sig": "4/4", "idiom": "funk_syncop", "onsets": [[0.0,0.5],[0.5,0.25],[0.75,0.75],[1.75,0.25],[2.0,0.5],[2.5,0.5],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M2","M6","M8"]},
+        {"id": "m44_fnk_05", "time_sig": "4/4", "idiom": "funk_syncop", "onsets": [[0.0,0.75],[0.75,0.25],[1.5,0.5],[2.0,0.25],[2.25,0.25],[2.75,0.25],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M2","M6"]}
+      ],
+      "lyrical_ballad": [
+        {"id": "m44_bal_01", "time_sig": "4/4", "idiom": "lyrical_ballad", "onsets": [[0.0,1.5],[1.5,0.5],[2.0,2.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m44_bal_02", "time_sig": "4/4", "idiom": "lyrical_ballad", "onsets": [[0.0,2.0],[2.0,1.5],[3.5,0.5]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m44_bal_03", "time_sig": "4/4", "idiom": "lyrical_ballad", "onsets": [[0.0,3.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m44_bal_04", "time_sig": "4/4", "idiom": "lyrical_ballad", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,2.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m44_bal_05", "time_sig": "4/4", "idiom": "lyrical_ballad", "onsets": [[0.0,4.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m44_bal_06", "time_sig": "4/4", "idiom": "lyrical_ballad", "onsets": [[0.5,1.5],[2.0,1.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M1","M10"]},
+        {"id": "m44_bal_07", "time_sig": "4/4", "idiom": "lyrical_ballad", "onsets": [[0.0,1.0],[1.0,2.0],[3.0,1.0]], "total_beats": 4, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]}
+      ]
+    },
+    "6/8": {
+      "lyrical_ballad": [
+        {"id": "m68_bal_01", "time_sig": "6/8", "idiom": "lyrical_ballad", "onsets": [[0.0,3.0],[3.0,3.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m68_bal_02", "time_sig": "6/8", "idiom": "lyrical_ballad", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,3.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M10"]},
+        {"id": "m68_bal_03", "time_sig": "6/8", "idiom": "lyrical_ballad", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0],[3.0,3.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M4","M10"]},
+        {"id": "m68_bal_04", "time_sig": "6/8", "idiom": "lyrical_ballad", "onsets": [[0.0,3.0],[3.0,1.0],[4.0,1.0],[5.0,1.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M4"]},
+        {"id": "m68_bal_05", "time_sig": "6/8", "idiom": "lyrical_ballad", "onsets": [[0.0,1.5],[1.5,1.5],[3.0,3.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m68_bal_06", "time_sig": "6/8", "idiom": "lyrical_ballad", "onsets": [[0.0,6.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]}
+      ],
+      "latin_clave": [
+        {"id": "m68_lat_01", "time_sig": "6/8", "idiom": "latin_clave", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0],[3.0,1.0],[4.0,1.0],[5.0,1.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": false, "mood_tags": ["M4","M10"]},
+        {"id": "m68_lat_02", "time_sig": "6/8", "idiom": "latin_clave", "onsets": [[0.0,1.0],[1.0,2.0],[3.0,2.0],[5.0,1.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": false, "mood_tags": ["M4"]},
+        {"id": "m68_lat_03", "time_sig": "6/8", "idiom": "latin_clave", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,1.0],[4.0,2.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": false, "mood_tags": ["M4","M10"]},
+        {"id": "m68_lat_04", "time_sig": "6/8", "idiom": "latin_clave", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0],[3.0,2.0],[5.0,1.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": false, "mood_tags": ["M4"]}
+      ],
+      "pop_basic": [
+        {"id": "m68_pop_01", "time_sig": "6/8", "idiom": "pop_basic", "onsets": [[0.0,1.5],[1.5,1.5],[3.0,1.5],[4.5,1.5]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M5","M10"]},
+        {"id": "m68_pop_02", "time_sig": "6/8", "idiom": "pop_basic", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,2.0],[5.0,1.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M5","M10"]},
+        {"id": "m68_pop_03", "time_sig": "6/8", "idiom": "pop_basic", "onsets": [[0.0,1.0],[1.0,2.0],[3.0,1.0],[4.0,2.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M5"]},
+        {"id": "m68_pop_04", "time_sig": "6/8", "idiom": "pop_basic", "onsets": [[0.0,3.0],[3.0,1.5],[4.5,1.5]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M5","M10"]},
+        {"id": "m68_pop_05", "time_sig": "6/8", "idiom": "pop_basic", "onsets": [[0.0,1.5],[1.5,1.5],[3.0,3.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m68_pop_06", "time_sig": "6/8", "idiom": "pop_basic", "onsets": [[0.0,3.0],[3.0,1.0],[4.0,1.0],[5.0,1.0]], "total_beats": 6, "meter_grouping": "3+3", "symmetry_safe": true, "mood_tags": ["M1","M5","M10"]}
+      ]
+    },
+    "3/4": {
+      "lyrical_ballad": [
+        {"id": "m34_bal_01", "time_sig": "3/4", "idiom": "lyrical_ballad", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m34_bal_02", "time_sig": "3/4", "idiom": "lyrical_ballad", "onsets": [[0.0,2.0],[2.0,1.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m34_bal_03", "time_sig": "3/4", "idiom": "lyrical_ballad", "onsets": [[0.0,1.0],[1.0,2.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m34_bal_04", "time_sig": "3/4", "idiom": "lyrical_ballad", "onsets": [[0.0,3.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m34_bal_05", "time_sig": "3/4", "idiom": "lyrical_ballad", "onsets": [[0.0,1.5],[1.5,0.5],[2.0,1.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]}
+      ],
+      "pop_basic": [
+        {"id": "m34_pop_01", "time_sig": "3/4", "idiom": "pop_basic", "onsets": [[0.0,0.5],[0.5,0.5],[1.0,1.0],[2.0,1.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M5","M10"]},
+        {"id": "m34_pop_02", "time_sig": "3/4", "idiom": "pop_basic", "onsets": [[0.0,1.0],[1.0,0.5],[1.5,0.5],[2.0,1.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": true, "mood_tags": ["M1","M5","M10"]},
+        {"id": "m34_pop_03", "time_sig": "3/4", "idiom": "pop_basic", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,0.5],[2.5,0.5]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M5"]},
+        {"id": "m34_pop_04", "time_sig": "3/4", "idiom": "pop_basic", "onsets": [[0.0,2.0],[2.0,0.5],[2.5,0.5]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M0","M1","M10"]}
+      ],
+      "swing_jazz": [
+        {"id": "m34_swg_01", "time_sig": "3/4", "idiom": "swing_jazz", "onsets": [[0.0,0.67],[0.67,0.33],[1.0,1.0],[2.0,1.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m34_swg_02", "time_sig": "3/4", "idiom": "swing_jazz", "onsets": [[0.0,1.0],[1.0,0.67],[1.67,0.33],[2.0,1.0]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m34_swg_03", "time_sig": "3/4", "idiom": "swing_jazz", "onsets": [[0.0,2.0],[2.0,0.67],[2.67,0.33]], "total_beats": 3, "meter_grouping": null, "symmetry_safe": false, "mood_tags": ["M1","M10"]}
+      ]
+    },
+    "12/8": {
+      "lyrical_ballad": [
+        {"id": "m128_bal_01", "time_sig": "12/8", "idiom": "lyrical_ballad", "onsets": [[0.0,3.0],[3.0,3.0],[6.0,3.0],[9.0,3.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": true, "mood_tags": ["M1","M10"]},
+        {"id": "m128_bal_02", "time_sig": "12/8", "idiom": "lyrical_ballad", "onsets": [[0.0,6.0],[6.0,3.0],[9.0,3.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]},
+        {"id": "m128_bal_03", "time_sig": "12/8", "idiom": "lyrical_ballad", "onsets": [[0.0,3.0],[3.0,2.0],[5.0,1.0],[6.0,3.0],[9.0,3.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": true, "mood_tags": ["M1","M10"]},
+        {"id": "m128_bal_04", "time_sig": "12/8", "idiom": "lyrical_ballad", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,3.0],[6.0,3.0],[9.0,2.0],[11.0,1.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": true, "mood_tags": ["M1","M10"]}
+      ],
+      "swing_jazz": [
+        {"id": "m128_swg_01", "time_sig": "12/8", "idiom": "swing_jazz", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,2.0],[5.0,1.0],[6.0,2.0],[8.0,1.0],[9.0,3.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m128_swg_02", "time_sig": "12/8", "idiom": "swing_jazz", "onsets": [[0.0,3.0],[3.0,2.0],[5.0,1.0],[6.0,2.0],[8.0,1.0],[9.0,2.0],[11.0,1.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m128_swg_03", "time_sig": "12/8", "idiom": "swing_jazz", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0],[3.0,3.0],[6.0,3.0],[9.0,3.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": false, "mood_tags": ["M1","M10"]},
+        {"id": "m128_swg_04", "time_sig": "12/8", "idiom": "swing_jazz", "onsets": [[0.0,12.0]], "total_beats": 12, "meter_grouping": "3+3+3+3", "symmetry_safe": true, "mood_tags": ["M0","M1","M10"]}
+      ]
+    },
+    "7/8": {
+      "glitch_223": [
+        {"id": "m78_g223_01", "time_sig": "7/8", "idiom": "glitch_223", "onsets": [[0.0,2.0],[2.0,2.0],[4.0,3.0]], "total_beats": 7, "meter_grouping": "2+2+3", "symmetry_safe": false, "mood_tags": ["M9"]},
+        {"id": "m78_g223_02", "time_sig": "7/8", "idiom": "glitch_223", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0],[3.0,1.0],[4.0,1.0],[5.0,1.0],[6.0,1.0]], "total_beats": 7, "meter_grouping": "2+2+3", "symmetry_safe": false, "mood_tags": ["M9"]},
+        {"id": "m78_g223_03", "time_sig": "7/8", "idiom": "glitch_223", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,1.0],[4.0,1.0],[5.0,2.0]], "total_beats": 7, "meter_grouping": "2+2+3", "symmetry_safe": false, "mood_tags": ["M9"]},
+        {"id": "m78_g223_04", "time_sig": "7/8", "idiom": "glitch_223", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,2.0],[4.0,3.0]], "total_beats": 7, "meter_grouping": "2+2+3", "symmetry_safe": false, "mood_tags": ["M9"]}
+      ],
+      "glitch_322": [
+        {"id": "m78_g322_01", "time_sig": "7/8", "idiom": "glitch_322", "onsets": [[0.0,3.0],[3.0,2.0],[5.0,2.0]], "total_beats": 7, "meter_grouping": "3+2+2", "symmetry_safe": false, "mood_tags": ["M9"]},
+        {"id": "m78_g322_02", "time_sig": "7/8", "idiom": "glitch_322", "onsets": [[0.0,1.0],[1.0,1.0],[2.0,1.0],[3.0,2.0],[5.0,1.0],[6.0,1.0]], "total_beats": 7, "meter_grouping": "3+2+2", "symmetry_safe": false, "mood_tags": ["M9"]},
+        {"id": "m78_g322_03", "time_sig": "7/8", "idiom": "glitch_322", "onsets": [[0.0,3.0],[3.0,1.0],[4.0,1.0],[5.0,2.0]], "total_beats": 7, "meter_grouping": "3+2+2", "symmetry_safe": false, "mood_tags": ["M9"]},
+        {"id": "m78_g322_04", "time_sig": "7/8", "idiom": "glitch_322", "onsets": [[0.0,2.0],[2.0,1.0],[3.0,2.0],[5.0,2.0]], "total_beats": 7, "meter_grouping": "3+2+2", "symmetry_safe": false, "mood_tags": ["M9"]}
+      ]
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "version": "soundhash/v1/drums/fills/hand-perc",
+  "kit": "hand-perc",
+  "fills": [
+    {
+      "id": "hp-conga-roll-d2d4",
+      "kit": "hand-perc",
+      "current_density": 2,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 1,
+            "v": 84
+          },
+          {
+            "s": 2,
+            "v": 88
+          },
+          {
+            "s": 3,
+            "v": 92
+          },
+          {
+            "s": 4,
+            "v": 96
+          },
+          {
+            "s": 5,
+            "v": 100
+          },
+          {
+            "s": 6,
+            "v": 104
+          },
+          {
+            "s": 7,
+            "v": 108
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "hp-clave-stack-d1d3",
+      "kit": "hand-perc",
+      "current_density": 1,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 96
+          },
+          {
+            "s": 3,
+            "v": 92
+          },
+          {
+            "s": 6,
+            "v": 100
+          },
+          {
+            "s": 7,
+            "v": 108
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 4,
+            "v": 88
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "hp-shaker-ramp-d2d3",
+      "kit": "hand-perc",
+      "current_density": 2,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "perc_2": [
+          {
+            "s": 0,
+            "v": 60
+          },
+          {
+            "s": 1,
+            "v": 64
+          },
+          {
+            "s": 2,
+            "v": 68
+          },
+          {
+            "s": 3,
+            "v": 72
+          },
+          {
+            "s": 4,
+            "v": 76
+          },
+          {
+            "s": 5,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 84
+          },
+          {
+            "s": 7,
+            "v": 88
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "hp-bell-accent-d3d4",
+      "kit": "hand-perc",
+      "current_density": 3,
+      "target_density": 4,
+      "span_steps": 4,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 110
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 2,
+            "v": 100
+          },
+          {
+            "s": 3,
+            "v": 116
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "hp-deescalate-d3d1",
+      "kit": "hand-perc",
+      "current_density": 3,
+      "target_density": 1,
+      "span_steps": 4,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    }
+  ]
+}

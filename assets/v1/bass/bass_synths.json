@@ -1,0 +1,104 @@
+{
+  "version": "soundhash/v1/bass/synths",
+  "synths": [
+    {
+      "id": "sub_sine",
+      "name": "Pure sine sub",
+      "engine_hint": "surge_xt",
+      "preset_hint": "sine_sub_clean",
+      "mood_tags": ["M0", "M3", "M6", "M7", "M8"],
+      "octave_window_midi": [24, 48],
+      "pattern_compat": ["whole_root_pulse", "half_root_pulse", "drone_pedal", "dnb_sub_stab", "dnb_reese", "trap_808_glide", "house_pumping_8ths"],
+      "supports_portamento": true,
+      "supports_filter_cc74": false
+    },
+    {
+      "id": "fm_bass",
+      "name": "FM bass",
+      "engine_hint": "dexed",
+      "preset_hint": "fm_solid_bass",
+      "mood_tags": ["M5", "M6", "M7", "M8", "M9"],
+      "octave_window_midi": [28, 52],
+      "pattern_compat": ["octave_bass", "synthwave_arp", "house_pumping_8ths", "syncop_funk", "rock_8ths", "metal_pedal"],
+      "supports_portamento": true,
+      "supports_filter_cc74": true
+    },
+    {
+      "id": "electric_bass_pluck",
+      "name": "Electric finger bass",
+      "engine_hint": "sfizz",
+      "preset_hint": "fingered_bass",
+      "mood_tags": ["M2", "M3", "M4", "M5", "M1"],
+      "octave_window_midi": [28, 55],
+      "pattern_compat": ["motown_jamerson", "syncop_funk", "rock_8ths", "rock_gallop", "country_alternating", "root_fifth_alt", "quarter_root_pulse", "ska_upstroke", "shuffle_blues", "boogie_woogie", "dub_offbeat", "dembow_bass", "gospel_walkup"],
+      "supports_portamento": false,
+      "supports_filter_cc74": false
+    },
+    {
+      "id": "upright_bass",
+      "name": "Upright acoustic bass",
+      "engine_hint": "sfizz",
+      "preset_hint": "upright_jazz",
+      "mood_tags": ["M1", "M3", "M4", "M10"],
+      "octave_window_midi": [28, 52],
+      "pattern_compat": ["walking_quarter", "walking_jazz_quarter", "jazz_two_feel", "latin_tumbao", "montuno_bass", "bossa_bass", "samba_bass", "shuffle_blues", "halfnote_fifth_walk", "six_eight_lilt", "gospel_walkup", "phrygian_andalusian_walk"],
+      "supports_portamento": false,
+      "supports_filter_cc74": false
+    },
+    {
+      "id": "synth_saw_low",
+      "name": "Saw bass low",
+      "engine_hint": "surge_xt",
+      "preset_hint": "saw_bass_classic",
+      "mood_tags": ["M5", "M6", "M7", "M9", "M10"],
+      "octave_window_midi": [28, 52],
+      "pattern_compat": ["synthwave_arp", "octave_bass", "house_pumping_8ths", "rock_8ths", "metal_pedal", "phrygian_andalusian_walk", "drone_pedal"],
+      "supports_portamento": true,
+      "supports_filter_cc74": true
+    },
+    {
+      "id": "acid_303",
+      "name": "TB-303 acid",
+      "engine_hint": "surge_xt",
+      "preset_hint": "303_basic",
+      "mood_tags": ["M6", "M7", "M9"],
+      "octave_window_midi": [28, 52],
+      "pattern_compat": ["acid_303", "syncop_funk", "octave_bass", "house_pumping_8ths"],
+      "supports_portamento": true,
+      "supports_filter_cc74": true
+    },
+    {
+      "id": "reese",
+      "name": "Reese detuned bass",
+      "engine_hint": "surge_xt",
+      "preset_hint": "reese_classic",
+      "mood_tags": ["M7", "M8", "M9"],
+      "octave_window_midi": [24, 48],
+      "pattern_compat": ["dnb_reese", "drone_pedal", "halfnote_fifth_walk", "whole_root_pulse"],
+      "supports_portamento": true,
+      "supports_filter_cc74": true
+    },
+    {
+      "id": "slap_bass",
+      "name": "Slap bass sample",
+      "engine_hint": "sfizz",
+      "preset_hint": "slap_bass_funk",
+      "mood_tags": ["M2", "M4", "M5"],
+      "octave_window_midi": [28, 55],
+      "pattern_compat": ["slap_funk", "syncop_funk", "motown_jamerson", "boogie_woogie"],
+      "supports_portamento": false,
+      "supports_filter_cc74": false
+    },
+    {
+      "id": "trap_808",
+      "name": "Trap 808 sub",
+      "engine_hint": "sfizz",
+      "preset_hint": "808_long_glide",
+      "mood_tags": ["M2", "M8"],
+      "octave_window_midi": [24, 48],
+      "pattern_compat": ["trap_808_glide", "dnb_sub_stab", "whole_root_pulse", "half_root_pulse", "drone_pedal"],
+      "supports_portamento": true,
+      "supports_filter_cc74": true
+    }
+  ]
+}

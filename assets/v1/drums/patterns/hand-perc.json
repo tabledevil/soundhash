@@ -1,0 +1,482 @@
+{
+  "version": "soundhash/v1/drums/patterns/hand-perc",
+  "kit": "hand-perc",
+  "patterns": [
+    {
+      "id": "hp-d0-shaker",
+      "kit": "hand-perc",
+      "density": 0,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 50
+          },
+          {
+            "s": 2,
+            "v": 50
+          },
+          {
+            "s": 4,
+            "v": 50
+          },
+          {
+            "s": 6,
+            "v": 50
+          },
+          {
+            "s": 8,
+            "v": 50
+          },
+          {
+            "s": 10,
+            "v": 50
+          },
+          {
+            "s": 12,
+            "v": 50
+          },
+          {
+            "s": 14,
+            "v": 50
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "perc-texture"
+    },
+    {
+      "id": "hp-d1-tresillo-skel",
+      "kit": "hand-perc",
+      "density": 1,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 96
+          },
+          {
+            "s": 6,
+            "v": 90
+          },
+          {
+            "s": 10,
+            "v": 92
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "tresillo"
+    },
+    {
+      "id": "hp-d2-son-clave",
+      "kit": "hand-perc",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 102
+          },
+          {
+            "s": 3,
+            "v": 96
+          },
+          {
+            "s": 6,
+            "v": 100
+          },
+          {
+            "s": 10,
+            "v": 98
+          },
+          {
+            "s": 12,
+            "v": 96
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 4,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 70
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "son-clave"
+    },
+    {
+      "id": "hp-d2-bossa",
+      "kit": "hand-perc",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 96
+          },
+          {
+            "s": 3,
+            "v": 92
+          },
+          {
+            "s": 8,
+            "v": 96
+          },
+          {
+            "s": 11,
+            "v": 92
+          },
+          {
+            "s": 14,
+            "v": 90
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 0,
+            "v": 60
+          },
+          {
+            "s": 2,
+            "v": 60
+          },
+          {
+            "s": 4,
+            "v": 60
+          },
+          {
+            "s": 6,
+            "v": 60
+          },
+          {
+            "s": 8,
+            "v": 60
+          },
+          {
+            "s": 10,
+            "v": 60
+          },
+          {
+            "s": 12,
+            "v": 60
+          },
+          {
+            "s": 14,
+            "v": 60
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 0,
+            "v": 56
+          },
+          {
+            "s": 2,
+            "v": 56
+          },
+          {
+            "s": 4,
+            "v": 56
+          },
+          {
+            "s": 6,
+            "v": 56
+          },
+          {
+            "s": 8,
+            "v": 56
+          },
+          {
+            "s": 10,
+            "v": 56
+          },
+          {
+            "s": 12,
+            "v": 56
+          },
+          {
+            "s": 14,
+            "v": 56
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "bossa"
+    },
+    {
+      "id": "hp-d2-bembe-6-8",
+      "kit": "hand-perc",
+      "density": 2,
+      "bars": 1,
+      "steps": 12,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 102
+          },
+          {
+            "s": 2,
+            "v": 90
+          },
+          {
+            "s": 4,
+            "v": 96
+          },
+          {
+            "s": 7,
+            "v": 96
+          },
+          {
+            "s": 9,
+            "v": 92
+          },
+          {
+            "s": 11,
+            "v": 88
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 6,
+            "v": 70
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "6/8",
+        "12/8"
+      ],
+      "style_tag": "bembe-12-8"
+    },
+    {
+      "id": "hp-d3-busy-cascara",
+      "kit": "hand-perc",
+      "density": 3,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 100
+          },
+          {
+            "s": 2,
+            "v": 80
+          },
+          {
+            "s": 4,
+            "v": 92
+          },
+          {
+            "s": 7,
+            "v": 88
+          },
+          {
+            "s": 8,
+            "v": 100
+          },
+          {
+            "s": 10,
+            "v": 80
+          },
+          {
+            "s": 12,
+            "v": 92
+          },
+          {
+            "s": 15,
+            "v": 88
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 4,
+            "v": 84
+          },
+          {
+            "s": 12,
+            "v": 84
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 0,
+            "v": 56
+          },
+          {
+            "s": 2,
+            "v": 56
+          },
+          {
+            "s": 4,
+            "v": 56
+          },
+          {
+            "s": 6,
+            "v": 56
+          },
+          {
+            "s": 8,
+            "v": 56
+          },
+          {
+            "s": 10,
+            "v": 56
+          },
+          {
+            "s": 12,
+            "v": 56
+          },
+          {
+            "s": 14,
+            "v": 56
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "cascara"
+    },
+    {
+      "id": "hp-d4-peak-rumba",
+      "kit": "hand-perc",
+      "density": 4,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 106
+          },
+          {
+            "s": 1,
+            "v": 90
+          },
+          {
+            "s": 2,
+            "v": 90
+          },
+          {
+            "s": 3,
+            "v": 90
+          },
+          {
+            "s": 4,
+            "v": 106
+          },
+          {
+            "s": 5,
+            "v": 90
+          },
+          {
+            "s": 6,
+            "v": 90
+          },
+          {
+            "s": 7,
+            "v": 90
+          },
+          {
+            "s": 8,
+            "v": 106
+          },
+          {
+            "s": 9,
+            "v": 90
+          },
+          {
+            "s": 10,
+            "v": 90
+          },
+          {
+            "s": 11,
+            "v": 90
+          },
+          {
+            "s": 12,
+            "v": 106
+          },
+          {
+            "s": 13,
+            "v": 90
+          },
+          {
+            "s": 14,
+            "v": 90
+          },
+          {
+            "s": 15,
+            "v": 90
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 4,
+            "v": 100
+          },
+          {
+            "s": 12,
+            "v": 100
+          }
+        ],
+        "tom_low": [
+          {
+            "s": 0,
+            "v": 110
+          },
+          {
+            "s": 8,
+            "v": 108
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "rumba-peak"
+    }
+  ]
+}

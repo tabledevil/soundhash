@@ -1,0 +1,26 @@
+{
+  "version": "soundhash/v1/melody/mutation_operators",
+  "_doc": "Per-bar operator applied to motif A. Selected by HKDF(byte26||byte31, 'mel/mut', bar_i) % len(allowed). preserves_phrase_coherence:true means the op is safe in any phrase position. weight_by_phrase_position is a 4-element array of multiplicative weights for [bar1, bar2, bar3, bar4_or_cadence]; 0 means excluded.",
+  "operators": [
+    {"id": "op_identity",     "name": "identity",     "applicable_time_sigs": ["4/4","6/8","3/4","12/8","7/8","5/4"], "preserves_phrase_coherence": true,  "weight_by_phrase_position": [2.0, 1.0, 1.0, 1.5]},
+    {"id": "op_transpose_p1", "name": "transpose+1",  "applicable_time_sigs": ["4/4","6/8","3/4","12/8","7/8","5/4"], "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.5, 1.5, 1.0, 0.5]},
+    {"id": "op_transpose_m1", "name": "transpose-1",  "applicable_time_sigs": ["4/4","6/8","3/4","12/8","7/8","5/4"], "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.5, 1.5, 1.0, 0.5]},
+    {"id": "op_transpose_p2", "name": "transpose+2",  "applicable_time_sigs": ["4/4","6/8","3/4","12/8","7/8","5/4"], "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.0, 1.0, 1.5, 0.5]},
+    {"id": "op_invert",       "name": "pitch_invert", "applicable_time_sigs": ["4/4","6/8","3/4","12/8"],              "preserves_phrase_coherence": false, "weight_by_phrase_position": [0.0, 0.5, 1.0, 0.0]},
+    {"id": "op_retro_rhythm", "name": "retro_rhythm", "applicable_time_sigs": ["4/4","6/8","3/4","12/8"],              "preserves_phrase_coherence": false, "weight_by_phrase_position": [0.0, 0.5, 1.0, 0.0]},
+    {"id": "op_truncate",     "name": "truncate",     "applicable_time_sigs": ["4/4","6/8","3/4","12/8","7/8","5/4"], "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.0, 0.5, 1.0, 1.5]},
+    {"id": "op_augment",      "name": "augment",      "applicable_time_sigs": ["4/4","6/8","3/4","12/8"],              "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.0, 0.0, 0.5, 1.5]},
+    {"id": "op_diminute",     "name": "diminute",     "applicable_time_sigs": ["4/4","6/8","3/4","12/8","7/8","5/4"], "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.5, 1.5, 1.5, 0.0]},
+    {"id": "op_ornament",     "name": "ornament",     "applicable_time_sigs": ["4/4","6/8","3/4","12/8","7/8","5/4"], "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.5, 1.0, 1.0, 1.0]},
+    {"id": "op_sequence_p1",  "name": "sequence+1",   "applicable_time_sigs": ["4/4","6/8","3/4","12/8"],              "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.0, 1.5, 1.5, 0.5]},
+    {"id": "op_sequence_m1",  "name": "sequence-1",   "applicable_time_sigs": ["4/4","6/8","3/4","12/8"],              "preserves_phrase_coherence": true,  "weight_by_phrase_position": [0.0, 1.5, 1.5, 0.5]}
+  ],
+  "filter_rules": [
+    "5/4 or 7/8 → exclude op_augment (overflow).",
+    "energy_bar < 0.3 → exclude op_diminute.",
+    "phrase_position == final_cadence → only {op_identity, op_truncate, op_augment}.",
+    "mood == M0 (Ambient) → exclude {op_ornament, op_diminute}.",
+    "motif.symmetry_safe == false → exclude {op_invert, op_retro_rhythm}.",
+    "cumulative_transpose would exceed tessitura → sign-flipped at table-build time."
+  ]
+}

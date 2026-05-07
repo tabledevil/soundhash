@@ -1,0 +1,158 @@
+{
+  "version": "soundhash/v1/drums/fills/trap-808",
+  "kit": "trap-808",
+  "fills": [
+    {
+      "id": "tr-snare-roll-d2d4",
+      "kit": "trap-808",
+      "current_density": 2,
+      "target_density": 4,
+      "span_steps": 4,
+      "rows": {
+        "snare": [
+          {
+            "s": 0,
+            "v": 90
+          },
+          {
+            "s": 1,
+            "v": 100
+          },
+          {
+            "s": 2,
+            "v": 110
+          },
+          {
+            "s": 3,
+            "v": 122
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "tr-hat-32nd-roll-d2d3",
+      "kit": "trap-808",
+      "current_density": 2,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "hat_closed": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 1,
+            "v": 72
+          },
+          {
+            "s": 2,
+            "v": 74
+          },
+          {
+            "s": 3,
+            "v": 76
+          },
+          {
+            "s": 4,
+            "v": 78
+          },
+          {
+            "s": 5,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 82
+          },
+          {
+            "s": 7,
+            "v": 84
+          },
+          {
+            "s": 8,
+            "v": 86
+          },
+          {
+            "s": 9,
+            "v": 88
+          },
+          {
+            "s": 10,
+            "v": 90
+          },
+          {
+            "s": 11,
+            "v": 92
+          },
+          {
+            "s": 12,
+            "v": 94
+          },
+          {
+            "s": 13,
+            "v": 96
+          },
+          {
+            "s": 14,
+            "v": 98
+          },
+          {
+            "s": 15,
+            "v": 100
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "tr-808-glide-d3d4",
+      "kit": "trap-808",
+      "current_density": 3,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 118
+          },
+          {
+            "s": 4,
+            "v": 122
+          }
+        ],
+        "snare": [
+          {
+            "s": 7,
+            "v": 124
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "tr-deescalate-d4d2",
+      "kit": "trap-808",
+      "current_density": 4,
+      "target_density": 2,
+      "span_steps": 4,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 110
+          }
+        ],
+        "snare": [
+          {
+            "s": 2,
+            "v": 100
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    }
+  ]
+}

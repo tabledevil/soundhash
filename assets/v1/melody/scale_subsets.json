@@ -1,0 +1,24 @@
+{
+  "version": "soundhash/v1/melody/scale_subsets",
+  "_doc": "Scale subsets are bitmasks over the 7 diatonic degrees of the active mode (bit 0 = degree 1, bit 6 = degree 7). pent_minor and blues are overlays per dim #01 (they replace b3/b7 mode-degrees as appropriate when modes have those degrees). mask is an int 0..127. applies_to_modes is the whitelist; mood_bias lists mood IDs that prefer this subset.",
+  "subsets": [
+    {"id": "ss_full",       "name": "full_diatonic",       "mask": 127, "applies_to_modes": ["ionian","aeolian","dorian","phrygian","lydian","mixolydian","jazz_minor"], "mood_bias": ["M0","M1","M5","M10"]},
+    {"id": "ss_pent_maj",   "name": "pent_major",          "mask": 55,  "applies_to_modes": ["ionian","lydian","mixolydian"], "mood_bias": ["M5","M6","M10"]},
+    {"id": "ss_pent_min",   "name": "pent_minor",          "mask": 109, "applies_to_modes": ["aeolian","dorian","phrygian"], "mood_bias": ["M2","M7","M8","M4"]},
+    {"id": "ss_blues",      "name": "blues",               "mask": 125, "applies_to_modes": ["aeolian","dorian","mixolydian"], "mood_bias": ["M2","M8"]},
+    {"id": "ss_hex_no4",    "name": "hexatonic_no_4",      "mask": 119, "applies_to_modes": ["ionian","mixolydian","aeolian","dorian"], "mood_bias": ["M0","M1","M5","M10"]},
+    {"id": "ss_chord_tone", "name": "chord_tone_only",     "mask": 21,  "applies_to_modes": ["ionian","aeolian","dorian","phrygian","lydian","mixolydian","jazz_minor"], "mood_bias": ["M0","M1","M3","M10"]},
+    {"id": "ss_arp",        "name": "arpeggio",            "mask": 85,  "applies_to_modes": ["ionian","aeolian","dorian","phrygian","lydian","mixolydian","jazz_minor"], "mood_bias": ["M1","M5","M10"]},
+    {"id": "ss_mode_char",  "name": "mode_characteristic", "mask": 91,  "applies_to_modes": ["dorian","phrygian","lydian","mixolydian"], "mood_bias": ["M2","M4","M7","M9","M10"]}
+  ],
+  "_mask_legend": {
+    "bit_0": "degree 1 (tonic of mode)",
+    "bit_1": "degree 2",
+    "bit_2": "degree 3 (b3 in minor modes)",
+    "bit_3": "degree 4 (#4 in lydian)",
+    "bit_4": "degree 5",
+    "bit_5": "degree 6 (b6 in aeolian/phrygian)",
+    "bit_6": "degree 7 (b7 in dorian/mixolydian/aeolian/phrygian)"
+  },
+  "_overlay_note": "ss_pent_min and ss_blues add a chromatic overlay (b3 over major modes, #4/b5 blue note) at table-build time per dim #01. Decoder: when subset is overlay-type, the b3 and blue-note positions are appended to the chord-relative degree map but kept distinct from in-mode degrees so the modulo distribution is uniform."
+}

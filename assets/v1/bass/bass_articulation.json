@@ -1,0 +1,47 @@
+{
+  "version": "soundhash/v1/bass/articulation",
+  "profiles": [
+    {
+      "id": "groove_tight",
+      "humanization_profile_ref": "groove-tight",
+      "ghost_velocity_max": 50,
+      "anticipation_velocity_boost": 6,
+      "default_release_pct_of_duration": 85
+    },
+    {
+      "id": "groove_loose",
+      "humanization_profile_ref": "groove-loose",
+      "ghost_velocity_max": 60,
+      "anticipation_velocity_boost": 8,
+      "default_release_pct_of_duration": 92
+    },
+    {
+      "id": "slap_funk",
+      "humanization_profile_ref": "groove-loose",
+      "ghost_velocity_max": 70,
+      "anticipation_velocity_boost": 12,
+      "default_release_pct_of_duration": 60
+    },
+    {
+      "id": "walking_jazz",
+      "humanization_profile_ref": "groove-loose",
+      "ghost_velocity_max": 60,
+      "anticipation_velocity_boost": 8,
+      "default_release_pct_of_duration": 95
+    },
+    {
+      "id": "dub_clean",
+      "humanization_profile_ref": "groove-tight",
+      "ghost_velocity_max": 40,
+      "anticipation_velocity_boost": 4,
+      "default_release_pct_of_duration": 90
+    },
+    {
+      "id": "sub_static",
+      "humanization_profile_ref": "groove-tight",
+      "ghost_velocity_max": 30,
+      "anticipation_velocity_boost": 2,
+      "default_release_pct_of_duration": 100
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "layers": ["drums", "bass", "comp", "lead", "counter", "drone", "fx_riser", "ad_lib"],
+  "cell_legend": {"-": "silent", "s": "sparse", "n": "normal", "d": "dense", "*": "scale_with_energy"},
+  "matrices": [
+    {"id": 0,  "name": "minimal_pad",      "compatible_forms": [0,10,11,20,23], "rows": {"intro":["-","-","s","-","-","n","-","-"],"A":["-","s","n","-","-","n","-","-"],"outro":["-","-","s","-","-","n","-","-"]}},
+    {"id": 1,  "name": "4floor_house",     "compatible_forms": [2,3,5,6,7,8,12,13,16,17,18,22], "rows": {"A":["*","*","n","*","-","-","s","-"],"B":["*","*","n","*","-","-","s","-"],"fill":["d","s","-","-","-","-","-","-"]}},
+    {"id": 2,  "name": "pad_lead",         "compatible_forms": [0,10,11,15,20], "rows": {"A":["-","s","n","n","-","n","-","-"]}},
+    {"id": 3,  "name": "band_basic",       "compatible_forms": [1,2,3,4,8,12,13,14,22], "rows": {"A":["*","*","n","*","-","-","-","-"],"B":["*","*","n","*","-","-","-","-"]}},
+    {"id": 4,  "name": "band_full",        "compatible_forms": [3,4,6,13,14,18,22], "rows": {"A":["d","d","d","d","n","-","s","s"],"B":["d","d","d","d","n","-","s","s"]}},
+    {"id": 5,  "name": "arp_lead",         "compatible_forms": [1,2,4,8,12,13,15], "rows": {"A":["n","s","d","n","-","-","-","-"],"B":["n","s","d","n","-","-","-","-"]}},
+    {"id": 6,  "name": "dub_skeleton",     "compatible_forms": [0,2,5,8,9,15,22,23], "rows": {"A":["n","d","-","-","n","n","s","s"]}},
+    {"id": 7,  "name": "breakdown_pad",    "compatible_forms": [4,15,21], "rows": {"breakdown":["-","-","n","s","-","n","s","-"]}},
+    {"id": 8,  "name": "drop_blast",       "compatible_forms": [7,16,19], "rows": {"drop":["d","d","d","d","d","-","d","d"]}},
+    {"id": 9,  "name": "intro_swell",      "compatible_forms": [6,10,12,19,21], "rows": {"intro":["-","-","s","-","-","n","s","-"]}},
+    {"id": 10, "name": "outro_tail",       "compatible_forms": [6,11,12,20,21], "rows": {"outro":["s","s","s","-","-","n","-","-"]}},
+    {"id": 11, "name": "call_response",    "compatible_forms": [9,18], "rows": {"A":["n","n","s","n","-","-","-","-"],"Aresp":["n","n","s","-","-","-","-","n"]}},
+    {"id": 12, "name": "bolero_additive",  "compatible_forms": [17], "rows": {"A_l1":["-","-","-","-","-","n","-","-"],"A_l2":["-","s","-","-","-","n","-","-"],"A_l3":["-","s","n","-","-","n","-","-"],"A_l4":["s","s","n","n","-","n","-","-"]}},
+    {"id": 13, "name": "bass_lead_duo",    "compatible_forms": [0,1,2,8,22,23], "rows": {"A":["-","d","-","n","-","-","-","-"]}},
+    {"id": 14, "name": "staccato_stab",    "compatible_forms": [2,3,5,8,13,14,18,22], "rows": {"A":["n","n","d","-","-","-","-","-"],"B":["n","n","d","-","-","-","-","-"]}},
+    {"id": 15, "name": "ambient_drone",    "compatible_forms": [0,10,11,20,23], "rows": {"A":["-","s","-","s","-","d","n","-"]}}
+  ]
+}

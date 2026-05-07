@@ -1,0 +1,43 @@
+{
+  "version": "soundhash/v1",
+  "spec_version": "v1",
+  "bundle_hash": "TODO-blake3-of-all-tables",
+  "tables": {
+    "moods": "TODO",
+    "mime_families": "mime_families.json",
+    "family_to_moods": "family_to_moods.json",
+    "forms": "forms.json",
+    "energy_curves": "energy_curves.json",
+    "layer_activation": "layer_activation.json",
+    "aux_layers": "aux_layers.json",
+    "synth_pool": "synth_pool.json",
+    "expression/velocity_curves": "expression/velocity_curves.json",
+    "expression/articulation": "expression/articulation.json",
+    "expression/cc_routing": "expression/cc_routing.json",
+    "expression/humanization_profiles": "expression/humanization_profiles.json"
+  },
+  "pinned_versions": "see versions.lock.json",
+  "render": {
+    "sample_rate": 44100,
+    "bit_depth": 16,
+    "channels": 2,
+    "fluidsynth_flags": {
+      "synth.cpu-cores": 1,
+      "synth.interpolation": 4,
+      "synth.reverb.active": 0,
+      "synth.chorus.active": 0,
+      "synth.dynamic-sample-loading": 0
+    },
+    "loudness": {
+      "target_lufs": -16.0,
+      "true_peak_dbtp": -1.5,
+      "limiter_oversample": 8
+    },
+    "envelope": {
+      "intro_lufs_s_min": -20.0,
+      "max_short_term_lufs_s": -14.0,
+      "song_end_offset_s": 32.0,
+      "fade_out_ms": 200
+    }
+  }
+}

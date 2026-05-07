@@ -1,0 +1,16 @@
+{
+  "version": "soundhash/v1/moods",
+  "moods": {
+    "M0":  {"name": "Ambient",            "tempo_pool": [60, 64, 68, 72, 76, 80], "time_sigs": ["4/4", "6/8", "3/4"],   "modes": ["ionian", "aeolian", "dorian", "lydian"]},
+    "M1":  {"name": "Ballad",             "tempo_pool": [64, 68, 72, 76, 80],     "time_sigs": ["4/4", "6/8", "12/8"],  "modes": ["ionian", "aeolian", "dorian"]},
+    "M2":  {"name": "Hip-hop",            "tempo_pool": [70, 76, 84, 88, 92, 94], "time_sigs": ["4/4"],                 "modes": ["aeolian", "dorian", "phrygian"]},
+    "M3":  {"name": "Downtempo",          "tempo_pool": [90, 95, 100, 105],       "time_sigs": ["4/4"],                 "modes": ["ionian", "aeolian", "dorian", "lydian"]},
+    "M4":  {"name": "Latin",              "tempo_pool": [92, 96, 100, 104, 108, 112], "time_sigs": ["4/4", "6/8"],      "modes": ["ionian", "phrygian", "mixolydian", "aeolian"]},
+    "M5":  {"name": "Synthwave",          "tempo_pool": [100, 105, 110, 115, 120],"time_sigs": ["4/4"],                 "modes": ["ionian", "aeolian", "lydian"]},
+    "M6":  {"name": "House",              "tempo_pool": [120, 122, 124, 126, 128],"time_sigs": ["4/4"],                 "modes": ["ionian", "aeolian", "mixolydian"]},
+    "M7":  {"name": "Techno",             "tempo_pool": [128, 130, 132, 135, 138],"time_sigs": ["4/4"],                 "modes": ["aeolian", "phrygian", "dorian"]},
+    "M8":  {"name": "DnB",                "tempo_pool": [85, 130, 170, 172, 174, 176], "time_sigs": ["4/4"],            "modes": ["aeolian", "dorian", "phrygian"]},
+    "M9":  {"name": "Glitch",             "tempo_pool": [90, 100, 110, 120, 130, 135], "time_sigs": ["4/4", "7/8", "5/4"], "modes": ["dorian", "phrygian", "aeolian"]},
+    "M10": {"name": "Cinematic",          "tempo_pool": [70, 80, 90, 100, 110],   "time_sigs": ["4/4", "12/8", "3/4"],  "modes": ["aeolian", "dorian", "lydian", "phrygian"]}
+  }
+}

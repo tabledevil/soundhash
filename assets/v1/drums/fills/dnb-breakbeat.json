@@ -1,0 +1,188 @@
+{
+  "version": "soundhash/v1/drums/fills/dnb-breakbeat",
+  "kit": "dnb-breakbeat",
+  "fills": [
+    {
+      "id": "dn-snare-flam-d2d4",
+      "kit": "dnb-breakbeat",
+      "current_density": 2,
+      "target_density": 4,
+      "span_steps": 4,
+      "rows": {
+        "snare": [
+          {
+            "s": 0,
+            "v": 110
+          },
+          {
+            "s": 1,
+            "v": 116
+          },
+          {
+            "s": 2,
+            "v": 120
+          },
+          {
+            "s": 3,
+            "v": 124
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "dn-tom-roll-d3d4",
+      "kit": "dnb-breakbeat",
+      "current_density": 3,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 0,
+            "v": 100
+          },
+          {
+            "s": 1,
+            "v": 92
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 2,
+            "v": 102
+          },
+          {
+            "s": 3,
+            "v": 96
+          }
+        ],
+        "tom_low": [
+          {
+            "s": 4,
+            "v": 104
+          },
+          {
+            "s": 5,
+            "v": 100
+          },
+          {
+            "s": 6,
+            "v": 110
+          },
+          {
+            "s": 7,
+            "v": 116
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "dn-amen-mash-d2d3",
+      "kit": "dnb-breakbeat",
+      "current_density": 2,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 110
+          },
+          {
+            "s": 5,
+            "v": 96
+          }
+        ],
+        "snare": [
+          {
+            "s": 2,
+            "v": 110
+          },
+          {
+            "s": 4,
+            "v": 116
+          },
+          {
+            "s": 7,
+            "v": 118
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "dn-rev-cymbal-d3d4",
+      "kit": "dnb-breakbeat",
+      "current_density": 3,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "crash": [
+          {
+            "s": 7,
+            "v": 116
+          }
+        ],
+        "hat_open": [
+          {
+            "s": 0,
+            "v": 50
+          },
+          {
+            "s": 1,
+            "v": 56
+          },
+          {
+            "s": 2,
+            "v": 62
+          },
+          {
+            "s": 3,
+            "v": 68
+          },
+          {
+            "s": 4,
+            "v": 74
+          },
+          {
+            "s": 5,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 86
+          },
+          {
+            "s": 7,
+            "v": 92
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "dn-deescalate-d4d2",
+      "kit": "dnb-breakbeat",
+      "current_density": 4,
+      "target_density": 2,
+      "span_steps": 4,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 110
+          }
+        ],
+        "snare": [
+          {
+            "s": 2,
+            "v": 110
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    }
+  ]
+}

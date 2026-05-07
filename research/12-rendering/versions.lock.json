@@ -1,0 +1,49 @@
+{
+  "_comment": "Example version pinning manifest. Replace SHAs at build time.",
+  "docker_image": "ghcr.io/soundhash/render:1.0.0",
+  "docker_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "binaries": {
+    "fluidsynth": {"version": "2.4.7", "build_commit": "PIN_AT_BUILD"},
+    "sfizz_render": {"version": "1.2.3"},
+    "surge-xt-cli": {"version": "1.3.4"},
+    "lame": {"version": "3.100"},
+    "flac": {"version": "1.4.3"},
+    "vorbis-tools": {"version": "1.4.2"}
+  },
+  "python": "3.12.4",
+  "python_packages": {
+    "mido": "1.3.2",
+    "pretty_midi": "0.2.10",
+    "numpy": "1.26.4",
+    "soundfile": "0.12.1",
+    "pedalboard": "0.9.16",
+    "pyloudnorm": "0.1.1"
+  },
+  "soundfonts": {
+    "GeneralUserGS_v2.0.2.sf2": "sha256:PIN",
+    "FluidR3_GM_v3.1.sf2": "sha256:PIN",
+    "soundhash_curated_v1.sf2": "sha256:PIN"
+  },
+  "sfz_libraries": {
+    "SalamanderGrandPianoV3.sfz": "sha256:PIN",
+    "SalamanderDrumkit.sfz": "sha256:PIN",
+    "VSChamberOrchestra.sfz": "sha256:PIN"
+  },
+  "render_flags": {
+    "sample_rate": 44100,
+    "interpolation": 7,
+    "cpu_cores": 1,
+    "reverb": false,
+    "chorus": false,
+    "dynamic_sample_loading": false,
+    "timing_source": "sample",
+    "lc_all": "C"
+  },
+  "post_processing": {
+    "lufs_target": -16.0,
+    "peak_dbtp": -1.0,
+    "fade_in_ms": 50,
+    "fade_out_ms": 200,
+    "output_subtype": "PCM_16"
+  }
+}

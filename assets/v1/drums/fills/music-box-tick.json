@@ -1,0 +1,154 @@
+{
+  "version": "soundhash/v1/drums/fills/music-box-tick",
+  "kit": "music-box-tick",
+  "fills": [
+    {
+      "id": "mb-arp-ramp-d1d3",
+      "kit": "music-box-tick",
+      "current_density": 1,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 1,
+            "v": 74
+          },
+          {
+            "s": 2,
+            "v": 78
+          },
+          {
+            "s": 3,
+            "v": 82
+          },
+          {
+            "s": 4,
+            "v": 86
+          },
+          {
+            "s": 5,
+            "v": 90
+          },
+          {
+            "s": 6,
+            "v": 94
+          },
+          {
+            "s": 7,
+            "v": 98
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "mb-tick-flurry-d2d3",
+      "kit": "music-box-tick",
+      "current_density": 2,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "perc_2": [
+          {
+            "s": 0,
+            "v": 64
+          },
+          {
+            "s": 1,
+            "v": 64
+          },
+          {
+            "s": 2,
+            "v": 64
+          },
+          {
+            "s": 3,
+            "v": 64
+          },
+          {
+            "s": 4,
+            "v": 64
+          },
+          {
+            "s": 5,
+            "v": 64
+          },
+          {
+            "s": 6,
+            "v": 64
+          },
+          {
+            "s": 7,
+            "v": 64
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "mb-roll-d2d4",
+      "kit": "music-box-tick",
+      "current_density": 2,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 78
+          },
+          {
+            "s": 1,
+            "v": 78
+          },
+          {
+            "s": 2,
+            "v": 78
+          },
+          {
+            "s": 3,
+            "v": 78
+          },
+          {
+            "s": 4,
+            "v": 78
+          },
+          {
+            "s": 5,
+            "v": 78
+          },
+          {
+            "s": 6,
+            "v": 78
+          },
+          {
+            "s": 7,
+            "v": 78
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "mb-deescalate-d3d1",
+      "kit": "music-box-tick",
+      "current_density": 3,
+      "target_density": 1,
+      "span_steps": 4,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 70
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    }
+  ]
+}

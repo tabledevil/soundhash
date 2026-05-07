@@ -1,0 +1,155 @@
+{
+  "version": "soundhash/v1/groove_overlays",
+  "comment": "Pattern-overlay grooves: macro-rhythm stencils applied ON TOP of base drum/perc patterns by dim #05. NOT micro-timing (that lives in groove_templates.json). Each overlay specifies a hit-mask in 16th cells per bar, plus role-routing (which layer plays each hit) and velocity_factor relative to the base pattern. Overlays compose additively: dim #05 picks 0..1 overlays per section.",
+  "format": {
+    "id": "string",
+    "applies_to_meters": ["4/4 | 6/8 | 12/8"],
+    "bar_cells": "int (16 for 4/4, 12 for 6/8 at 16th-equivalent doubling, etc.)",
+    "hits": "array of {cell, role, velocity_factor, accent}",
+    "role_options": ["clave_wood", "perc_high", "perc_low", "rim", "log_drum", "shaker", "kick", "snare_main", "snare_ghost"],
+    "tempo_compat_bpm": "[min, max]",
+    "moods_compat": "array of mood ids"
+  },
+  "overlays": [
+    {
+      "id": "son_clave_3_2",
+      "applies_to_meters": ["4/4"],
+      "pattern_bars": 2,
+      "bar_cells": 32,
+      "hits": [
+        {"cell": 0,  "role": "clave_wood", "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 3,  "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 6,  "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 20, "role": "clave_wood", "velocity_factor": 0.90, "accent": "med"},
+        {"cell": 22, "role": "clave_wood", "velocity_factor": 0.95, "accent": "strong"}
+      ],
+      "tempo_compat_bpm": [88, 130],
+      "moods_compat": ["M4", "M3", "M5"]
+    },
+    {
+      "id": "son_clave_2_3",
+      "applies_to_meters": ["4/4"],
+      "pattern_bars": 2,
+      "bar_cells": 32,
+      "hits": [
+        {"cell": 4,  "role": "clave_wood", "velocity_factor": 0.95, "accent": "strong"},
+        {"cell": 6,  "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 16, "role": "clave_wood", "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 19, "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 22, "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"}
+      ],
+      "tempo_compat_bpm": [88, 130],
+      "moods_compat": ["M4", "M3", "M5"]
+    },
+    {
+      "id": "rumba_clave_3_2",
+      "applies_to_meters": ["4/4"],
+      "pattern_bars": 2,
+      "bar_cells": 32,
+      "hits": [
+        {"cell": 0,  "role": "clave_wood", "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 3,  "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 7,  "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 20, "role": "clave_wood", "velocity_factor": 0.90, "accent": "med"},
+        {"cell": 22, "role": "clave_wood", "velocity_factor": 0.95, "accent": "strong"}
+      ],
+      "tempo_compat_bpm": [88, 120],
+      "moods_compat": ["M4"]
+    },
+    {
+      "id": "bossa_clave",
+      "applies_to_meters": ["4/4"],
+      "pattern_bars": 2,
+      "bar_cells": 32,
+      "hits": [
+        {"cell": 0,  "role": "rim", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 3,  "role": "rim", "velocity_factor": 0.80, "accent": "med"},
+        {"cell": 6,  "role": "rim", "velocity_factor": 0.80, "accent": "med"},
+        {"cell": 18, "role": "rim", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 21, "role": "rim", "velocity_factor": 0.80, "accent": "med"}
+      ],
+      "tempo_compat_bpm": [92, 116],
+      "moods_compat": ["M3", "M4", "M1"]
+    },
+    {
+      "id": "dembow_classic",
+      "applies_to_meters": ["4/4"],
+      "bar_cells": 16,
+      "hits": [
+        {"cell": 0,  "role": "kick",         "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 3,  "role": "snare_ghost",  "velocity_factor": 0.55, "accent": "ghost"},
+        {"cell": 4,  "role": "snare_main",   "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 6,  "role": "kick",         "velocity_factor": 0.95, "accent": "strong"},
+        {"cell": 8,  "role": "snare_main",   "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 11, "role": "snare_ghost",  "velocity_factor": 0.55, "accent": "ghost"},
+        {"cell": 12, "role": "snare_main",   "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 14, "role": "kick",         "velocity_factor": 0.90, "accent": "med"}
+      ],
+      "tempo_compat_bpm": [90, 110],
+      "moods_compat": ["M4", "M3"]
+    },
+    {
+      "id": "amapiano_logdrum",
+      "applies_to_meters": ["4/4"],
+      "bar_cells": 16,
+      "hits": [
+        {"cell": 4,  "role": "log_drum", "velocity_factor": 0.90, "accent": "strong"},
+        {"cell": 7,  "role": "log_drum", "velocity_factor": 0.75, "accent": "med"},
+        {"cell": 10, "role": "log_drum", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 12, "role": "log_drum", "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 15, "role": "log_drum", "velocity_factor": 0.70, "accent": "med"}
+      ],
+      "tempo_compat_bpm": [108, 118],
+      "moods_compat": ["M4", "M6"]
+    },
+    {
+      "id": "shaker_8ths",
+      "applies_to_meters": ["4/4"],
+      "bar_cells": 16,
+      "hits": [
+        {"cell": 0,  "role": "shaker", "velocity_factor": 0.70, "accent": "med"},
+        {"cell": 2,  "role": "shaker", "velocity_factor": 0.55, "accent": "weak"},
+        {"cell": 4,  "role": "shaker", "velocity_factor": 0.70, "accent": "med"},
+        {"cell": 6,  "role": "shaker", "velocity_factor": 0.55, "accent": "weak"},
+        {"cell": 8,  "role": "shaker", "velocity_factor": 0.70, "accent": "med"},
+        {"cell": 10, "role": "shaker", "velocity_factor": 0.55, "accent": "weak"},
+        {"cell": 12, "role": "shaker", "velocity_factor": 0.70, "accent": "med"},
+        {"cell": 14, "role": "shaker", "velocity_factor": 0.55, "accent": "weak"}
+      ],
+      "tempo_compat_bpm": [70, 140],
+      "moods_compat": ["M3", "M4", "M5", "M6", "M1"]
+    },
+    {
+      "id": "tresillo",
+      "applies_to_meters": ["4/4"],
+      "bar_cells": 16,
+      "hits": [
+        {"cell": 0,  "role": "perc_low", "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 6,  "role": "perc_low", "velocity_factor": 0.90, "accent": "med"},
+        {"cell": 12, "role": "perc_low", "velocity_factor": 0.85, "accent": "med"}
+      ],
+      "tempo_compat_bpm": [88, 130],
+      "moods_compat": ["M4", "M3", "M5", "M6"]
+    },
+    {
+      "id": "compound_68_bell",
+      "applies_to_meters": ["6/8", "12/8"],
+      "bar_cells": 12,
+      "hits": [
+        {"cell": 0, "role": "clave_wood", "velocity_factor": 1.00, "accent": "strong"},
+        {"cell": 2, "role": "clave_wood", "velocity_factor": 0.75, "accent": "med"},
+        {"cell": 4, "role": "clave_wood", "velocity_factor": 0.75, "accent": "med"},
+        {"cell": 5, "role": "clave_wood", "velocity_factor": 0.70, "accent": "weak"},
+        {"cell": 7, "role": "clave_wood", "velocity_factor": 0.85, "accent": "med"},
+        {"cell": 9, "role": "clave_wood", "velocity_factor": 0.75, "accent": "med"},
+        {"cell": 11,"role": "clave_wood", "velocity_factor": 0.70, "accent": "weak"}
+      ],
+      "tempo_compat_bpm": [80, 130],
+      "moods_compat": ["M4", "M10", "M1"]
+    }
+  ],
+  "selection": {
+    "owner_byte": "macro-overlay sub-byte derived via HKDF label 'groove/microtiming' (shared seed; first 8 bits of overlay-stream)",
+    "rule": "If mood is in moods_compat AND tempo in tempo_compat_bpm AND meter matches, overlay is eligible. Pick by `byte % len(eligible)`; reserved 'none' slot at index 0 means no overlay."
+  }
+}

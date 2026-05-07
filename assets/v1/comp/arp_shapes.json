@@ -1,0 +1,115 @@
+{
+  "version": "soundhash/v1/comp/arp_shapes",
+  "shapes": [
+    {
+      "id": "up",
+      "name": "Ascending",
+      "sequence": [0, 1, 2, 3],
+      "octave_offsets": [0, 0, 0, 0],
+      "tempo_compat_bpm": [60, 200],
+      "mood_tags": ["M0", "M5", "M6", "M7"],
+      "polyphony": 1
+    },
+    {
+      "id": "down",
+      "name": "Descending",
+      "sequence": [3, 2, 1, 0],
+      "octave_offsets": [0, 0, 0, 0],
+      "tempo_compat_bpm": [60, 200],
+      "mood_tags": ["M0", "M1", "M5", "M10"],
+      "polyphony": 1
+    },
+    {
+      "id": "up_down",
+      "name": "Up-down",
+      "sequence": [0, 1, 2, 3, 2, 1],
+      "octave_offsets": [0, 0, 0, 0, 0, 0],
+      "tempo_compat_bpm": [70, 180],
+      "mood_tags": ["M0", "M1", "M3", "M5"],
+      "polyphony": 1
+    },
+    {
+      "id": "down_up",
+      "name": "Down-up",
+      "sequence": [3, 2, 1, 0, 1, 2],
+      "octave_offsets": [0, 0, 0, 0, 0, 0],
+      "tempo_compat_bpm": [70, 180],
+      "mood_tags": ["M1", "M3", "M5", "M10"],
+      "polyphony": 1
+    },
+    {
+      "id": "alberti",
+      "name": "Alberti bass figure",
+      "sequence": [0, 2, 1, 2],
+      "octave_offsets": [0, 0, 0, 0],
+      "tempo_compat_bpm": [60, 160],
+      "mood_tags": ["M0", "M1", "M10"],
+      "polyphony": 1
+    },
+    {
+      "id": "broken_thirds",
+      "name": "Broken thirds",
+      "sequence": [0, 2, 1, 3],
+      "octave_offsets": [0, 0, 0, 0],
+      "tempo_compat_bpm": [70, 170],
+      "mood_tags": ["M0", "M1", "M3", "M10"],
+      "polyphony": 1
+    },
+    {
+      "id": "converge",
+      "name": "Outside-in converge",
+      "sequence": [0, 3, 1, 2],
+      "octave_offsets": [0, 0, 0, 0],
+      "tempo_compat_bpm": [70, 170],
+      "mood_tags": ["M3", "M5", "M9"],
+      "polyphony": 1
+    },
+    {
+      "id": "expand",
+      "name": "Inside-out expand",
+      "sequence": [1, 2, 0, 3],
+      "octave_offsets": [0, 0, 0, 0],
+      "tempo_compat_bpm": [70, 170],
+      "mood_tags": ["M3", "M5", "M9"],
+      "polyphony": 1
+    },
+    {
+      "id": "random_inkey",
+      "name": "Pseudo-random in-key permutation",
+      "sequence": [0, 1, 2, 3],
+      "octave_offsets": [0, 0, 0, 0],
+      "tempo_compat_bpm": [80, 180],
+      "mood_tags": ["M5", "M7", "M9"],
+      "polyphony": 1,
+      "hkdf_label": "comp/arp_perm",
+      "hkdf_note": "sequence is a placeholder; runtime derives a deterministic permutation of voicing-degree positions via HKDF using label 'comp/arp_perm'. No system RNG."
+    },
+    {
+      "id": "arp_pedal",
+      "name": "Pedal-tone arpeggio (alternating with tonic)",
+      "sequence": [0, 1, 0, 2, 0, 3],
+      "octave_offsets": [0, 0, 0, 0, 0, 0],
+      "tempo_compat_bpm": [80, 180],
+      "mood_tags": ["M5", "M6", "M7", "M10"],
+      "polyphony": 1
+    },
+    {
+      "id": "octave_stack",
+      "name": "Octave-stacked ascend",
+      "sequence": [0, 1, 2, 3, 0, 1, 2, 3],
+      "octave_offsets": [0, 0, 0, 0, 1, 1, 1, 1],
+      "tempo_compat_bpm": [90, 180],
+      "mood_tags": ["M5", "M6", "M7"],
+      "polyphony": 1
+    },
+    {
+      "id": "trance_16th",
+      "name": "Trance 16th gated",
+      "sequence": [0, 0, 1, 1, 2, 2, 3, 3],
+      "octave_offsets": [0, 1, 0, 1, 0, 1, 0, 1],
+      "tempo_compat_bpm": [120, 180],
+      "mood_tags": ["M5", "M6", "M7"],
+      "polyphony": 1
+    }
+  ]
+}

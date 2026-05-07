@@ -1,0 +1,364 @@
+{
+  "version": "soundhash/v1/drums/patterns/kalimba-tick",
+  "kit": "kalimba-tick",
+  "patterns": [
+    {
+      "id": "kl-d0-bed",
+      "kit": "kalimba-tick",
+      "density": 0,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4",
+        "6/8",
+        "12/8",
+        "3/4"
+      ],
+      "style_tag": "kalimba-texture"
+    },
+    {
+      "id": "kl-d1-pulse",
+      "kit": "kalimba-tick",
+      "density": 1,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 8,
+            "v": 78
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 4,
+            "v": 64
+          },
+          {
+            "s": 12,
+            "v": 64
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "kalimba-skel"
+    },
+    {
+      "id": "kl-d2-arp-cycle",
+      "kit": "kalimba-tick",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 86
+          },
+          {
+            "s": 4,
+            "v": 74
+          },
+          {
+            "s": 8,
+            "v": 84
+          },
+          {
+            "s": 12,
+            "v": 74
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 2,
+            "v": 64
+          },
+          {
+            "s": 6,
+            "v": 64
+          },
+          {
+            "s": 10,
+            "v": 64
+          },
+          {
+            "s": 14,
+            "v": 64
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "kalimba-arp"
+    },
+    {
+      "id": "kl-d2-6-8-rocking",
+      "kit": "kalimba-tick",
+      "density": 2,
+      "bars": 1,
+      "steps": 12,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 3,
+            "v": 70
+          },
+          {
+            "s": 6,
+            "v": 84
+          },
+          {
+            "s": 9,
+            "v": 70
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 2,
+            "v": 60
+          },
+          {
+            "s": 8,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "6/8",
+        "12/8"
+      ],
+      "style_tag": "rocking-6-8"
+    },
+    {
+      "id": "kl-d3-busy-arp",
+      "kit": "kalimba-tick",
+      "density": 3,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 2,
+            "v": 70
+          },
+          {
+            "s": 4,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 80
+          },
+          {
+            "s": 10,
+            "v": 70
+          },
+          {
+            "s": 12,
+            "v": 80
+          },
+          {
+            "s": 14,
+            "v": 70
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 1,
+            "v": 60
+          },
+          {
+            "s": 3,
+            "v": 60
+          },
+          {
+            "s": 5,
+            "v": 60
+          },
+          {
+            "s": 7,
+            "v": 60
+          },
+          {
+            "s": 9,
+            "v": 60
+          },
+          {
+            "s": 11,
+            "v": 60
+          },
+          {
+            "s": 13,
+            "v": 60
+          },
+          {
+            "s": 15,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "kalimba-busy"
+    },
+    {
+      "id": "kl-d4-peak",
+      "kit": "kalimba-tick",
+      "density": 4,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 1,
+            "v": 78
+          },
+          {
+            "s": 2,
+            "v": 78
+          },
+          {
+            "s": 3,
+            "v": 78
+          },
+          {
+            "s": 4,
+            "v": 88
+          },
+          {
+            "s": 5,
+            "v": 78
+          },
+          {
+            "s": 6,
+            "v": 78
+          },
+          {
+            "s": 7,
+            "v": 78
+          },
+          {
+            "s": 8,
+            "v": 88
+          },
+          {
+            "s": 9,
+            "v": 78
+          },
+          {
+            "s": 10,
+            "v": 78
+          },
+          {
+            "s": 11,
+            "v": 78
+          },
+          {
+            "s": 12,
+            "v": 88
+          },
+          {
+            "s": 13,
+            "v": 78
+          },
+          {
+            "s": 14,
+            "v": 78
+          },
+          {
+            "s": 15,
+            "v": 78
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 0,
+            "v": 66
+          },
+          {
+            "s": 2,
+            "v": 66
+          },
+          {
+            "s": 4,
+            "v": 66
+          },
+          {
+            "s": 6,
+            "v": 66
+          },
+          {
+            "s": 8,
+            "v": 66
+          },
+          {
+            "s": 10,
+            "v": 66
+          },
+          {
+            "s": 12,
+            "v": 66
+          },
+          {
+            "s": 14,
+            "v": 66
+          }
+        ],
+        "crash": [
+          {
+            "s": 0,
+            "v": 80
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "kalimba-peak"
+    }
+  ]
+}

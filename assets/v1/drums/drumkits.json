@@ -1,0 +1,126 @@
+{
+  "version": "soundhash/v1/drums/drumkits",
+  "comment": "12 drum kits with GM percussion key map (channel 10), mood-tag whitelist, humanize defaults, and time-sig validity. sample_pack_hint is a TODO slug to be resolved by dim #12 to a CC0 sample pack or SF2 program.",
+  "kits": [
+    {
+      "id": "acoustic-studio",
+      "name": "Acoustic Studio",
+      "mood_tags": ["M0", "M1", "M5", "M10"],
+      "gm_map": {"kick": 36, "snare": 38, "snare_rim": 37, "hat_closed": 42, "hat_open": 46, "ride": 51, "crash": 49, "tom_low": 41, "tom_mid": 47, "tom_high": 50, "perc_1": 54, "perc_2": 56},
+      "has_kick": true,
+      "humanize": {"timing_ms": 9, "velocity": 10},
+      "valid_time_sigs": ["4/4", "6/8", "12/8", "3/4"],
+      "sample_pack_hint": "TODO-cc0-acoustic-studio"
+    },
+    {
+      "id": "brushes",
+      "name": "Brush Kit",
+      "mood_tags": ["M0", "M1", "M10"],
+      "gm_map": {"kick": 36, "snare": 38, "snare_rim": 37, "hat_closed": 42, "hat_open": 46, "ride": 51, "crash": 49, "tom_low": 41, "tom_mid": 47, "tom_high": 50, "perc_1": 54, "perc_2": 56},
+      "has_kick": true,
+      "humanize": {"timing_ms": 14, "velocity": 14},
+      "valid_time_sigs": ["4/4", "6/8", "12/8", "3/4"],
+      "sample_pack_hint": "TODO-cc0-brushes"
+    },
+    {
+      "id": "jazz-kit",
+      "name": "Jazz Kit",
+      "mood_tags": ["M1", "M3", "M10"],
+      "gm_map": {"kick": 36, "snare": 38, "snare_rim": 37, "hat_closed": 42, "hat_open": 46, "ride": 51, "crash": 49, "tom_low": 41, "tom_mid": 47, "tom_high": 50, "perc_1": 54, "perc_2": 56},
+      "has_kick": true,
+      "humanize": {"timing_ms": 11, "velocity": 12},
+      "valid_time_sigs": ["4/4", "6/8", "12/8", "3/4"],
+      "sample_pack_hint": "TODO-cc0-jazz"
+    },
+    {
+      "id": "trap-808",
+      "name": "Trap 808",
+      "mood_tags": ["M2", "M8"],
+      "gm_map": {"kick": 36, "snare": 40, "snare_rim": 37, "hat_closed": 42, "hat_open": 46, "ride": 51, "crash": 49, "tom_low": 41, "tom_mid": 47, "tom_high": 50, "perc_1": 39, "perc_2": 56},
+      "has_kick": true,
+      "humanize": {"timing_ms": 2, "velocity": 6},
+      "valid_time_sigs": ["4/4"],
+      "sample_pack_hint": "TODO-cc0-trap-808"
+    },
+    {
+      "id": "house-909",
+      "name": "House 909",
+      "mood_tags": ["M5", "M6", "M7"],
+      "gm_map": {"kick": 36, "snare": 38, "snare_rim": 37, "hat_closed": 42, "hat_open": 46, "ride": 51, "crash": 49, "tom_low": 41, "tom_mid": 47, "tom_high": 50, "perc_1": 54, "perc_2": 39},
+      "has_kick": true,
+      "humanize": {"timing_ms": 1, "velocity": 4},
+      "valid_time_sigs": ["4/4"],
+      "sample_pack_hint": "TODO-cc0-tr909"
+    },
+    {
+      "id": "lo-fi-tape",
+      "name": "Lo-fi Tape",
+      "mood_tags": ["M2", "M3", "M0"],
+      "gm_map": {"kick": 36, "snare": 38, "snare_rim": 37, "hat_closed": 42, "hat_open": 46, "ride": 51, "crash": 49, "tom_low": 41, "tom_mid": 47, "tom_high": 50, "perc_1": 54, "perc_2": 56},
+      "has_kick": true,
+      "humanize": {"timing_ms": 13, "velocity": 16},
+      "valid_time_sigs": ["4/4"],
+      "sample_pack_hint": "TODO-cc0-lofi-tape"
+    },
+    {
+      "id": "hand-perc",
+      "name": "Hand Percussion",
+      "mood_tags": ["M0", "M3", "M4", "M10"],
+      "gm_map": {"kick": 64, "snare": 60, "snare_rim": 61, "hat_closed": 69, "hat_open": 70, "ride": 76, "crash": 81, "tom_low": 64, "tom_mid": 63, "tom_high": 62, "perc_1": 73, "perc_2": 75},
+      "has_kick": false,
+      "humanize": {"timing_ms": 12, "velocity": 14},
+      "valid_time_sigs": ["4/4", "6/8", "12/8", "3/4"],
+      "sample_pack_hint": "TODO-cc0-hand-perc"
+    },
+    {
+      "id": "mallets",
+      "name": "Mallets",
+      "mood_tags": ["M0", "M1", "M10"],
+      "gm_map": {"kick": 47, "snare": 50, "snare_rim": 50, "hat_closed": 80, "hat_open": 81, "ride": 84, "crash": 81, "tom_low": 41, "tom_mid": 45, "tom_high": 48, "perc_1": 84, "perc_2": 80},
+      "has_kick": false,
+      "humanize": {"timing_ms": 8, "velocity": 9},
+      "valid_time_sigs": ["4/4", "6/8", "12/8", "3/4"],
+      "sample_pack_hint": "TODO-cc0-mallets"
+    },
+    {
+      "id": "latin-conga",
+      "name": "Latin Conga",
+      "mood_tags": ["M4", "M3", "M10"],
+      "gm_map": {"kick": 64, "snare": 63, "snare_rim": 62, "hat_closed": 69, "hat_open": 70, "ride": 76, "crash": 81, "tom_low": 64, "tom_mid": 63, "tom_high": 62, "perc_1": 73, "perc_2": 75},
+      "has_kick": false,
+      "humanize": {"timing_ms": 10, "velocity": 12},
+      "valid_time_sigs": ["4/4", "6/8"],
+      "sample_pack_hint": "TODO-cc0-latin-conga"
+    },
+    {
+      "id": "dnb-breakbeat",
+      "name": "DnB Breakbeat",
+      "mood_tags": ["M8", "M9"],
+      "gm_map": {"kick": 36, "snare": 38, "snare_rim": 37, "hat_closed": 42, "hat_open": 46, "ride": 51, "crash": 49, "tom_low": 41, "tom_mid": 47, "tom_high": 50, "perc_1": 54, "perc_2": 56},
+      "has_kick": true,
+      "humanize": {"timing_ms": 4, "velocity": 8},
+      "valid_time_sigs": ["4/4"],
+      "sample_pack_hint": "TODO-cc0-dnb-amen"
+    },
+    {
+      "id": "music-box-tick",
+      "name": "Music Box Tick",
+      "mood_tags": ["M0", "M1", "M10"],
+      "gm_map": {"kick": 75, "snare": 76, "snare_rim": 76, "hat_closed": 77, "hat_open": 78, "ride": 79, "crash": 81, "tom_low": 75, "tom_mid": 76, "tom_high": 77, "perc_1": 80, "perc_2": 81},
+      "has_kick": false,
+      "humanize": {"timing_ms": 6, "velocity": 8},
+      "valid_time_sigs": ["4/4", "6/8", "3/4"],
+      "sample_pack_hint": "TODO-cc0-music-box"
+    },
+    {
+      "id": "kalimba-tick",
+      "name": "Kalimba Tick",
+      "mood_tags": ["M0", "M3", "M10"],
+      "gm_map": {"kick": 75, "snare": 76, "snare_rim": 76, "hat_closed": 77, "hat_open": 78, "ride": 79, "crash": 81, "tom_low": 75, "tom_mid": 76, "tom_high": 77, "perc_1": 80, "perc_2": 81},
+      "has_kick": false,
+      "humanize": {"timing_ms": 7, "velocity": 9},
+      "valid_time_sigs": ["4/4", "6/8", "12/8", "3/4"],
+      "sample_pack_hint": "TODO-cc0-kalimba"
+    }
+  ]
+}

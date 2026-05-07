@@ -1,0 +1,22 @@
+{
+  "version": "soundhash/v1/melody/accent_skeleton",
+  "_doc": "The high-leverage HKDF-driven sub-dimension of dim #08. The accent skeleton fixes the four strong-beat scale-degrees of the phrase (out of the chord-tone set, weighted by harmonic function); a separate micro_shape interpolates the 3 weak-beat-positions between each pair of adjacent strong beats. micro_shape values are normalized contour offsets in the [-1,+1] range, applied additively to the contour sample at each weak slot. 8 entries indexed by the single byte from HKDF label `melody/accent_skeleton`. Distinguishability per byte is the highest in the melody pipeline (see C4 in findings).",
+  "spec": {
+    "hkdf_label": "soundhash/v1/melody/accent_skeleton",
+    "bytes_consumed": 1,
+    "strong_beat_chord_tones": "Decoder takes the 4 chord-tone slots from the current chord stack at strong beats (downbeat of bars 1-4 of the phrase, or beats 1/3 within a 4/4 bar — interpretation set by the form's harmonic_rhythm). For each strong beat, a 2-bit sub-field of the byte (or HKDF top-up if more chord tones exist) selects from {root, 3, 5, 7-or-extension} weighted [0.35, 0.30, 0.25, 0.10].",
+    "weak_beat_interp": "Between successive strong beats, micro_shape supplies 3 normalized offsets that are added to the contour-derived sample at each weak slot. The sum of the strong-beat target plus the offset is then resolved via the active scale_subset.",
+    "ordering_rule": "If the phrase has fewer than 4 strong beats (e.g. 3/4, 7/8), only the first N slots of the skeleton are consumed; remaining bytes are ignored deterministically (high-order bits first per dim #12 ordering).",
+    "anti_collision": "If the chosen strong-beat tone would create a parallel-fifth/octave with the bass at chord onset (per C7 fix), the resolver substitutes the next-weighted chord tone from the same byte sub-field."
+  },
+  "skeletons": [
+    {"id": "as_01_arch_micro",      "micro_shape": [ 0.3,  0.6,  0.3]},
+    {"id": "as_02_inv_arch_micro",  "micro_shape": [-0.4, -0.7, -0.4]},
+    {"id": "as_03_ascend_step",     "micro_shape": [ 0.2,  0.5,  0.8]},
+    {"id": "as_04_descend_step",    "micro_shape": [-0.2, -0.5, -0.8]},
+    {"id": "as_05_zigzag_alt",      "micro_shape": [ 0.5, -0.5,  0.5]},
+    {"id": "as_06_static_decoy",    "micro_shape": [ 0.0,  0.1,  0.0]},
+    {"id": "as_07_anticipate",      "micro_shape": [ 0.7,  0.0, -0.3]},
+    {"id": "as_08_resolve_late",    "micro_shape": [-0.3,  0.0,  0.7]}
+  ]
+}

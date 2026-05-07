@@ -1,0 +1,212 @@
+{
+  "version": "soundhash/v1/drums/fills/brushes",
+  "kit": "brushes",
+  "fills": [
+    {
+      "id": "br-sweep-d1d2",
+      "kit": "brushes",
+      "current_density": 1,
+      "target_density": 2,
+      "span_steps": 8,
+      "rows": {
+        "snare": [
+          {
+            "s": 0,
+            "v": 60
+          },
+          {
+            "s": 1,
+            "v": 64
+          },
+          {
+            "s": 2,
+            "v": 68
+          },
+          {
+            "s": 3,
+            "v": 72
+          },
+          {
+            "s": 4,
+            "v": 76
+          },
+          {
+            "s": 5,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 84
+          },
+          {
+            "s": 7,
+            "v": 88
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "br-tom-roll-d2d4",
+      "kit": "brushes",
+      "current_density": 2,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 0,
+            "v": 100
+          },
+          {
+            "s": 1,
+            "v": 92
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 2,
+            "v": 102
+          },
+          {
+            "s": 3,
+            "v": 96
+          }
+        ],
+        "tom_low": [
+          {
+            "s": 4,
+            "v": 104
+          },
+          {
+            "s": 5,
+            "v": 100
+          },
+          {
+            "s": 6,
+            "v": 110
+          },
+          {
+            "s": 7,
+            "v": 116
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "br-snare-cresc-d2d3",
+      "kit": "brushes",
+      "current_density": 2,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "snare": [
+          {
+            "s": 0,
+            "v": 60
+          },
+          {
+            "s": 1,
+            "v": 68
+          },
+          {
+            "s": 2,
+            "v": 76
+          },
+          {
+            "s": 3,
+            "v": 84
+          },
+          {
+            "s": 4,
+            "v": 92
+          },
+          {
+            "s": 5,
+            "v": 100
+          },
+          {
+            "s": 6,
+            "v": 108
+          },
+          {
+            "s": 7,
+            "v": 116
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "br-rev-cymbal-d3d4",
+      "kit": "brushes",
+      "current_density": 3,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "crash": [
+          {
+            "s": 7,
+            "v": 116
+          }
+        ],
+        "hat_open": [
+          {
+            "s": 0,
+            "v": 50
+          },
+          {
+            "s": 1,
+            "v": 56
+          },
+          {
+            "s": 2,
+            "v": 62
+          },
+          {
+            "s": 3,
+            "v": 68
+          },
+          {
+            "s": 4,
+            "v": 74
+          },
+          {
+            "s": 5,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 86
+          },
+          {
+            "s": 7,
+            "v": 92
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "br-deescalate-d3d1",
+      "kit": "brushes",
+      "current_density": 3,
+      "target_density": 1,
+      "span_steps": 4,
+      "rows": {
+        "snare": [
+          {
+            "s": 0,
+            "v": 78
+          },
+          {
+            "s": 2,
+            "v": 60
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    }
+  ]
+}

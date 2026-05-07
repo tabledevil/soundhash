@@ -1,0 +1,741 @@
+{
+  "version": "soundhash/v1/bass/patterns",
+  "degree_legend": {
+    "R": "root", "3": "major third", "b3": "minor third", "5": "fifth", "b5": "flat fifth",
+    "6": "sixth", "b6": "flat sixth", "b7": "minor seventh", "7": "major seventh",
+    "8": "octave", "9": "ninth", "CH": "chromatic approach to next chord root",
+    ".": "rest", "~": "tie to previous"
+  },
+  "art_legend": ["tenuto", "staccato", "legato", "slide", "ghost", "dead"],
+  "patterns": [
+    {
+      "id": "whole_root_pulse",
+      "name": "Whole-note root pulse",
+      "archetype": "root_pulse",
+      "mood_tags": ["M0", "M1", "M10"],
+      "density": 1,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":16,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "half_root_pulse",
+      "name": "Half-note root pulse",
+      "archetype": "root_pulse",
+      "mood_tags": ["M0", "M1", "M10"],
+      "density": 2,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":8,"art":"tenuto","ghost":false},
+        {"deg":"R","len":8,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "quarter_root_pulse",
+      "name": "Quarter-note root pulse",
+      "archetype": "root_pulse",
+      "mood_tags": ["M1", "M5", "M10", "M3"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "root_fifth_alt",
+      "name": "Root-fifth alternation",
+      "archetype": "alternating",
+      "mood_tags": ["M1", "M5"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "country_alternating",
+      "name": "Country alternating bass",
+      "archetype": "alternating",
+      "mood_tags": ["M4", "M5", "M1"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"staccato","ghost":false},
+        {"deg":"5","len":4,"art":"staccato","ghost":false},
+        {"deg":"R","len":4,"art":"staccato","ghost":false},
+        {"deg":"3","len":4,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "octave_bass",
+      "name": "Octave bass disco",
+      "archetype": "octave",
+      "mood_tags": ["M5", "M6"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"8","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"8","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"8","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"8","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E3"
+    },
+    {
+      "id": "walking_quarter",
+      "name": "Walking quarter (diatonic)",
+      "archetype": "walking",
+      "mood_tags": ["M2", "M4", "M3"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"3","len":4,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false},
+        {"deg":"6","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": 3,
+      "register_hint": "C2-C3"
+    },
+    {
+      "id": "walking_jazz_quarter",
+      "name": "Walking jazz quarter chromatic",
+      "archetype": "walking",
+      "mood_tags": ["M3", "M10"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"3","len":4,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false},
+        {"deg":"CH","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": true,
+      "anticipation_cell": 3,
+      "register_hint": "C2-C3"
+    },
+    {
+      "id": "syncop_funk",
+      "name": "Syncopated funk 16ths",
+      "archetype": "funk",
+      "mood_tags": ["M2", "M4", "M6"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":".","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"ghost","ghost":true},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":".","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":".","len":1,"art":"staccato","ghost":false},
+        {"deg":"b7","len":1,"art":"ghost","ghost":true},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":".","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "dub_offbeat",
+      "name": "Dub reggae offbeat",
+      "archetype": "reggae",
+      "mood_tags": ["M3", "M4"],
+      "density": 2,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "ska_upstroke",
+      "name": "Ska upstroke bass",
+      "archetype": "ska",
+      "mood_tags": ["M4", "M5"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"3","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"3","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"3","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "dembow_bass",
+      "name": "Dembow bass",
+      "archetype": "latin",
+      "mood_tags": ["M4", "M2"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "latin_tumbao",
+      "name": "Latin salsa tumbao",
+      "archetype": "latin",
+      "mood_tags": ["M4"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"b7","len":2,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":2,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": 2,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "montuno_bass",
+      "name": "Montuno bass anticipation",
+      "archetype": "latin",
+      "mood_tags": ["M4"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":2,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"b7","len":2,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": 6,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "bossa_bass",
+      "name": "Bossa nova bass",
+      "archetype": "latin",
+      "mood_tags": ["M3", "M4"],
+      "density": 2,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":3,"art":"tenuto","ghost":false},
+        {"deg":".","len":1,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false},
+        {"deg":"R","len":3,"art":"tenuto","ghost":false},
+        {"deg":".","len":1,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "samba_bass",
+      "name": "Samba surdo bass",
+      "archetype": "latin",
+      "mood_tags": ["M4"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":".","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "jazz_two_feel",
+      "name": "Jazz two-feel",
+      "archetype": "two_feel",
+      "mood_tags": ["M3", "M10"],
+      "density": 2,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":8,"art":"tenuto","ghost":false},
+        {"deg":"5","len":8,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "C2-C3"
+    },
+    {
+      "id": "motown_jamerson",
+      "name": "Motown Jamerson walk",
+      "archetype": "walking",
+      "mood_tags": ["M2", "M4", "M5"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":1,"art":"ghost","ghost":true},
+        {"deg":"3","len":1,"art":"tenuto","ghost":false},
+        {"deg":"5","len":2,"art":"tenuto","ghost":false},
+        {"deg":"6","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":2,"art":"tenuto","ghost":false},
+        {"deg":"3","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"CH","len":2,"art":"slide","ghost":false}
+      ],
+      "chromatic_ok": true,
+      "anticipation_cell": 8,
+      "register_hint": "E1-E3"
+    },
+    {
+      "id": "slap_funk",
+      "name": "Slap funk pop bass",
+      "archetype": "funk",
+      "mood_tags": ["M2", "M5"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"ghost","ghost":true},
+        {"deg":"8","len":1,"art":"staccato","ghost":false},
+        {"deg":"b7","len":2,"art":"slide","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"dead","ghost":false},
+        {"deg":"R","len":1,"art":"ghost","ghost":true},
+        {"deg":"3","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E3"
+    },
+    {
+      "id": "shuffle_blues",
+      "name": "Shuffle blues bass",
+      "archetype": "shuffle",
+      "mood_tags": ["M4", "M2"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 12,
+      "grid": [
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"5","len":1,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"6","len":1,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"b7","len":1,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"6","len":1,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "boogie_woogie",
+      "name": "Boogie-woogie bass",
+      "archetype": "shuffle",
+      "mood_tags": ["M4", "M5"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"3","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"6","len":2,"art":"staccato","ghost":false},
+        {"deg":"b7","len":2,"art":"staccato","ghost":false},
+        {"deg":"6","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"3","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "rock_8ths",
+      "name": "Rock straight 8ths",
+      "archetype": "rock",
+      "mood_tags": ["M5", "M2"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false},
+        {"deg":"R","len":2,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "rock_gallop",
+      "name": "Rock gallop bass",
+      "archetype": "rock",
+      "mood_tags": ["M5", "M10"],
+      "density": 5,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "metal_pedal",
+      "name": "Metal pedal-tone 16ths",
+      "archetype": "rock",
+      "mood_tags": ["M5", "M10"],
+      "density": 5,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "synthwave_arp",
+      "name": "Synthwave 8th-note arp bass",
+      "archetype": "arp",
+      "mood_tags": ["M5"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"8","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":"8","len":2,"art":"staccato","ghost":false},
+        {"deg":"b7","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E3"
+    },
+    {
+      "id": "acid_303",
+      "name": "Acid 303 16th line",
+      "archetype": "acid",
+      "mood_tags": ["M6", "M7", "M9"],
+      "density": 5,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":1,"art":"slide","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"8","len":1,"art":"slide","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"b3","len":1,"art":"slide","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"5","len":1,"art":"slide","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"8","len":1,"art":"slide","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"b7","len":1,"art":"slide","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":"5","len":1,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E3"
+    },
+    {
+      "id": "trap_808_glide",
+      "name": "Trap 808 glide",
+      "archetype": "808",
+      "mood_tags": ["M2", "M8"],
+      "density": 2,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":6,"art":"slide","ghost":false},
+        {"deg":".","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":4,"art":"slide","ghost":false},
+        {"deg":".","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"slide","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "C1-C2"
+    },
+    {
+      "id": "dnb_sub_stab",
+      "name": "DnB sub stab",
+      "archetype": "sub",
+      "mood_tags": ["M8"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":".","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":1,"art":"staccato","ghost":false},
+        {"deg":".","len":3,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":".","len":2,"art":"staccato","ghost":false},
+        {"deg":"5","len":2,"art":"staccato","ghost":false},
+        {"deg":".","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "C1-C2"
+    },
+    {
+      "id": "dnb_reese",
+      "name": "DnB Reese sustain",
+      "archetype": "reese",
+      "mood_tags": ["M8"],
+      "density": 2,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":8,"art":"legato","ghost":false},
+        {"deg":"b7","len":4,"art":"legato","ghost":false},
+        {"deg":"R","len":4,"art":"legato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "C1-C3"
+    },
+    {
+      "id": "gospel_walkup",
+      "name": "Gospel walk-up",
+      "archetype": "walking",
+      "mood_tags": ["M1", "M3"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"3","len":4,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false},
+        {"deg":"7","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": true,
+      "anticipation_cell": 3,
+      "register_hint": "C2-C3"
+    },
+    {
+      "id": "drone_pedal",
+      "name": "Drone pedal root",
+      "archetype": "drone",
+      "mood_tags": ["M0", "M10"],
+      "density": 1,
+      "time_sigs": ["4/4", "6/8", "3/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":16,"art":"legato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "C1-C2"
+    },
+    {
+      "id": "house_pumping_8ths",
+      "name": "House pumping 8ths",
+      "archetype": "octave",
+      "mood_tags": ["M6", "M7"],
+      "density": 4,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false},
+        {"deg":"R","len":2,"art":"staccato","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "halfnote_fifth_walk",
+      "name": "Half-note root-fifth walk",
+      "archetype": "alternating",
+      "mood_tags": ["M0", "M1", "M10"],
+      "density": 2,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":8,"art":"tenuto","ghost":false},
+        {"deg":"5","len":8,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "phrygian_andalusian_walk",
+      "name": "Phrygian descending walk",
+      "archetype": "walking",
+      "mood_tags": ["M4", "M7", "M10"],
+      "density": 3,
+      "time_sigs": ["4/4"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":"R","len":4,"art":"tenuto","ghost":false},
+        {"deg":"b7","len":4,"art":"tenuto","ghost":false},
+        {"deg":"b6","len":4,"art":"tenuto","ghost":false},
+        {"deg":"5","len":4,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "C2-C3"
+    },
+    {
+      "id": "six_eight_lilt",
+      "name": "6/8 lilting bass",
+      "archetype": "lilt",
+      "mood_tags": ["M0", "M1", "M4", "M10"],
+      "density": 3,
+      "time_sigs": ["6/8", "12/8"],
+      "grid_cells": 12,
+      "grid": [
+        {"deg":"R","len":3,"art":"tenuto","ghost":false},
+        {"deg":".","len":3,"art":"tenuto","ghost":false},
+        {"deg":"5","len":3,"art":"tenuto","ghost":false},
+        {"deg":".","len":3,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    },
+    {
+      "id": "none_silent",
+      "name": "No bass (silent)",
+      "archetype": "none",
+      "mood_tags": ["M0", "M9"],
+      "density": 0,
+      "time_sigs": ["4/4", "6/8", "3/4", "12/8", "5/4", "7/8"],
+      "grid_cells": 16,
+      "grid": [
+        {"deg":".","len":16,"art":"tenuto","ghost":false}
+      ],
+      "chromatic_ok": false,
+      "anticipation_cell": null,
+      "register_hint": "E1-E2"
+    }
+  ]
+}

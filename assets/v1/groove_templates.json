@@ -1,0 +1,300 @@
+{
+  "version": "soundhash/v1/groove_templates",
+  "comment": "16 groove templates. Each template stores per-instrument-role micro-timing offset arrays in PPQ-480 ticks (signed). Offsets are applied to the nominal grid position before any deterministic-humanize jitter. Index N in an offset array corresponds to the Nth grid cell of that role's natural subdivision (kick/snare = 16th cells = 16 entries; hat-closed/shaker/comp = 16 entries; hat-open/ride = 8 entries; bass/lead = 16 entries; perc = 16 entries). Roles whose offset array is null inherit zero-offset.",
+  "ppq": 480,
+  "subdivision_cells": {
+    "kick": 16, "snare": 16, "hat_closed": 16, "hat_open": 8, "ride": 8,
+    "perc": 16, "bass": 16, "comp": 16, "lead": 16
+  },
+  "humanize_spec": {
+    "owner_label": "groove/microtiming",
+    "comment": "Deterministic timing humanize is owned exclusively by this dim. The HKDF subkey under label 'groove/microtiming' seeds a ChaCha20-based PRNG; per-note offsets are drawn from a triangular distribution on [-jitter_ticks, +jitter_ticks]. dim #10 owns velocity/CC humanize and uses a DIFFERENT label ('expression/velocity/L<n>'); the two MUST NOT share state.",
+    "distribution": "triangular(-J, 0, +J) where J = template.jitter_ticks",
+    "rng": "ChaCha20Stream(key=HKDF(salt=sha256, info='groove/microtiming'), nonce=0)",
+    "consumption_order": "by (bar_index, cell_index, role_id) sorted lexicographically; each note pulls 2 bytes → uniform [0, 65535] → mapped to triangular via (a+b-65535)/2 with two draws"
+  },
+  "templates": [
+    {
+      "id": "straight_4_4",
+      "feel": "metronomic",
+      "swing_pct": 0.00,
+      "jitter_ticks": 0,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_closed": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       [0,0,0,0, 0,0,0,0],
+        "perc":       null,
+        "bass":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "comp":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "lead":       null
+      }
+    },
+    {
+      "id": "dilla_feel",
+      "feel": "drunken / hat-late, snare-late, kick-on-grid",
+      "swing_pct": 0.00,
+      "jitter_ticks": 6,
+      "offsets": {
+        "kick":       [-2,0,0,0, 0,0,4,0, 0,0,0,0, 0,0,2,0],
+        "snare":      [0,0,0,0, 14,0,0,0, 0,0,0,0, 18,0,0,0],
+        "hat_closed": [0,22,0,18, 0,22,0,18, 0,22,0,18, 0,22,0,18],
+        "hat_open":   [0,0,0,24, 0,0,0,24],
+        "ride":       null,
+        "perc":       null,
+        "bass":       [0,0,0,0, 0,0,0,0, 6,0,0,0, 0,0,0,0],
+        "comp":       [4,0,0,0, 4,0,0,0, 4,0,0,0, 4,0,0,0],
+        "lead":       null
+      }
+    },
+    {
+      "id": "mpc60_swing",
+      "feel": "16th-swing 58%",
+      "swing_pct": 0.58,
+      "jitter_ticks": 3,
+      "offsets": {
+        "kick":       [0,24,0,24, 0,24,0,24, 0,24,0,24, 0,24,0,24],
+        "snare":      [0,24,0,24, 0,24,0,24, 0,24,0,24, 0,24,0,24],
+        "hat_closed": [0,24,0,24, 0,24,0,24, 0,24,0,24, 0,24,0,24],
+        "hat_open":   [0,24,0,24, 0,24,0,24],
+        "ride":       null,
+        "perc":       [0,24,0,24, 0,24,0,24, 0,24,0,24, 0,24,0,24],
+        "bass":       [0,24,0,24, 0,24,0,24, 0,24,0,24, 0,24,0,24],
+        "comp":       [0,24,0,24, 0,24,0,24, 0,24,0,24, 0,24,0,24],
+        "lead":       null
+      }
+    },
+    {
+      "id": "neo_soul",
+      "feel": "snare slightly behind, hats lazy, bass on top",
+      "swing_pct": 0.54,
+      "jitter_ticks": 4,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 10,0,0,0, 0,0,0,0, 12,0,0,0],
+        "hat_closed": [0,16,0,16, 0,16,0,16, 0,16,0,16, 0,16,0,16],
+        "hat_open":   [0,0,0,12, 0,0,0,12],
+        "ride":       null,
+        "perc":       null,
+        "bass":       [-4,0,0,0, -4,0,0,0, -4,0,0,0, -4,0,0,0],
+        "comp":       [2,0,0,0, 2,0,0,0, 2,0,0,0, 2,0,0,0],
+        "lead":       null
+      }
+    },
+    {
+      "id": "house_pocket",
+      "feel": "hat-open lifted, kick rock-solid, slight clap-late",
+      "swing_pct": 0.51,
+      "jitter_ticks": 2,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 4,0,0,0, 0,0,0,0, 4,0,0,0],
+        "hat_closed": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_open":   [0,-6,0,-6, 0,-6,0,-6],
+        "ride":       null,
+        "perc":       null,
+        "bass":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "comp":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "lead":       null
+      }
+    },
+    {
+      "id": "techno_push",
+      "feel": "hats push ahead of grid, kick on grid",
+      "swing_pct": 0.50,
+      "jitter_ticks": 1,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_closed": [0,-4,0,-4, 0,-4,0,-4, 0,-4,0,-4, 0,-4,0,-4],
+        "hat_open":   [0,-4,0,-4, 0,-4,0,-4],
+        "ride":       null,
+        "perc":       [0,-2,0,-2, 0,-2,0,-2, 0,-2,0,-2, 0,-2,0,-2],
+        "bass":       [-3,0,-3,0, -3,0,-3,0, -3,0,-3,0, -3,0,-3,0],
+        "comp":       null,
+        "lead":       null
+      }
+    },
+    {
+      "id": "trap_triplet_hat",
+      "feel": "hats roll in 1/12, kick on 1/16",
+      "swing_pct": 0.50,
+      "jitter_ticks": 2,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_closed": [0,-40,40,0, 0,-40,40,0, 0,-40,40,0, 0,-40,40,0],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       null,
+        "perc":       null,
+        "bass":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "comp":       null,
+        "lead":       null
+      }
+    },
+    {
+      "id": "boom_bap_60",
+      "feel": "MPC60-ish, kick early, snare late",
+      "swing_pct": 0.56,
+      "jitter_ticks": 5,
+      "offsets": {
+        "kick":       [-6,0,0,0, 0,0,0,0, -4,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 12,0,0,0, 0,0,0,0, 14,0,0,0],
+        "hat_closed": [0,22,0,22, 0,22,0,22, 0,22,0,22, 0,22,0,22],
+        "hat_open":   [0,0,0,12, 0,0,0,12],
+        "ride":       null,
+        "perc":       null,
+        "bass":       [2,0,0,0, 2,0,0,0, 2,0,0,0, 2,0,0,0],
+        "comp":       null,
+        "lead":       null
+      }
+    },
+    {
+      "id": "amapiano_pocket",
+      "feel": "slow shuffle 16ths, log-drum lead",
+      "swing_pct": 0.55,
+      "jitter_ticks": 3,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_closed": [0,18,0,18, 0,18,0,18, 0,18,0,18, 0,18,0,18],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       null,
+        "perc":       [0,18,0,18, 0,18,0,18, 0,18,0,18, 0,18,0,18],
+        "bass":       [-2,0,0,0, -2,0,0,0, -2,0,0,0, -2,0,0,0],
+        "comp":       [0,18,0,18, 0,18,0,18, 0,18,0,18, 0,18,0,18],
+        "lead":       null
+      }
+    },
+    {
+      "id": "gospel_12_8",
+      "feel": "12/8 triplet shuffle",
+      "swing_pct": 0.00,
+      "jitter_ticks": 4,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_closed": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       [0,8,0,0, 8,0,0,8, 0,0,8,0],
+        "perc":       null,
+        "bass":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "comp":       [4,0,0,4, 0,0,4,0, 0,4,0,0],
+        "lead":       null
+      }
+    },
+    {
+      "id": "dembow_pocket",
+      "feel": "kick-snare-kick-snare reggaeton stencil",
+      "swing_pct": 0.50,
+      "jitter_ticks": 2,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,6, 0,0,0,0, 6,0,0,6, 0,0,0,0],
+        "hat_closed": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       null,
+        "perc":       [0,0,4,0, 0,0,4,0, 0,0,4,0, 0,0,4,0],
+        "bass":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "comp":       null,
+        "lead":       null
+      }
+    },
+    {
+      "id": "dnb_amen_lean",
+      "feel": "snare-on-the-and shuffle, kick on grid",
+      "swing_pct": 0.52,
+      "jitter_ticks": 2,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 6,0,0,0, 0,0,6,0, 4,0,0,0],
+        "hat_closed": [0,8,0,8, 0,8,0,8, 0,8,0,8, 0,8,0,8],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       null,
+        "perc":       null,
+        "bass":       [0,0,4,0, 0,0,0,0, 0,4,0,0, 0,0,0,0],
+        "comp":       null,
+        "lead":       null
+      }
+    },
+    {
+      "id": "synthwave_tight",
+      "feel": "machine tight, slight gated-snare delay",
+      "swing_pct": 0.50,
+      "jitter_ticks": 1,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 2,0,0,0, 0,0,0,0, 2,0,0,0],
+        "hat_closed": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       null,
+        "perc":       null,
+        "bass":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "comp":       null,
+        "lead":       null
+      }
+    },
+    {
+      "id": "ambient_drift",
+      "feel": "no drums; bass and comp drift slightly behind grid",
+      "swing_pct": 0.00,
+      "jitter_ticks": 12,
+      "offsets": {
+        "kick":       null,
+        "snare":      null,
+        "hat_closed": null,
+        "hat_open":   null,
+        "ride":       null,
+        "perc":       null,
+        "bass":       [8,0,0,0, 8,0,0,0, 8,0,0,0, 8,0,0,0],
+        "comp":       [12,0,0,0, 12,0,0,0, 12,0,0,0, 12,0,0,0],
+        "lead":       null
+      }
+    },
+    {
+      "id": "latin_clave_pocket",
+      "feel": "tight 4/4 with subtle clave-aware kick lift",
+      "swing_pct": 0.50,
+      "jitter_ticks": 2,
+      "offsets": {
+        "kick":       [0,0,0,-2, 0,0,-2,0, 0,0,0,0, -2,0,0,0],
+        "snare":      [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_closed": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       null,
+        "perc":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "bass":       [-2,0,0,-2, 0,0,-2,0, 0,0,0,0, -2,0,0,0],
+        "comp":       null,
+        "lead":       null
+      }
+    },
+    {
+      "id": "deterministic_humanize_only",
+      "feel": "zero-offset baseline with audible jitter (J=8 ticks); reserved for moods that want 'live' feel without a named groove",
+      "swing_pct": 0.00,
+      "jitter_ticks": 8,
+      "offsets": {
+        "kick":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "snare":      [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_closed": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "hat_open":   [0,0,0,0, 0,0,0,0],
+        "ride":       [0,0,0,0, 0,0,0,0],
+        "perc":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "bass":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "comp":       [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        "lead":       null
+      }
+    }
+  ],
+  "half_time_flag": {
+    "field": "half_time",
+    "type": "bool",
+    "owner": "this dim (#02), consumed by #05 drums",
+    "bpm_gate": 130,
+    "comment": "If half_time=true and tempo>=130, dim #05 MUST move snare from cells [4,12] to cell [8] only; kick spacing is unchanged in cells but felt-tempo halves. hat_closed and perc layers are NOT affected. Bass MAY follow the half-time accent (decided by dim #06).",
+    "affected_layers": ["kick", "snare"],
+    "unaffected_layers": ["hat_closed", "hat_open", "ride", "perc", "comp", "lead", "bass_optional"],
+    "handoff_dim_05": "SongSpec.groove.half_time → drum-pattern selector substitutes the half-time variant from drum_patterns/<kit>.json"
+  }
+}

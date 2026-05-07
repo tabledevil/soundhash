@@ -1,0 +1,174 @@
+{
+  "version": "soundhash/v1/harmony/resolution_rules",
+  "rules": [
+    {
+      "id": "v7_to_i_major",
+      "from_quality": "dom7",
+      "to_quality": "maj",
+      "context": "V7 -> I (major key)",
+      "rules": [
+        {"voice": "leading_tone", "resolves_to": "tonic", "direction": "up_h"},
+        {"voice": "chord_7th", "resolves_to": "chord_3rd", "direction": "down_h"},
+        {"voice": "chord_5th", "resolves_to": "tonic", "direction": "down_w"},
+        {"voice": "root", "resolves_to": "tonic", "direction": "down_p5"}
+      ]
+    },
+    {
+      "id": "v7_to_i_minor",
+      "from_quality": "dom7",
+      "to_quality": "min",
+      "context": "V7 -> i (minor key, harmonic)",
+      "rules": [
+        {"voice": "leading_tone", "resolves_to": "tonic", "direction": "up_h"},
+        {"voice": "chord_7th", "resolves_to": "chord_3rd", "direction": "down_h"},
+        {"voice": "chord_5th", "resolves_to": "tonic", "direction": "down_w"}
+      ]
+    },
+    {
+      "id": "v7_to_vi_deceptive",
+      "from_quality": "dom7",
+      "to_quality": "min",
+      "context": "V7 -> vi (deceptive, major key)",
+      "rules": [
+        {"voice": "leading_tone", "resolves_to": "tonic", "direction": "up_h"},
+        {"voice": "chord_7th", "resolves_to": "chord_3rd_of_vi", "direction": "down_h"},
+        {"voice": "root", "resolves_to": "vi_3rd", "direction": "down_w"},
+        {"voice": "chord_5th", "resolves_to": "vi_5th", "direction": "down_w"}
+      ]
+    },
+    {
+      "id": "secondary_v7_of_x",
+      "from_quality": "dom7",
+      "to_quality": "any",
+      "context": "V7/x -> x (any tonicized target)",
+      "rules": [
+        {"voice": "leading_tone_of_x", "resolves_to": "x_root", "direction": "up_h"},
+        {"voice": "chord_7th", "resolves_to": "x_3rd", "direction": "down_h"},
+        {"voice": "chord_5th", "resolves_to": "x_root", "direction": "down_w"}
+      ]
+    },
+    {
+      "id": "tritone_sub_bII7_to_I",
+      "from_quality": "dom7",
+      "to_quality": "maj",
+      "context": "bII7 -> I (tritone sub)",
+      "rules": [
+        {"voice": "chord_3rd", "resolves_to": "tonic", "direction": "down_h"},
+        {"voice": "chord_7th", "resolves_to": "chord_3rd", "direction": "down_h"},
+        {"voice": "root", "resolves_to": "tonic", "direction": "down_h"}
+      ]
+    },
+    {
+      "id": "iv_to_i_plagal",
+      "from_quality": "maj",
+      "to_quality": "maj",
+      "context": "IV -> I (plagal)",
+      "rules": [
+        {"voice": "chord_root", "resolves_to": "chord_5th", "direction": "down_p4"},
+        {"voice": "chord_3rd", "resolves_to": "chord_3rd", "direction": "common_tone"},
+        {"voice": "chord_5th", "resolves_to": "tonic", "direction": "down_h"}
+      ]
+    },
+    {
+      "id": "iv_minor_to_I_mixture",
+      "from_quality": "min",
+      "to_quality": "maj",
+      "context": "iv -> I (minor plagal mixture)",
+      "rules": [
+        {"voice": "b6_scale_degree", "resolves_to": "5_scale_degree", "direction": "down_h"},
+        {"voice": "chord_root", "resolves_to": "tonic", "direction": "down_p4"},
+        {"voice": "chord_3rd", "resolves_to": "tonic", "direction": "down_w"}
+      ]
+    },
+    {
+      "id": "bvi_to_v",
+      "from_quality": "maj",
+      "to_quality": "maj",
+      "context": "bVI -> V (deceptive cadence prep / phrygian-style)",
+      "rules": [
+        {"voice": "chord_root", "resolves_to": "v_root", "direction": "down_h"},
+        {"voice": "chord_3rd", "resolves_to": "v_5th", "direction": "down_w"},
+        {"voice": "chord_5th", "resolves_to": "v_root", "direction": "down_h"}
+      ]
+    },
+    {
+      "id": "ii7_v7_i",
+      "from_quality": "m7",
+      "to_quality": "dom7",
+      "context": "ii7 -> V7 (inside ii-V-I)",
+      "rules": [
+        {"voice": "chord_7th", "resolves_to": "v_3rd", "direction": "down_h"},
+        {"voice": "chord_3rd", "resolves_to": "v_7th", "direction": "down_h"},
+        {"voice": "chord_root", "resolves_to": "v_root", "direction": "down_p5"}
+      ]
+    },
+    {
+      "id": "vii_dim7_to_i",
+      "from_quality": "dim7",
+      "to_quality": "min",
+      "context": "vii°7 -> i",
+      "rules": [
+        {"voice": "leading_tone", "resolves_to": "tonic", "direction": "up_h"},
+        {"voice": "chord_b3", "resolves_to": "tonic", "direction": "down_w"},
+        {"voice": "chord_b5", "resolves_to": "chord_3rd_of_i", "direction": "down_h"},
+        {"voice": "chord_bb7", "resolves_to": "chord_5th_of_i", "direction": "down_h"}
+      ]
+    },
+    {
+      "id": "vii_half_dim_to_i",
+      "from_quality": "min7b5",
+      "to_quality": "min",
+      "context": "vii-half-diminished -> i",
+      "rules": [
+        {"voice": "leading_tone", "resolves_to": "tonic", "direction": "up_h"},
+        {"voice": "chord_b5", "resolves_to": "chord_3rd_of_i", "direction": "down_h"},
+        {"voice": "chord_b7", "resolves_to": "chord_5th_of_i", "direction": "down_w"}
+      ]
+    },
+    {
+      "id": "neapolitan_bii_to_v7",
+      "from_quality": "maj",
+      "to_quality": "dom7",
+      "context": "bII6 -> V7 (Neapolitan)",
+      "rules": [
+        {"voice": "b2_scale_degree", "resolves_to": "leading_tone", "direction": "down_d3"},
+        {"voice": "chord_3rd", "resolves_to": "v_3rd_or_5th", "direction": "common_or_step"},
+        {"voice": "chord_5th", "resolves_to": "v_root", "direction": "down_h"}
+      ]
+    },
+    {
+      "id": "phrygian_bii_to_i",
+      "from_quality": "maj",
+      "to_quality": "min",
+      "context": "bII -> i (phrygian half-step cadence)",
+      "rules": [
+        {"voice": "b2_scale_degree", "resolves_to": "tonic", "direction": "down_h"},
+        {"voice": "chord_3rd", "resolves_to": "tonic", "direction": "down_w"},
+        {"voice": "chord_5th", "resolves_to": "chord_b3_of_i", "direction": "down_h"}
+      ]
+    },
+    {
+      "id": "modal_bvii_to_i",
+      "from_quality": "maj",
+      "to_quality": "min",
+      "context": "bVII -> i (modal mixolydian/aeolian cadence)",
+      "rules": [
+        {"voice": "chord_root", "resolves_to": "tonic", "direction": "up_w"},
+        {"voice": "chord_3rd", "resolves_to": "chord_5th_of_i", "direction": "common_or_up_h"},
+        {"voice": "chord_5th", "resolves_to": "chord_b3_of_i", "direction": "up_h"}
+      ]
+    },
+    {
+      "id": "ii_v7_alt_to_i",
+      "from_quality": "dom7",
+      "to_quality": "maj",
+      "context": "V7alt (b9/#9/#11/b13) -> Imaj7",
+      "rules": [
+        {"voice": "chord_3rd_leading_tone", "resolves_to": "tonic", "direction": "up_h"},
+        {"voice": "chord_7th", "resolves_to": "chord_3rd", "direction": "down_h"},
+        {"voice": "b13", "resolves_to": "chord_5th", "direction": "down_h"},
+        {"voice": "b9_or_sharp9", "resolves_to": "tonic", "direction": "down_h"}
+      ]
+    }
+  ]
+}

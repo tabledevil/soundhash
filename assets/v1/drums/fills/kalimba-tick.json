@@ -1,0 +1,156 @@
+{
+  "version": "soundhash/v1/drums/fills/kalimba-tick",
+  "kit": "kalimba-tick",
+  "fills": [
+    {
+      "id": "kl-arp-ramp-d1d3",
+      "kit": "kalimba-tick",
+      "current_density": 1,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 1,
+            "v": 74
+          },
+          {
+            "s": 2,
+            "v": 78
+          },
+          {
+            "s": 3,
+            "v": 82
+          },
+          {
+            "s": 4,
+            "v": 86
+          },
+          {
+            "s": 5,
+            "v": 90
+          },
+          {
+            "s": 6,
+            "v": 94
+          },
+          {
+            "s": 7,
+            "v": 98
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "kl-bell-flurry-d2d3",
+      "kit": "kalimba-tick",
+      "current_density": 2,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 2,
+            "v": 80
+          },
+          {
+            "s": 4,
+            "v": 92
+          },
+          {
+            "s": 6,
+            "v": 100
+          }
+        ],
+        "perc_2": [
+          {
+            "s": 1,
+            "v": 64
+          },
+          {
+            "s": 3,
+            "v": 68
+          },
+          {
+            "s": 5,
+            "v": 72
+          },
+          {
+            "s": 7,
+            "v": 78
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "kl-roll-d2d4",
+      "kit": "kalimba-tick",
+      "current_density": 2,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 78
+          },
+          {
+            "s": 1,
+            "v": 80
+          },
+          {
+            "s": 2,
+            "v": 82
+          },
+          {
+            "s": 3,
+            "v": 84
+          },
+          {
+            "s": 4,
+            "v": 86
+          },
+          {
+            "s": 5,
+            "v": 88
+          },
+          {
+            "s": 6,
+            "v": 90
+          },
+          {
+            "s": 7,
+            "v": 92
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "kl-deescalate-d4d2",
+      "kit": "kalimba-tick",
+      "current_density": 4,
+      "target_density": 2,
+      "span_steps": 4,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    }
+  ]
+}

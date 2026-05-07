@@ -1,0 +1,400 @@
+{
+  "version": "soundhash/v1/drums/patterns/latin-conga",
+  "kit": "latin-conga",
+  "patterns": [
+    {
+      "id": "lc-d0-tumbao-bed",
+      "kit": "latin-conga",
+      "density": 0,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 0,
+            "v": 60
+          },
+          {
+            "s": 8,
+            "v": 58
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "conga-texture"
+    },
+    {
+      "id": "lc-d1-conga-skel",
+      "kit": "latin-conga",
+      "density": 1,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 6,
+            "v": 96
+          },
+          {
+            "s": 14,
+            "v": 92
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 8,
+            "v": 80
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "conga-skel"
+    },
+    {
+      "id": "lc-d2-tumbao",
+      "kit": "latin-conga",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 6,
+            "v": 100
+          },
+          {
+            "s": 7,
+            "v": 88
+          },
+          {
+            "s": 14,
+            "v": 100
+          },
+          {
+            "s": 15,
+            "v": 88
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 4,
+            "v": 88
+          },
+          {
+            "s": 12,
+            "v": 88
+          }
+        ],
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 90
+          },
+          {
+            "s": 3,
+            "v": 88
+          },
+          {
+            "s": 6,
+            "v": 90
+          },
+          {
+            "s": 10,
+            "v": 88
+          },
+          {
+            "s": 12,
+            "v": 90
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "tumbao"
+    },
+    {
+      "id": "lc-d2-son-clave",
+      "kit": "latin-conga",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 102
+          },
+          {
+            "s": 3,
+            "v": 96
+          },
+          {
+            "s": 6,
+            "v": 100
+          },
+          {
+            "s": 10,
+            "v": 98
+          },
+          {
+            "s": 12,
+            "v": 96
+          }
+        ],
+        "tom_high": [
+          {
+            "s": 6,
+            "v": 92
+          },
+          {
+            "s": 14,
+            "v": 92
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 0,
+            "v": 78
+          },
+          {
+            "s": 8,
+            "v": 78
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "son-clave"
+    },
+    {
+      "id": "lc-d3-busy-conga",
+      "kit": "latin-conga",
+      "density": 3,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 2,
+            "v": 90
+          },
+          {
+            "s": 6,
+            "v": 100
+          },
+          {
+            "s": 7,
+            "v": 88
+          },
+          {
+            "s": 10,
+            "v": 92
+          },
+          {
+            "s": 14,
+            "v": 100
+          },
+          {
+            "s": 15,
+            "v": 88
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 4,
+            "v": 92
+          },
+          {
+            "s": 8,
+            "v": 80
+          },
+          {
+            "s": 12,
+            "v": 92
+          }
+        ],
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 2,
+            "v": 80
+          },
+          {
+            "s": 4,
+            "v": 80
+          },
+          {
+            "s": 6,
+            "v": 80
+          },
+          {
+            "s": 8,
+            "v": 80
+          },
+          {
+            "s": 10,
+            "v": 80
+          },
+          {
+            "s": 12,
+            "v": 80
+          },
+          {
+            "s": 14,
+            "v": 80
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "conga-busy"
+    },
+    {
+      "id": "lc-d4-peak-mambo",
+      "kit": "latin-conga",
+      "density": 4,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 0,
+            "v": 90
+          },
+          {
+            "s": 2,
+            "v": 90
+          },
+          {
+            "s": 4,
+            "v": 90
+          },
+          {
+            "s": 6,
+            "v": 90
+          },
+          {
+            "s": 8,
+            "v": 90
+          },
+          {
+            "s": 10,
+            "v": 90
+          },
+          {
+            "s": 12,
+            "v": 90
+          },
+          {
+            "s": 14,
+            "v": 90
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 1,
+            "v": 86
+          },
+          {
+            "s": 3,
+            "v": 86
+          },
+          {
+            "s": 5,
+            "v": 86
+          },
+          {
+            "s": 7,
+            "v": 86
+          },
+          {
+            "s": 9,
+            "v": 86
+          },
+          {
+            "s": 11,
+            "v": 86
+          },
+          {
+            "s": 13,
+            "v": 86
+          },
+          {
+            "s": 15,
+            "v": 86
+          }
+        ],
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 102
+          },
+          {
+            "s": 3,
+            "v": 96
+          },
+          {
+            "s": 6,
+            "v": 100
+          },
+          {
+            "s": 10,
+            "v": 98
+          },
+          {
+            "s": 12,
+            "v": 96
+          }
+        ],
+        "tom_low": [
+          {
+            "s": 0,
+            "v": 110
+          },
+          {
+            "s": 8,
+            "v": 108
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "mambo-peak"
+    }
+  ]
+}

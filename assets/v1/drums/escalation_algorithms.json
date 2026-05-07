@@ -1,0 +1,363 @@
+{
+  "version": "soundhash/v1/drums/escalation_algorithms",
+  "comment": "Eight escalation + eight de-escalation algorithms. param_schema entries are type strings; concrete params are sampled per-bar via HKDF label 'perbar/drums/<i>'. bpm_clamp_max_subdiv enforces a humane top-end subdivision so 32nd-note hat ramps are not selected at 170 BPM.",
+  "escalation": [
+    {
+      "id": "linear_add",
+      "name": "Linear Add",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_closed",
+        "perc_1",
+        "perc_2"
+      ],
+      "param_schema": {
+        "add_per_bar": "int",
+        "max_steps": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "subdivision_double",
+      "name": "Subdivision Double",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_closed",
+        "hat_open"
+      ],
+      "param_schema": {
+        "start_subdiv": "int",
+        "end_subdiv": "int",
+        "ramp_bars": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "tom_rollup",
+      "name": "Tom Rollup",
+      "preserves_rows": [
+        "kick"
+      ],
+      "mutates_rows": [
+        "tom_high",
+        "tom_mid",
+        "tom_low",
+        "snare"
+      ],
+      "param_schema": {
+        "start_bar": "int",
+        "span_steps": "int",
+        "velocity_curve": "str"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 16,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "snare_roll_crescendo",
+      "name": "Snare Roll Crescendo",
+      "preserves_rows": [
+        "kick"
+      ],
+      "mutates_rows": [
+        "snare",
+        "ghost_snare"
+      ],
+      "param_schema": {
+        "start_velocity": "int",
+        "end_velocity": "int",
+        "subdiv": "int",
+        "span_steps": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 16
+      }
+    },
+    {
+      "id": "hat_density_ramp",
+      "name": "Hat Density Ramp",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_closed",
+        "hat_open"
+      ],
+      "param_schema": {
+        "start_density": "int",
+        "end_density": "int",
+        "ramp_bars": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "reverse_cymbal_sweep",
+      "name": "Reverse Cymbal Sweep",
+      "preserves_rows": [
+        "kick",
+        "snare",
+        "hat_closed"
+      ],
+      "mutates_rows": [
+        "crash",
+        "hat_open",
+        "ride"
+      ],
+      "param_schema": {
+        "sweep_bars": "int",
+        "peak_velocity": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 16,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "ghost_note_stack",
+      "name": "Ghost Note Stack",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "ghost_snare",
+        "perc_1"
+      ],
+      "param_schema": {
+        "adds_per_bar": "int",
+        "velocity_min": "int",
+        "velocity_max": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 16
+      }
+    },
+    {
+      "id": "polyrhythm_overlay",
+      "name": "Polyrhythm Overlay",
+      "preserves_rows": [
+        "kick",
+        "snare",
+        "hat_closed"
+      ],
+      "mutates_rows": [
+        "perc_1",
+        "perc_2",
+        "tom_high"
+      ],
+      "param_schema": {
+        "poly_ratio": "str",
+        "voice": "str",
+        "intensity": "float"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 16,
+        "111-140": 16,
+        ">140": 8
+      }
+    }
+  ],
+  "deescalation": [
+    {
+      "id": "linear_strip",
+      "name": "Linear Strip",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_closed",
+        "perc_1",
+        "perc_2"
+      ],
+      "param_schema": {
+        "strip_per_bar": "int",
+        "min_steps": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "subdivision_halve",
+      "name": "Subdivision Halve",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_closed",
+        "hat_open"
+      ],
+      "param_schema": {
+        "start_subdiv": "int",
+        "end_subdiv": "int",
+        "ramp_bars": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "drop_layer",
+      "name": "Drop Layer",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_open",
+        "ride",
+        "perc_1",
+        "perc_2"
+      ],
+      "param_schema": {
+        "layers_to_drop": "list",
+        "drop_bar": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 16,
+        "111-140": 16,
+        ">140": 16
+      }
+    },
+    {
+      "id": "kick_only_breakdown",
+      "name": "Kick-Only Breakdown",
+      "preserves_rows": [
+        "kick"
+      ],
+      "mutates_rows": [
+        "snare",
+        "hat_closed",
+        "hat_open",
+        "ride",
+        "perc_1",
+        "perc_2"
+      ],
+      "param_schema": {
+        "breakdown_bars": "int",
+        "kick_subdiv": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 16,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "snare_silence_skel",
+      "name": "Snare Silence Skeleton",
+      "preserves_rows": [
+        "kick",
+        "hat_closed"
+      ],
+      "mutates_rows": [
+        "snare",
+        "ghost_snare"
+      ],
+      "param_schema": {
+        "silence_bars": "int",
+        "ghost_only": "bool"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 16
+      }
+    },
+    {
+      "id": "hat_thinning",
+      "name": "Hat Thinning",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_closed",
+        "hat_open"
+      ],
+      "param_schema": {
+        "start_density": "int",
+        "end_density": "int",
+        "ramp_bars": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 8
+      }
+    },
+    {
+      "id": "ghost_decay",
+      "name": "Ghost Decay",
+      "preserves_rows": [
+        "kick",
+        "snare",
+        "hat_closed"
+      ],
+      "mutates_rows": [
+        "ghost_snare"
+      ],
+      "param_schema": {
+        "decay_bars": "int",
+        "min_velocity": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 32,
+        "111-140": 16,
+        ">140": 16
+      }
+    },
+    {
+      "id": "swap_to_ride",
+      "name": "Swap To Ride",
+      "preserves_rows": [
+        "kick",
+        "snare"
+      ],
+      "mutates_rows": [
+        "hat_closed",
+        "ride"
+      ],
+      "param_schema": {
+        "crossfade_bars": "int"
+      },
+      "bpm_clamp_max_subdiv": {
+        "<=110": 16,
+        "111-140": 16,
+        ">140": 8
+      }
+    }
+  ]
+}

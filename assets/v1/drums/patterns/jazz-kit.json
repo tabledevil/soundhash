@@ -1,0 +1,390 @@
+{
+  "version": "soundhash/v1/drums/patterns/jazz-kit",
+  "kit": "jazz-kit",
+  "patterns": [
+    {
+      "id": "jz-d0-ride-only",
+      "kit": "jazz-kit",
+      "density": 0,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "ride": [
+          {
+            "s": 0,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 68
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4",
+        "12/8"
+      ],
+      "style_tag": "jazz-texture"
+    },
+    {
+      "id": "jz-d1-ride-skel",
+      "kit": "jazz-kit",
+      "density": 1,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "ride": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 4,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 80
+          },
+          {
+            "s": 12,
+            "v": 70
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 4,
+            "v": 60
+          },
+          {
+            "s": 12,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": true,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "swing-skel"
+    },
+    {
+      "id": "jz-d2-swing-ride",
+      "kit": "jazz-kit",
+      "density": 2,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 78
+          },
+          {
+            "s": 8,
+            "v": 76
+          }
+        ],
+        "snare": [
+          {
+            "s": 4,
+            "v": 60
+          },
+          {
+            "s": 12,
+            "v": 60
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 3,
+            "v": 64
+          },
+          {
+            "s": 4,
+            "v": 80
+          },
+          {
+            "s": 8,
+            "v": 88
+          },
+          {
+            "s": 11,
+            "v": 64
+          },
+          {
+            "s": 12,
+            "v": 80
+          }
+        ],
+        "hat_closed": [
+          {
+            "s": 4,
+            "v": 60
+          },
+          {
+            "s": 12,
+            "v": 60
+          }
+        ]
+      },
+      "ghost_snare": [
+        {
+          "s": 2,
+          "v": 30
+        },
+        {
+          "s": 6,
+          "v": 32
+        },
+        {
+          "s": 14,
+          "v": 30
+        }
+      ],
+      "assumes_swing": true,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "shuffle"
+    },
+    {
+      "id": "jz-d2-12-8-jazz-waltz",
+      "kit": "jazz-kit",
+      "density": 2,
+      "bars": 1,
+      "steps": 12,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 86
+          }
+        ],
+        "snare": [
+          {
+            "s": 6,
+            "v": 80
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 86
+          },
+          {
+            "s": 4,
+            "v": 70
+          },
+          {
+            "s": 6,
+            "v": 84
+          },
+          {
+            "s": 8,
+            "v": 70
+          },
+          {
+            "s": 10,
+            "v": 76
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "12/8",
+        "6/8"
+      ],
+      "style_tag": "bembe-12-8"
+    },
+    {
+      "id": "jz-d3-trade-fours",
+      "kit": "jazz-kit",
+      "density": 3,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 6,
+            "v": 76
+          },
+          {
+            "s": 10,
+            "v": 80
+          }
+        ],
+        "snare": [
+          {
+            "s": 2,
+            "v": 60
+          },
+          {
+            "s": 4,
+            "v": 92
+          },
+          {
+            "s": 11,
+            "v": 60
+          },
+          {
+            "s": 12,
+            "v": 92
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 92
+          },
+          {
+            "s": 3,
+            "v": 68
+          },
+          {
+            "s": 4,
+            "v": 86
+          },
+          {
+            "s": 6,
+            "v": 70
+          },
+          {
+            "s": 8,
+            "v": 92
+          },
+          {
+            "s": 11,
+            "v": 68
+          },
+          {
+            "s": 12,
+            "v": 86
+          },
+          {
+            "s": 14,
+            "v": 70
+          }
+        ]
+      },
+      "ghost_snare": [
+        {
+          "s": 7,
+          "v": 36
+        },
+        {
+          "s": 9,
+          "v": 34
+        }
+      ],
+      "assumes_swing": true,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "swing-busy"
+    },
+    {
+      "id": "jz-d4-peak-trade",
+      "kit": "jazz-kit",
+      "density": 4,
+      "bars": 1,
+      "steps": 16,
+      "rows": {
+        "kick": [
+          {
+            "s": 0,
+            "v": 100
+          },
+          {
+            "s": 4,
+            "v": 84
+          },
+          {
+            "s": 8,
+            "v": 96
+          },
+          {
+            "s": 12,
+            "v": 84
+          }
+        ],
+        "snare": [
+          {
+            "s": 2,
+            "v": 92
+          },
+          {
+            "s": 6,
+            "v": 96
+          },
+          {
+            "s": 10,
+            "v": 94
+          },
+          {
+            "s": 14,
+            "v": 100
+          }
+        ],
+        "ride": [
+          {
+            "s": 0,
+            "v": 88
+          },
+          {
+            "s": 2,
+            "v": 88
+          },
+          {
+            "s": 4,
+            "v": 88
+          },
+          {
+            "s": 6,
+            "v": 88
+          },
+          {
+            "s": 8,
+            "v": 88
+          },
+          {
+            "s": 10,
+            "v": 88
+          },
+          {
+            "s": 12,
+            "v": 88
+          },
+          {
+            "s": 14,
+            "v": 88
+          }
+        ],
+        "crash": [
+          {
+            "s": 0,
+            "v": 116
+          }
+        ]
+      },
+      "ghost_snare": [],
+      "assumes_swing": false,
+      "valid_time_sigs": [
+        "4/4"
+      ],
+      "style_tag": "swing-peak"
+    }
+  ]
+}

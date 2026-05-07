@@ -1,0 +1,100 @@
+{
+  "version": "soundhash/v1/mime_families",
+  "description": "Deterministic MIME -> family taxonomy. Lookup is exact-match on canonical MIME first, then prefix rules in declared order, then extension fallback, then 'unknown'.",
+  "families": [
+    {
+      "id": 0,
+      "slug": "text-code",
+      "name": "Text / Source code",
+      "exact": ["text/x-python", "text/x-c", "text/x-c++", "text/x-java", "text/x-shellscript", "text/javascript", "application/javascript", "application/json", "application/xml", "text/x-rust", "text/x-go", "application/typescript", "text/x-ruby"],
+      "prefix": ["text/x-"],
+      "ext": [".py", ".c", ".cpp", ".h", ".hpp", ".js", ".ts", ".tsx", ".jsx", ".rs", ".go", ".rb", ".java", ".kt", ".swift", ".sh", ".zsh", ".bash", ".lua", ".pl", ".php", ".json", ".xml", ".yaml", ".yml", ".toml"]
+    },
+    {
+      "id": 1,
+      "slug": "image",
+      "name": "Image",
+      "prefix": ["image/"],
+      "ext": [".png", ".jpg", ".jpeg", ".gif", ".webp", ".tiff", ".bmp", ".heic", ".avif", ".svg", ".ico"]
+    },
+    {
+      "id": 2,
+      "slug": "audio",
+      "name": "Audio",
+      "prefix": ["audio/"],
+      "ext": [".mp3", ".wav", ".flac", ".ogg", ".m4a", ".aac", ".opus", ".aiff", ".wma", ".mid", ".midi"]
+    },
+    {
+      "id": 3,
+      "slug": "video",
+      "name": "Video",
+      "prefix": ["video/"],
+      "ext": [".mp4", ".mov", ".mkv", ".avi", ".webm", ".m4v", ".flv", ".wmv"]
+    },
+    {
+      "id": 4,
+      "slug": "archive",
+      "name": "Archive / Compressed",
+      "exact": ["application/zip", "application/x-tar", "application/gzip", "application/x-7z-compressed", "application/x-bzip2", "application/x-xz", "application/x-rar-compressed", "application/x-rar", "application/vnd.rar", "application/zstd"],
+      "ext": [".zip", ".tar", ".gz", ".tgz", ".bz2", ".7z", ".xz", ".rar", ".zst"]
+    },
+    {
+      "id": 5,
+      "slug": "document-pdf",
+      "name": "Document / PDF / Word-processing",
+      "exact": ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.oasis.opendocument.text", "application/rtf", "text/markdown", "text/plain"],
+      "ext": [".pdf", ".doc", ".docx", ".odt", ".rtf", ".md", ".txt", ".epub"]
+    },
+    {
+      "id": 6,
+      "slug": "spreadsheet",
+      "name": "Spreadsheet / Tabular / Data",
+      "exact": ["text/csv", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.oasis.opendocument.spreadsheet", "application/vnd.apache.parquet", "application/x-parquet", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+      "ext": [".csv", ".tsv", ".xls", ".xlsx", ".ods", ".parquet", ".feather", ".ppt", ".pptx", ".key"]
+    },
+    {
+      "id": 7,
+      "slug": "executable",
+      "name": "Executable / Binary code",
+      "exact": ["application/x-executable", "application/x-mach-binary", "application/x-sharedlib", "application/x-pie-executable", "application/x-msdownload", "application/vnd.microsoft.portable-executable", "application/wasm", "application/java-archive"],
+      "ext": [".exe", ".dll", ".so", ".dylib", ".elf", ".bin", ".wasm", ".jar", ".class", ".o", ".a"]
+    },
+    {
+      "id": 8,
+      "slug": "font",
+      "name": "Font",
+      "prefix": ["font/"],
+      "exact": ["application/font-woff", "application/font-woff2", "application/x-font-ttf", "application/vnd.ms-fontobject"],
+      "ext": [".ttf", ".otf", ".woff", ".woff2", ".eot"]
+    },
+    {
+      "id": 9,
+      "slug": "model-3d",
+      "name": "3D / model / CAD",
+      "prefix": ["model/"],
+      "exact": ["application/sla", "application/x-tgif"],
+      "ext": [".stl", ".obj", ".fbx", ".gltf", ".glb", ".dae", ".3ds", ".blend", ".usd", ".usdz", ".step", ".stp"]
+    },
+    {
+      "id": 10,
+      "slug": "web-asset",
+      "name": "Web asset (HTML/CSS)",
+      "exact": ["text/html", "text/css", "application/xhtml+xml", "image/svg+xml", "application/manifest+json"],
+      "ext": [".html", ".htm", ".css", ".scss", ".less", ".webmanifest"]
+    },
+    {
+      "id": 11,
+      "slug": "database",
+      "name": "Database / store",
+      "exact": ["application/vnd.sqlite3", "application/x-sqlite3", "application/x-berkeley-db"],
+      "ext": [".sqlite", ".sqlite3", ".db", ".mdb", ".accdb", ".ndb", ".rdb", ".leveldb"]
+    },
+    {
+      "id": 12,
+      "slug": "unknown",
+      "name": "Unknown / octet-stream",
+      "exact": ["application/octet-stream"],
+      "default": true
+    }
+  ]
+}

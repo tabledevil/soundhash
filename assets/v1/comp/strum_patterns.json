@@ -1,0 +1,178 @@
+{
+  "version": "soundhash/v1/comp/strum_patterns",
+  "patterns": [
+    {
+      "id": "folk_dduudu",
+      "name": "Folk D-D-U-U-D-U",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 1.00},
+        {"step": 4, "dir": "D", "vel_factor": 0.90},
+        {"step": 6, "dir": "U", "vel_factor": 0.70},
+        {"step": 8, "dir": "U", "vel_factor": 0.65},
+        {"step": 10, "dir": "D", "vel_factor": 0.85},
+        {"step": 12, "dir": "U", "vel_factor": 0.70}
+      ],
+      "inter_string_spread_ms": 18,
+      "palm_mute": false,
+      "mood_tags": ["M0", "M1"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "country_boom_chick",
+      "name": "Country boom-chick",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 1.00},
+        {"step": 4, "dir": "D", "vel_factor": 0.80},
+        {"step": 8, "dir": "D", "vel_factor": 0.95},
+        {"step": 12, "dir": "D", "vel_factor": 0.80}
+      ],
+      "inter_string_spread_ms": 14,
+      "palm_mute": false,
+      "mood_tags": ["M1", "M5"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "reggae_upstroke",
+      "name": "Reggae upstroke skank",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 2, "dir": "U", "vel_factor": 0.95},
+        {"step": 6, "dir": "U", "vel_factor": 0.90},
+        {"step": 10, "dir": "U", "vel_factor": 0.95},
+        {"step": 14, "dir": "U", "vel_factor": 0.90}
+      ],
+      "inter_string_spread_ms": 8,
+      "palm_mute": true,
+      "mood_tags": ["M2", "M4"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "funk_16th",
+      "name": "Funk 16th muted",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 1.00},
+        {"step": 1, "dir": "U", "vel_factor": 0.55},
+        {"step": 2, "dir": "D", "vel_factor": 0.60},
+        {"step": 3, "dir": "U", "vel_factor": 0.55},
+        {"step": 4, "dir": "D", "vel_factor": 0.85},
+        {"step": 5, "dir": "U", "vel_factor": 0.55},
+        {"step": 6, "dir": "D", "vel_factor": 0.60},
+        {"step": 7, "dir": "U", "vel_factor": 0.70},
+        {"step": 8, "dir": "D", "vel_factor": 0.95},
+        {"step": 9, "dir": "U", "vel_factor": 0.55},
+        {"step": 10, "dir": "D", "vel_factor": 0.60},
+        {"step": 11, "dir": "U", "vel_factor": 0.55},
+        {"step": 12, "dir": "D", "vel_factor": 0.85},
+        {"step": 13, "dir": "U", "vel_factor": 0.55},
+        {"step": 14, "dir": "D", "vel_factor": 0.60},
+        {"step": 15, "dir": "U", "vel_factor": 0.70}
+      ],
+      "inter_string_spread_ms": 6,
+      "palm_mute": true,
+      "mood_tags": ["M2", "M6"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "latin_rasgueado",
+      "name": "Latin rasgueado",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 1.00},
+        {"step": 2, "dir": "U", "vel_factor": 0.75},
+        {"step": 4, "dir": "D", "vel_factor": 0.90},
+        {"step": 7, "dir": "U", "vel_factor": 0.70},
+        {"step": 8, "dir": "D", "vel_factor": 0.95},
+        {"step": 10, "dir": "U", "vel_factor": 0.75},
+        {"step": 12, "dir": "D", "vel_factor": 0.90},
+        {"step": 14, "dir": "U", "vel_factor": 0.70}
+      ],
+      "inter_string_spread_ms": 22,
+      "palm_mute": false,
+      "mood_tags": ["M4", "M10"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "samba_bossa",
+      "name": "Samba/bossa nova",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 0.95},
+        {"step": 3, "dir": "U", "vel_factor": 0.70},
+        {"step": 6, "dir": "D", "vel_factor": 0.80},
+        {"step": 10, "dir": "U", "vel_factor": 0.75},
+        {"step": 13, "dir": "D", "vel_factor": 0.85}
+      ],
+      "inter_string_spread_ms": 10,
+      "palm_mute": false,
+      "mood_tags": ["M1", "M3", "M4"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "gospel_triplet",
+      "name": "Gospel 12/8 triplet",
+      "grid_steps": 12,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 1.00},
+        {"step": 2, "dir": "U", "vel_factor": 0.70},
+        {"step": 3, "dir": "D", "vel_factor": 0.85},
+        {"step": 5, "dir": "U", "vel_factor": 0.70},
+        {"step": 6, "dir": "D", "vel_factor": 0.95},
+        {"step": 8, "dir": "U", "vel_factor": 0.70},
+        {"step": 9, "dir": "D", "vel_factor": 0.85},
+        {"step": 11, "dir": "U", "vel_factor": 0.70}
+      ],
+      "inter_string_spread_ms": 16,
+      "palm_mute": false,
+      "mood_tags": ["M1", "M10"],
+      "time_sigs": ["12/8", "6/8"]
+    },
+    {
+      "id": "ballad_whole",
+      "name": "Ballad whole-note arpeggiated",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 0.85}
+      ],
+      "inter_string_spread_ms": 35,
+      "palm_mute": false,
+      "mood_tags": ["M0", "M1", "M10"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "flamenco_golpe",
+      "name": "Flamenco with golpe",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 0, "dir": "D", "vel_factor": 1.00},
+        {"step": 3, "dir": "U", "vel_factor": 0.75},
+        {"step": 4, "dir": "D", "vel_factor": 0.85},
+        {"step": 6, "dir": "U", "vel_factor": 0.70},
+        {"step": 8, "dir": "D", "vel_factor": 0.95},
+        {"step": 11, "dir": "U", "vel_factor": 0.75},
+        {"step": 12, "dir": "D", "vel_factor": 0.90}
+      ],
+      "inter_string_spread_ms": 20,
+      "palm_mute": false,
+      "mood_tags": ["M4", "M10"],
+      "time_sigs": ["4/4"]
+    },
+    {
+      "id": "ska_offbeat",
+      "name": "Ska offbeat 8ths",
+      "grid_steps": 16,
+      "strokes": [
+        {"step": 2, "dir": "U", "vel_factor": 0.95},
+        {"step": 6, "dir": "U", "vel_factor": 0.95},
+        {"step": 10, "dir": "U", "vel_factor": 0.95},
+        {"step": 14, "dir": "U", "vel_factor": 0.95}
+      ],
+      "inter_string_spread_ms": 6,
+      "palm_mute": true,
+      "mood_tags": ["M4", "M6"],
+      "time_sigs": ["4/4"]
+    }
+  ]
+}

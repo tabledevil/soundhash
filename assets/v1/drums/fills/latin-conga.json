@@ -1,0 +1,174 @@
+{
+  "version": "soundhash/v1/drums/fills/latin-conga",
+  "kit": "latin-conga",
+  "fills": [
+    {
+      "id": "lc-conga-roll-d2d4",
+      "kit": "latin-conga",
+      "current_density": 2,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 0,
+            "v": 80
+          },
+          {
+            "s": 1,
+            "v": 84
+          },
+          {
+            "s": 2,
+            "v": 88
+          },
+          {
+            "s": 3,
+            "v": 92
+          },
+          {
+            "s": 4,
+            "v": 96
+          },
+          {
+            "s": 5,
+            "v": 100
+          },
+          {
+            "s": 6,
+            "v": 104
+          },
+          {
+            "s": 7,
+            "v": 108
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "lc-mambo-bell-d1d3",
+      "kit": "latin-conga",
+      "current_density": 1,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 102
+          },
+          {
+            "s": 3,
+            "v": 96
+          },
+          {
+            "s": 6,
+            "v": 100
+          },
+          {
+            "s": 7,
+            "v": 108
+          }
+        ],
+        "tom_high": [
+          {
+            "s": 4,
+            "v": 96
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "lc-quinto-flurry-d2d3",
+      "kit": "latin-conga",
+      "current_density": 2,
+      "target_density": 3,
+      "span_steps": 8,
+      "rows": {
+        "tom_high": [
+          {
+            "s": 0,
+            "v": 92
+          },
+          {
+            "s": 1,
+            "v": 88
+          },
+          {
+            "s": 2,
+            "v": 96
+          },
+          {
+            "s": 4,
+            "v": 100
+          },
+          {
+            "s": 5,
+            "v": 92
+          },
+          {
+            "s": 7,
+            "v": 110
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    },
+    {
+      "id": "lc-mambo-cascade-d3d4",
+      "kit": "latin-conga",
+      "current_density": 3,
+      "target_density": 4,
+      "span_steps": 8,
+      "rows": {
+        "tom_low": [
+          {
+            "s": 7,
+            "v": 116
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 4,
+            "v": 100
+          }
+        ],
+        "tom_high": [
+          {
+            "s": 0,
+            "v": 96
+          },
+          {
+            "s": 2,
+            "v": 100
+          }
+        ]
+      },
+      "crash_at_next_down": true
+    },
+    {
+      "id": "lc-deescalate-d4d2",
+      "kit": "latin-conga",
+      "current_density": 4,
+      "target_density": 2,
+      "span_steps": 4,
+      "rows": {
+        "perc_1": [
+          {
+            "s": 0,
+            "v": 92
+          }
+        ],
+        "tom_mid": [
+          {
+            "s": 2,
+            "v": 80
+          }
+        ]
+      },
+      "crash_at_next_down": false
+    }
+  ]
+}

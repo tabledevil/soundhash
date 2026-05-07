@@ -1,0 +1,69 @@
+{
+  "version": "soundhash/v1/meter_accents",
+  "comment": "Meter-aware accent strengths per beat-cell. Cells subdivide the bar at 16th-note resolution for simple meters and 8th-note resolution for compound meters (the natural pulse units). Strength scale: 1.00=primary downbeat, 0.75=secondary, 0.50=tertiary, 0.25=weak, 0.10=ghost-cell. Dim #03 (form) and #05 (drums) MUST consult this when placing accent skeletons. Sum-of-strengths is intentionally NOT normalized — it is a perceptual weight, not a probability.",
+  "meters": {
+    "4/4": {
+      "cells": 16,
+      "subdivision": "1/16",
+      "beat_unit_cells": 4,
+      "accents": [1.00, 0.10, 0.25, 0.10,  0.50, 0.10, 0.25, 0.10,  0.75, 0.10, 0.25, 0.10,  0.50, 0.10, 0.25, 0.10],
+      "primary_beats": [0, 8],
+      "backbeats": [4, 12],
+      "natural_snare_cells": [4, 12]
+    },
+    "3/4": {
+      "cells": 12,
+      "subdivision": "1/16",
+      "beat_unit_cells": 4,
+      "accents": [1.00, 0.10, 0.25, 0.10,  0.75, 0.10, 0.25, 0.10,  0.50, 0.10, 0.25, 0.10],
+      "primary_beats": [0],
+      "backbeats": [4],
+      "natural_snare_cells": [4, 8]
+    },
+    "6/8": {
+      "cells": 6,
+      "subdivision": "1/8",
+      "beat_unit_cells": 3,
+      "groupings": [3, 3],
+      "accents": [1.00, 0.25, 0.50,  0.75, 0.25, 0.50],
+      "primary_beats": [0, 3],
+      "backbeats": [3],
+      "natural_snare_cells": [3]
+    },
+    "12/8": {
+      "cells": 12,
+      "subdivision": "1/8",
+      "beat_unit_cells": 3,
+      "groupings": [3, 3, 3, 3],
+      "accents": [1.00, 0.25, 0.50,  0.50, 0.25, 0.40,  0.75, 0.25, 0.50,  0.50, 0.25, 0.40],
+      "primary_beats": [0, 3, 6, 9],
+      "backbeats": [3, 9],
+      "natural_snare_cells": [3, 9]
+    },
+    "7/8_2+2+3": {
+      "cells": 7,
+      "subdivision": "1/8",
+      "beat_unit_cells": null,
+      "groupings": [2, 2, 3],
+      "accents": [1.00, 0.10,  0.50, 0.10,  0.75, 0.10, 0.25],
+      "primary_beats": [0],
+      "backbeats": [4],
+      "natural_snare_cells": [4]
+    },
+    "7/8_3+2+2": {
+      "cells": 7,
+      "subdivision": "1/8",
+      "beat_unit_cells": null,
+      "groupings": [3, 2, 2],
+      "accents": [1.00, 0.10, 0.25,  0.50, 0.10,  0.75, 0.10],
+      "primary_beats": [0],
+      "backbeats": [3, 5],
+      "natural_snare_cells": [5]
+    }
+  },
+  "handoff": {
+    "to_dim_03_form": "natural_snare_cells defines where energy-curve crests should preferentially land",
+    "to_dim_05_drums": "accents[i] multiplies kick/snare velocity baseline; ghost cells (0.10) gate ghost-snare placement",
+    "to_dim_08_melody": "primary_beats are the chord-tone slots; backbeats prefer color tones"
+  }
+}

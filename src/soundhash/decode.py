@@ -1,0 +1,420 @@
+"""Decode a SHA-256 (and optional MIME) into a SongSpec.
+
+Pure function. No I/O after table preload, no system clock, no system random.
+All entropy comes from HKDF-Expand of the input hash.
+
+Current scope: produces a fully populated macro SongSpec — mood, tempo, key,
+mode, progression resolved to per-bar chord roots and PC sets — for any input.
+The melody/bass/drum note generation lives downstream and is not yet wired.
+"""
+from __future__ import annotations
+
+import hashlib
+import hmac
+from typing import Optional
+
+from . import tables, theory
+from .spec import (
+    Bar,
+    LayerSpec,
+    Provenance,
+    RenderHints,
+    SongSpec,
+)
+
+
+# ---------------------------------------------------------------------------
+# HKDF (RFC 5869) over SHA-256
+# ---------------------------------------------------------------------------
+
+_SALT = b"soundhash-v1"
+
+
+def _hkdf_extract(salt: bytes, ikm: bytes) -> bytes:
+    return hmac.new(salt, ikm, hashlib.sha256).digest()
+
+
+def _hkdf_expand(prk: bytes, info: bytes, length: int) -> bytes:
+    out, t, counter = b"", b"", 1
+    while len(out) < length:
+        t = hmac.new(prk, t + info + bytes([counter]), hashlib.sha256).digest()
+        out += t
+        counter += 1
+    return out[:length]
+
+
+class HashStream:
+    """Domain-separated entropy stream derived from the input hash."""
+
+    __slots__ = ("_prk", "_version")
+
+    def __init__(self, prk: bytes, version: str = "v1"):
+        self._prk = prk
+        self._version = version
+
+    def take(self, label: str, n: int) -> bytes:
+        info = f"soundhash/{self._version}/{label}".encode("ascii")
+        return _hkdf_expand(self._prk, info, n)
+
+    def pick(self, label: str, table):
+        b = self.take(label, 1)[0]
+        return table[b % len(table)]
+
+
+# ---------------------------------------------------------------------------
+# Selection helpers — each one applies the constraint propagation principle
+# ---------------------------------------------------------------------------
+
+
+def _pick_mood(macro: bytes, mime_family: str | None) -> str:
+    """Byte 0 selects mood within a MIME-family-filtered candidate list.
+
+    With mime=None we expose all 11 moods.
+    """
+    f2m = tables.load("family_to_moods")
+    if mime_family and mime_family in f2m["mapping"]:
+        candidates = f2m["mapping"][mime_family]["candidates"]
+    else:
+        candidates = list(f2m["moods"].keys())
+    return candidates[macro[0] % len(candidates)]
+
+
+def _pick_tempo(byte: int, mood: str) -> float:
+    pools = tables.load("tempo_pools")["pools"]
+    pool = pools[mood]["bpm"]
+    base = pool[(byte & 0x07) % len(pool)]
+    # 5 high bits drive a ±0.5% nudge to retain entropy without changing perceived BPM.
+    nudge = ((byte >> 3) - 16) / 16.0 * 0.005      # in [-0.005, +0.00469]
+    return round(base * (1.0 + nudge), 3)
+
+
+def _pick_mode(byte: int, mood: str) -> str:
+    moods = tables.load("moods")["moods"]
+    mood_modes = moods[mood]["modes"]
+    return mood_modes[byte % len(mood_modes)]
+
+
+def _pick_form(byte: int, n_bars: int) -> dict:
+    forms = tables.load("forms")["forms"]
+    eligible = [f for f in forms if f.get("min_bars", 1) <= n_bars <= f.get("max_bars", 99)]
+    if not eligible:
+        eligible = forms
+    eligible.sort(key=lambda f: f.get("id", 0))
+    return eligible[byte % len(eligible)]
+
+
+def _pick_energy_curve(byte: int, form: dict) -> dict:
+    curves = tables.load("energy_curves")["curves"]
+    allowed_ids = form.get("allowed_curves") or [c["id"] for c in curves]
+    eligible = [c for c in curves if c.get("id") in allowed_ids] or curves
+    eligible.sort(key=lambda c: c.get("id", 0))
+    return eligible[byte % len(eligible)]
+
+
+def _sample_energy_curve(curve: dict, fraction: float) -> float:
+    """Linear interpolation over the curve's `points: [[fraction, energy], ...]`."""
+    pts = curve.get("points") or [[0.0, 0.5], [1.0, 0.5]]
+    if fraction <= pts[0][0]:
+        return float(pts[0][1])
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        if fraction <= x1:
+            if x1 == x0:
+                return float(y1)
+            t = (fraction - x0) / (x1 - x0)
+            return float(y0 + (y1 - y0) * t)
+    return float(pts[-1][1])
+
+
+def _pick_progression(byte: int, mood: str, mode: str) -> dict:
+    """Filter progression bank by mood-tag ∩ mode, then index."""
+    progs = tables.load("harmony/progressions")["progressions"]
+    eligible = [p for p in progs if mood in p.get("mood_tags", []) and p["mode"] == mode]
+    if not eligible:
+        # Fallback: relax mode constraint, keep mood.
+        eligible = [p for p in progs if mood in p.get("mood_tags", [])]
+    if not eligible:
+        # Last-resort fallback: any ionian progression.
+        eligible = [p for p in progs if p["mode"] == "ionian"]
+    eligible.sort(key=lambda p: p["id"])               # stable order
+    return eligible[byte % len(eligible)]
+
+
+def _filter_by_mood(items, mood):
+    return [x for x in items if mood in x.get("mood_tags", [])]
+
+
+def _pick_drum_kit(byte: int, mood: str) -> dict:
+    kits = tables.load("drums/drumkits")["kits"]
+    eligible = _filter_by_mood(kits, mood) or kits
+    eligible.sort(key=lambda k: k["id"])
+    return eligible[byte % len(eligible)]
+
+
+# ---------------------------------------------------------------------------
+# Mood-keyed GM program palettes (placeholder until synth_pool.json is wired).
+# Each tuple gives candidates for that role; byte % len picks one.
+# ---------------------------------------------------------------------------
+
+# (gm_program, name) — stick to widely-supported GM patches so MS Basic / GeneralUser cover them.
+_GM_PALETTE: dict[str, dict[str, tuple[int, ...]]] = {
+    "M0":  {"bass": (32,),               "comp": (88, 89, 91),       "lead": (54, 75, 73)},   # Ambient: pad-led, vocal/whistle
+    "M1":  {"bass": (32, 33),            "comp": (0, 4, 24),         "lead": (73, 71, 56)},   # Ballad: piano + flute/oboe
+    "M2":  {"bass": (33, 34, 36),        "comp": (4, 5, 11),         "lead": (80, 81, 28)},   # Hip-hop: EP + lead
+    "M3":  {"bass": (33, 36),            "comp": (4, 5, 88, 89),     "lead": (80, 73, 78)},   # Downtempo
+    "M4":  {"bass": (32, 35),            "comp": (24, 25, 32),       "lead": (56, 11, 24)},   # Latin: nylon + brass
+    "M5":  {"bass": (38, 39, 33),        "comp": (81, 89, 80),       "lead": (81, 80, 84)},   # Synthwave: synth bass + saw lead
+    "M6":  {"bass": (38, 39, 36),        "comp": (16, 17, 81),       "lead": (80, 81, 53)},   # House: synth bass + organ
+    "M7":  {"bass": (38, 39),            "comp": (81, 89, 90),       "lead": (80, 81, 87)},   # Techno
+    "M8":  {"bass": (38, 39, 87),        "comp": (89, 88, 91),       "lead": (81, 80, 87)},   # DnB
+    "M9":  {"bass": (38, 39, 87),        "comp": (90, 91, 102),      "lead": (88, 81, 102)},  # Glitch / IDM
+    "M10": {"bass": (32, 43, 44),        "comp": (48, 49, 50, 89),   "lead": (60, 73, 71)},   # Cinematic: orchestral
+}
+
+
+def _pick_gm_program(byte: int, mood: str, layer: str, default: int) -> int:
+    pal = _GM_PALETTE.get(mood, {}).get(layer)
+    if not pal:
+        return default
+    return pal[byte % len(pal)]
+
+
+def _pick_drum_pattern(byte: int, kit_id: str, time_sig: str) -> dict:
+    pats = tables.load(f"drums/patterns/{kit_id}")["patterns"]
+    eligible = [p for p in pats if time_sig in p.get("valid_time_sigs", [time_sig])]
+    if not eligible:
+        eligible = pats
+    eligible.sort(key=lambda p: p["id"])
+    return eligible[byte % len(eligible)]
+
+
+def _pick_drum_pattern_pair(byte: int, kit_id: str, time_sig: str) -> tuple[dict, dict]:
+    """Pick a (low-density, high-density) pair so render can pick per-bar by energy."""
+    try:
+        pats = tables.load(f"drums/patterns/{kit_id}")["patterns"]
+    except FileNotFoundError:
+        return ({}, {})
+    eligible = [p for p in pats if time_sig in p.get("valid_time_sigs", [time_sig])] or pats
+    eligible.sort(key=lambda p: (p.get("density", 2), p["id"]))
+    low = [p for p in eligible if p.get("density", 2) <= 2] or eligible
+    high = [p for p in eligible if p.get("density", 2) >= 3] or eligible
+    pat_low = low[(byte & 0x0F) % len(low)]
+    pat_high = high[(byte >> 4) % len(high)]
+    return pat_low, pat_high
+
+
+def _pick_bass_pattern(byte: int, mood: str, time_sig: str) -> dict:
+    pats = tables.load("bass/bass_patterns")["patterns"]
+    eligible = [p for p in _filter_by_mood(pats, mood) if time_sig in p.get("time_sigs", [])]
+    if not eligible:
+        eligible = [p for p in pats if time_sig in p.get("time_sigs", [])] or pats
+    eligible.sort(key=lambda p: p["id"])
+    return eligible[byte % len(eligible)]
+
+
+def _pick_bass_synth(byte: int, mood: str, pattern_id: str) -> dict:
+    synths = tables.load("bass/bass_synths")["synths"]
+    eligible = [s for s in _filter_by_mood(synths, mood)
+                if not s.get("pattern_compat") or pattern_id in s["pattern_compat"]]
+    if not eligible:
+        eligible = _filter_by_mood(synths, mood) or synths
+    eligible.sort(key=lambda s: s["id"])
+    return eligible[byte % len(eligible)]
+
+
+def _pick_comp_role(byte: int, mood: str) -> dict:
+    roles = tables.load("comp/comp_roles")["roles"]
+    eligible = _filter_by_mood(roles, mood) or roles
+    eligible.sort(key=lambda r: r["id"])
+    return eligible[byte % len(eligible)]
+
+
+def _pick_comp_synth(byte: int, mood: str, role_id: str) -> dict:
+    synths = tables.load("comp/comp_synths")["synths"]
+    eligible = [s for s in _filter_by_mood(synths, mood) if role_id in s.get("compatible_roles", [])]
+    if not eligible:
+        eligible = _filter_by_mood(synths, mood) or synths
+    eligible.sort(key=lambda s: s["id"])
+    return eligible[byte % len(eligible)]
+
+
+def _pick_comp_pattern(byte: int, mood: str, time_sig: str) -> dict:
+    pats = tables.load("comp/chord_rhythm_patterns")["patterns"]
+    eligible = [p for p in _filter_by_mood(pats, mood) if time_sig in p.get("time_sigs", [])]
+    if not eligible:
+        eligible = [p for p in pats if time_sig in p.get("time_sigs", [])] or pats
+    eligible.sort(key=lambda p: p["id"])
+    return eligible[byte % len(eligible)]
+
+
+def _pick_melody_motif(byte: int, time_sig: str) -> dict:
+    data = tables.load("melody/motif_rhythms")
+    pools = data.get("pools", data)
+    pool = pools.get(time_sig) or pools.get(time_sig.replace("/", "_")) or next(iter(pools.values()))
+    if isinstance(pool, dict):
+        # Some schemas group by idiom sub-pool.
+        flat = []
+        for v in pool.values():
+            if isinstance(v, list):
+                flat.extend(v)
+        pool = flat or list(pool.values())
+    eligible = sorted(pool, key=lambda x: x.get("id", str(x)))
+    return eligible[byte % len(eligible)]
+
+
+def _pick_contour(byte: int) -> dict:
+    data = tables.load("melody/contours")
+    contours = data.get("contours", data)
+    if isinstance(contours, dict):
+        contours = list(contours.values())
+    eligible = sorted(contours, key=lambda x: x.get("id", str(x)))
+    return eligible[byte % len(eligible)]
+
+
+def _pick_scale_subset(byte: int, mode: str) -> dict:
+    data = tables.load("melody/scale_subsets")
+    subsets = data.get("subsets", data.get("scale_subsets", data))
+    if isinstance(subsets, dict):
+        subsets = list(subsets.values())
+    eligible = [s for s in subsets if mode in s.get("applies_to_modes", [mode])] or subsets
+    eligible = sorted(eligible, key=lambda x: x.get("id", str(x)))
+    return eligible[byte % len(eligible)]
+
+
+# ---------------------------------------------------------------------------
+# Public entry point
+# ---------------------------------------------------------------------------
+
+
+class UnsupportedVersionError(ValueError):
+    pass
+
+
+def hash_to_spec(
+    hash_bytes: bytes,
+    mime: Optional[str] = None,
+    version: str = "v1",
+) -> SongSpec:
+    """Pure: same (hash, mime, version) → same SongSpec.
+
+    Walks the byte budget from CONTEXT/§4 of DESIGN.md top-down, filtering each
+    table by all prior choices. See test_decode_invariants.py for invariants.
+    """
+    if len(hash_bytes) != 32:
+        raise ValueError(f"expected 32-byte SHA-256, got {len(hash_bytes)}")
+    if version != "v1":
+        raise UnsupportedVersionError(version)
+
+    prk = _hkdf_extract(_SALT, hash_bytes)
+    s = HashStream(prk, version)
+    macro = s.take("macro", 32)
+
+    # MIME → family pre-filter.
+    from .mime import family_for_mime
+    family = family_for_mime(mime)
+
+    # Macro decisions.
+    mood = _pick_mood(macro, family)
+    tempo = _pick_tempo(macro[2], mood)
+    key_root = macro[3] % 12
+    mode = _pick_mode(macro[4], mood)
+    progression = _pick_progression(macro[7], mood, mode)
+
+    # Resolve progression to per-bar chord entries.
+    chord_entries = theory.resolve_progression(progression, key_root, mode)
+
+    # Loop the progression to ~8 bars (placeholder form pick).
+    target_bars = 8
+    looped = []
+    while len(looped) < target_bars:
+        looped.extend(chord_entries)
+    looped = looped[:target_bars]
+
+    bars = tuple(
+        Bar(
+            index=i,
+            chord=f"{theory.name_for_pc(e['root_pc'])}{e['quality']}",
+            chord_root_pc=e["root_pc"],
+            chord_root_midi=e["root_midi"],
+            chord_pcs=tuple(e["chord_pcs"]),
+            chord_quality=e["quality"],
+        )
+        for i, e in enumerate(looped)
+    )
+
+    # Form + energy curve.
+    form = _pick_form(macro[6], target_bars)
+    energy_curve = _pick_energy_curve(macro[24], form)
+    if target_bars > 1:
+        bar_energies = tuple(
+            _sample_energy_curve(energy_curve, (i + 0.5) / target_bars)
+            for i in range(target_bars)
+        )
+    else:
+        bar_energies = (_sample_energy_curve(energy_curve, 0.5),)
+
+    # Per-layer picks (constraint propagation continues).
+    time_sig_str = "4/4"
+    drum_kit = _pick_drum_kit(macro[9], mood)
+    drum_pat_low, drum_pat_high = _pick_drum_pattern_pair(macro[10], drum_kit["id"], time_sig_str)
+    drum_pat = drum_pat_low or drum_pat_high or {}
+    bass_pat = _pick_bass_pattern(macro[13], mood, time_sig_str)
+    bass_synth = _pick_bass_synth(macro[14], mood, bass_pat["id"])
+    comp_role = _pick_comp_role(macro[15], mood)
+    comp_synth = _pick_comp_synth(macro[16], mood, comp_role["id"])
+    comp_pat = _pick_comp_pattern(macro[17], mood, time_sig_str)
+    melody_motif = _pick_melody_motif(macro[19], time_sig_str)
+    melody_contour = _pick_contour(macro[20])
+    melody_scale = _pick_scale_subset(macro[18], mode)
+
+    bass_program = _pick_gm_program(macro[14], mood, "bass", default=33)
+    comp_program = _pick_gm_program(macro[16], mood, "comp", default=4)
+    lead_program = _pick_gm_program(macro[21], mood, "lead", default=80)
+
+    layers = (
+        LayerSpec(name="drums", midi_channel=9, synth_id=f"drumkit/{drum_kit['id']}",
+                  program=0, pattern_id=drum_pat.get("id", ""),
+                  extra={
+                      "kit": drum_kit["id"],
+                      "pattern_low": drum_pat_low.get("id", ""),
+                      "pattern_high": drum_pat_high.get("id", ""),
+                  }),
+        LayerSpec(name="bass", midi_channel=0, synth_id=bass_synth["id"],
+                  program=bass_program, pattern_id=bass_pat["id"]),
+        LayerSpec(name="comp", midi_channel=1, synth_id=comp_synth["id"],
+                  program=comp_program, pattern_id=comp_pat["id"],
+                  extra={"role": comp_role["id"]}),
+        LayerSpec(name="lead", midi_channel=2, synth_id="lead/placeholder",
+                  program=lead_program, pattern_id=melody_motif.get("id", ""),
+                  extra={
+                      "motif_id": melody_motif.get("id", ""),
+                      "contour_id": melody_contour.get("id", ""),
+                      "scale_subset_id": melody_scale.get("id", ""),
+                  }),
+    )
+
+    provenance = Provenance(
+        hash_hex=hash_bytes.hex(),
+        mime_detected=mime,
+        mime_family=family,
+        mood=mood,
+        libmagic_version=None,
+        magic_mgc_sha=None,
+        overrides=(),
+    )
+
+    return SongSpec(
+        version=version,
+        provenance=provenance,
+        tempo_bpm=tempo,
+        time_sig=(4, 4),
+        swing="straight",
+        key_root=key_root,
+        mode=mode,
+        form_id=form.get("name", progression["id"]),
+        energy_curve_id=energy_curve.get("name", "arc"),
+        activation_matrix_id="band_basic",
+        bars=bars,
+        layers=layers,
+        bar_energies=bar_energies,
+        render=RenderHints(),
+    )

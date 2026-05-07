@@ -1,0 +1,24 @@
+{
+  "version": "soundhash/v1/labels",
+  "comment": "HKDF label registry. Decoder MUST refuse labels not in this list. CI rejects PRs that add unregistered labels or rename existing ones.",
+  "labels": [
+    "macro",
+    "perbar/drums/<i>",
+    "perbar/bass/<i>",
+    "perbar/comp/<i>",
+    "perbar/melody/<i>",
+    "perbar/aux/<i>",
+    "earcandy/positions",
+    "earcandy/types",
+    "expression/velocity/L<n>",
+    "expression/cc/L<n>",
+    "expression/bend-curve",
+    "harmony/substitutions",
+    "harmony/modulation",
+    "melody/scaleorder",
+    "melody/accent_skeleton",
+    "groove/microtiming",
+    "render/synthparams/L<n>",
+    "dither"
+  ]
+}
