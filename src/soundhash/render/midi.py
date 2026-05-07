@@ -586,7 +586,9 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     base_octave_midi = 72                       # C5
 
     # Build (abs_tick, kind, pitch, vel) events; deltas computed at the end.
+    # Pitch-bend events are stored separately and merged at the end.
     events = []
+    bend_events: list[tuple[int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _ENERGY_GATE["lead"]:
@@ -596,6 +598,14 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
         if next_bar is not None and next_bar.section_letter != bar.section_letter:
             continue
+        # Phrase end: this bar is the last lead-active bar before either the
+        # song ends OR the lead drops for a fill. We apply a downward bend
+        # ("fall") to its last note.
+        is_phrase_end = (
+            next_bar is None
+            or (next_bar.index + 1 < len(spec.bars)
+                and spec.bars[next_bar.index + 1].section_letter != next_bar.section_letter)
+        )
         # Per-section motif/contour — falls back to the macro pick for unknown letters.
         motif_id_b = spec.section_motif_ids.get(bar.section_letter, motif_id)
         contour_id_b = spec.section_contour_ids.get(bar.section_letter, contour_id)
@@ -643,9 +653,22 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
             events.append((on_tick, 0, pitch, vel))
             events.append((on_tick + dur_ticks, 1, pitch, 64))
 
-    # Merge note + CC events; sort by (tick, kind) where CC is kind=2 to order
-    # note-offs before CCs at the same tick.
-    merged = list(events) + [(t, 2, cc, val) for t, cc, val in cc_events]
+            # Phrase-end bend: schedule a downward fall on the last onset.
+            is_last_onset = (i == n_onsets - 1)
+            if is_phrase_end and is_last_onset:
+                bend_start = on_tick + max(20, dur_ticks // 2)
+                bend_end = on_tick + dur_ticks - 5
+                bend_events.append((bend_start, 0))           # neutral at start
+                bend_events.append((bend_end, -8192))         # full -2 semitones
+                bend_events.append((on_tick + dur_ticks + 20, 0))  # reset after note-off
+
+    # Merge note + CC + pitch-bend events. Kind ordering at same tick:
+    # 0 note_on, 1 note_off, 2 control_change, 3 pitchwheel.
+    merged = (
+        list(events)
+        + [(t, 2, cc, val) for t, cc, val in cc_events]
+        + [(t, 3, val, 0) for t, val in bend_events]
+    )
     merged.sort(key=lambda e: (e[0], e[1], e[2]))
     cursor = 0
     for abs_tick, kind, *rest in merged:
@@ -654,6 +677,9 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
             cc, val = rest
             track.append(Message("control_change", channel=2,
                                  control=cc, value=val, time=delta))
+        elif kind == 3:
+            bend_val, _ = rest
+            track.append(Message("pitchwheel", channel=2, pitch=bend_val, time=delta))
         else:
             pitch, vel = rest
             msg_type = "note_on" if kind == 0 else "note_off"
