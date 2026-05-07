@@ -405,12 +405,13 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     if not (motif_id and contour_id and subset_id):
         return None
 
-    motif = _find_motif(motif_id, f"{spec.time_sig[0]}/{spec.time_sig[1]}")
-    contour = next((c for c in tables.load("melody/contours")["contours"]
-                    if c["id"] == contour_id), None)
+    ts_str = f"{spec.time_sig[0]}/{spec.time_sig[1]}"
+    contours_list = tables.load("melody/contours")["contours"]
     subsets = tables.load("melody/scale_subsets").get("subsets")
     subset = next((s for s in subsets if s["id"] == subset_id), None) if subsets else None
-    if not (motif and contour and subset):
+    default_motif = _find_motif(motif_id, ts_str)
+    default_contour = next((c for c in contours_list if c["id"] == contour_id), None)
+    if not (default_motif and default_contour and subset):
         return None
 
     track = MidiTrack()
@@ -420,17 +421,23 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     mask = subset.get("mask", 127)
     allowed_degs = [d for d in range(7) if mask & (1 << d)] or list(range(7))
-    samples = contour["samples"]
-    onsets = motif["onsets"]
     base_octave_midi = 72                       # C5
 
     # Build (abs_tick, kind, pitch, vel) events; deltas computed at the end.
     events = []
-    samples_mean = sum(samples) / len(samples) if samples else 0.0
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _ENERGY_GATE["lead"]:
             continue
+        # Per-section motif/contour — falls back to the macro pick for unknown letters.
+        motif_id_b = spec.section_motif_ids.get(bar.section_letter, motif_id)
+        contour_id_b = spec.section_contour_ids.get(bar.section_letter, contour_id)
+        motif = _find_motif(motif_id_b, ts_str) or default_motif
+        contour = next((c for c in contours_list if c["id"] == contour_id_b),
+                       default_contour)
+        samples = contour["samples"]
+        onsets = motif["onsets"]
+        samples_mean = sum(samples) / len(samples) if samples else 0.0
         bar_tick = bar.index * ticks_per_bar
         n_onsets = len(onsets)
         # Strong-beat snap targets: chord tones in the lead octave.

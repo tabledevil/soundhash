@@ -120,6 +120,30 @@ def _pick_groove_template(byte: int, mood: str) -> str:
     return pool[byte % len(pool)]
 
 
+def _expand_form_layout(form: dict, n_bars: int) -> list[str]:
+    """Turn `[[letter, bar_count_or_'N'], ...]` into a per-bar section-letter list of length n_bars."""
+    layout = form.get("layout") or [["A", "N"]]
+    fixed = [(letter, count) for letter, count in layout if count != "N"]
+    fixed_total = sum(c for _, c in fixed)
+    n_remaining = max(0, n_bars - fixed_total)
+    n_natural = sum(1 for _, c in layout if c == "N") or 1
+    natural_share, extra = divmod(n_remaining, n_natural)
+
+    out: list[str] = []
+    for letter, count in layout:
+        if count == "N":
+            share = natural_share + (1 if extra > 0 else 0)
+            extra = max(0, extra - 1)
+            out.extend([letter] * share)
+        else:
+            out.extend([letter] * count)
+    # Truncate / pad to exactly n_bars.
+    out = out[:n_bars]
+    while len(out) < n_bars:
+        out.append(out[-1] if out else "A")
+    return out
+
+
 def _pick_form(byte: int, n_bars: int) -> dict:
     forms = tables.load("forms")["forms"]
     eligible = [f for f in forms if f.get("min_bars", 1) <= n_bars <= f.get("max_bars", 99)]
@@ -272,6 +296,27 @@ def _pick_comp_pattern(byte: int, mood: str, time_sig: str) -> dict:
     return eligible[byte % len(eligible)]
 
 
+def _all_motifs_for_time_sig(time_sig: str) -> list[dict]:
+    data = tables.load("melody/motif_rhythms")
+    pools = data.get("pools", data)
+    pool = pools.get(time_sig) or pools.get(time_sig.replace("/", "_")) or next(iter(pools.values()), {})
+    if isinstance(pool, dict):
+        flat = []
+        for v in pool.values():
+            if isinstance(v, list):
+                flat.extend(v)
+        return sorted(flat, key=lambda x: x.get("id", ""))
+    return sorted(list(pool), key=lambda x: x.get("id", ""))
+
+
+def _all_contours() -> list[dict]:
+    data = tables.load("melody/contours")
+    contours = data.get("contours", data)
+    if isinstance(contours, dict):
+        contours = list(contours.values())
+    return sorted(contours, key=lambda x: x.get("id", ""))
+
+
 def _pick_melody_motif(byte: int, time_sig: str) -> dict:
     data = tables.load("melody/motif_rhythms")
     pools = data.get("pools", data)
@@ -355,6 +400,19 @@ def hash_to_spec(
         looped.extend(chord_entries)
     looped = looped[:target_bars]
 
+    # Form + energy curve + groove (must run before per-bar Bar construction).
+    form = _pick_form(macro[6], target_bars)
+    energy_curve = _pick_energy_curve(macro[24], form)
+    groove_id = _pick_groove_template(macro[5], mood)
+    section_letters = _expand_form_layout(form, target_bars)
+    if target_bars > 1:
+        bar_energies = tuple(
+            _sample_energy_curve(energy_curve, (i + 0.5) / target_bars)
+            for i in range(target_bars)
+        )
+    else:
+        bar_energies = (_sample_energy_curve(energy_curve, 0.5),)
+
     bars = []
     for i, e in enumerate(looped):
         # Per-bar mutation seeds from HKDF.
@@ -379,6 +437,7 @@ def hash_to_spec(
             chord_root_midi=e["root_midi"],
             chord_pcs=tuple(e["chord_pcs"]),
             chord_quality=e["quality"],
+            section_letter=section_letters[i] if i < len(section_letters) else "A",
             melody_transpose=transpose,
             melody_invert=invert,
             bass_octave_shift=octave_shift,
@@ -386,18 +445,6 @@ def hash_to_spec(
             bass_ghost_first=ghost_first,
         ))
     bars = tuple(bars)
-
-    # Form + energy curve + groove.
-    form = _pick_form(macro[6], target_bars)
-    energy_curve = _pick_energy_curve(macro[24], form)
-    groove_id = _pick_groove_template(macro[5], mood)
-    if target_bars > 1:
-        bar_energies = tuple(
-            _sample_energy_curve(energy_curve, (i + 0.5) / target_bars)
-            for i in range(target_bars)
-        )
-    else:
-        bar_energies = (_sample_energy_curve(energy_curve, 0.5),)
 
     # Per-layer picks (constraint propagation continues).
     time_sig_str = "4/4"
@@ -416,6 +463,24 @@ def hash_to_spec(
     bass_program = _pick_gm_program(macro[14], mood, "bass", default=33)
     comp_program = _pick_gm_program(macro[16], mood, "comp", default=4)
     lead_program = _pick_gm_program(macro[21], mood, "lead", default=80)
+
+    # Per-section motif & contour overrides — introduces real variation between
+    # form sections (A/B/C). Falls back to the macro melody picks for section A.
+    motif_pool = _all_motifs_for_time_sig(time_sig_str)
+    contour_pool = _all_contours()
+    section_motifs: dict[str, str] = {}
+    section_contours: dict[str, str] = {}
+    unique_letters = list(dict.fromkeys(section_letters))
+    for li, letter in enumerate(unique_letters):
+        if li == 0 and motif_pool:
+            section_motifs[letter] = melody_motif.get("id", motif_pool[0]["id"])
+            section_contours[letter] = melody_contour.get("id", contour_pool[0]["id"])
+        else:
+            seed = s.take(f"form/section/{letter}", 4)
+            if motif_pool:
+                section_motifs[letter] = motif_pool[seed[0] % len(motif_pool)]["id"]
+            if contour_pool:
+                section_contours[letter] = contour_pool[seed[1] % len(contour_pool)]["id"]
 
     layers = (
         LayerSpec(name="drums", midi_channel=9, synth_id=f"drumkit/{drum_kit['id']}",
@@ -464,5 +529,7 @@ def hash_to_spec(
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,
+        section_motif_ids=section_motifs,
+        section_contour_ids=section_contours,
         render=RenderHints(),
     )

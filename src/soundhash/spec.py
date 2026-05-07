@@ -41,6 +41,7 @@ class Bar:
     chord_root_midi: int = 36       # MIDI pitch of the bass-octave root
     chord_pcs: tuple[int, ...] = () # semitone offsets-from-root (chord-tone PC set)
     chord_quality: str = "maj"      # quality string from progression
+    section_letter: str = "A"       # form-section label (A/B/C/Ap/...)
     melody_transpose: int = 0       # per-bar scale-degree shift from HKDF mutation seed
     melody_invert: bool = False     # mirror the contour around its mean
     bass_octave_shift: int = 0      # +12/-12 transpose for bass this bar
@@ -96,6 +97,8 @@ class SongSpec:
     bars: tuple[Bar, ...] = ()
     layers: tuple[LayerSpec, ...] = ()
     bar_energies: tuple[float, ...] = ()  # one 0..1 per bar from the energy curve
+    section_motif_ids: dict[str, str] = field(default_factory=dict)
+    section_contour_ids: dict[str, str] = field(default_factory=dict)
     render: RenderHints = field(default_factory=RenderHints)
 
     def total_duration_seconds(self) -> float:
