@@ -12,7 +12,15 @@
       "pattern_table": "chord_rhythm_patterns",
       "energy_min": 0.0,
       "energy_max": 0.85,
-      "mood_tags": ["M0", "M1", "M3", "M5", "M10"],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M3",
+        "M5",
+        "M10",
+        "M7",
+        "M8"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -26,7 +34,14 @@
       "pattern_table": "chord_rhythm_patterns",
       "energy_min": 0.25,
       "energy_max": 1.0,
-      "mood_tags": ["M2", "M3", "M5", "M6", "M10"],
+      "mood_tags": [
+        "M2",
+        "M3",
+        "M5",
+        "M6",
+        "M10",
+        "M7"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -40,7 +55,13 @@
       "pattern_table": "arp_shapes",
       "energy_min": 0.15,
       "energy_max": 0.9,
-      "mood_tags": ["M0", "M1", "M3", "M5", "M10"],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M3",
+        "M5",
+        "M10"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -54,7 +75,13 @@
       "pattern_table": "strum_patterns",
       "energy_min": 0.2,
       "energy_max": 1.0,
-      "mood_tags": ["M0", "M1", "M4", "M5", "M10"],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M4",
+        "M5",
+        "M10"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -68,7 +95,11 @@
       "pattern_table": "chord_rhythm_patterns",
       "energy_min": 0.3,
       "energy_max": 1.0,
-      "mood_tags": ["M2", "M4", "M6"],
+      "mood_tags": [
+        "M2",
+        "M4",
+        "M6"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -82,7 +113,14 @@
       "pattern_table": "chord_rhythm_patterns",
       "energy_min": 0.1,
       "energy_max": 0.95,
-      "mood_tags": ["M1", "M3", "M5", "M6", "M10"],
+      "mood_tags": [
+        "M1",
+        "M3",
+        "M5",
+        "M6",
+        "M10",
+        "M7"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -96,7 +134,13 @@
       "pattern_table": "chord_rhythm_patterns",
       "energy_min": 0.1,
       "energy_max": 0.9,
-      "mood_tags": ["M1", "M3", "M5", "M6", "M10"],
+      "mood_tags": [
+        "M1",
+        "M3",
+        "M5",
+        "M6",
+        "M10"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -110,7 +154,12 @@
       "pattern_table": "chord_rhythm_patterns",
       "energy_min": 0.0,
       "energy_max": 0.9,
-      "mood_tags": ["M0", "M1", "M3", "M10"],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M3",
+        "M10"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -124,7 +173,13 @@
       "pattern_table": "arp_shapes",
       "energy_min": 0.3,
       "energy_max": 1.0,
-      "mood_tags": ["M5", "M6", "M7", "M8", "M9"],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M7",
+        "M8",
+        "M9"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -138,7 +193,12 @@
       "pattern_table": "chord_rhythm_patterns",
       "energy_min": 0.4,
       "energy_max": 1.0,
-      "mood_tags": ["M2", "M4", "M6", "M10"],
+      "mood_tags": [
+        "M2",
+        "M4",
+        "M6",
+        "M10"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -152,7 +212,11 @@
       "pattern_table": "arp_shapes",
       "energy_min": 0.0,
       "energy_max": 0.7,
-      "mood_tags": ["M0", "M1", "M10"],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M10"
+      ],
       "must_top_below_melody_median_minus_semitones": 5
     },
     {
@@ -166,7 +230,19 @@
       "pattern_table": "none",
       "energy_min": 0.0,
       "energy_max": 1.0,
-      "mood_tags": ["M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10"],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6",
+        "M7",
+        "M8",
+        "M9",
+        "M10"
+      ],
       "must_top_below_melody_median_minus_semitones": 0
     }
   ]
