@@ -142,3 +142,70 @@ def score_wav(wav_bytes: bytes, target_lufs: float = -16.0) -> QualityScore:
         band_pct=band_pct,
         stereo_width=float(width),
     )
+
+
+# ---------------------------------------------------------------------------
+# Psychoacoustic score (mosqito) — slower, more rigorous
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PsychoScore:
+    sones: float                   # Zwicker stationary loudness
+    acum: float                    # DIN 45692 stationary sharpness
+    loudness_score: float          # 0..1, 1.0 in 18-40 sone "comfortable" range
+    sharpness_score: float         # 0..1, 1.0 in 0.8-1.6 acum "smooth" range
+    overall: float                 # mean(loudness_score, sharpness_score)
+
+    def summary(self) -> str:
+        return (f"psy={self.overall:.2f}  "
+                f"loudness={self.sones:.1f} sone (s={self.loudness_score:.2f})  "
+                f"sharpness={self.acum:.2f} acum (s={self.sharpness_score:.2f})")
+
+
+def psychoacoustic_score(wav_bytes: bytes) -> PsychoScore | None:
+    """Zwicker loudness + DIN sharpness via mosqito. Returns None if unavailable."""
+    try:
+        from mosqito.sq_metrics import loudness_zwst, sharpness_din_st
+    except ImportError:
+        return None
+
+    with wave.open(io.BytesIO(wav_bytes), "rb") as r:
+        rate = r.getframerate()
+        raw = r.readframes(r.getnframes())
+    n_channels = 2 if (len(raw) // 2) % 2 == 0 and rate else 1
+    samples = np.frombuffer(raw, dtype="<i2").astype(np.float32) / 32768.0
+    if samples.size > 1 and (samples.size % 2) == 0:
+        samples = samples.reshape(-1, 2).mean(axis=1)
+
+    try:
+        N, _N_spec, _bark = loudness_zwst(samples, rate, field_type="free")
+        sharp = sharpness_din_st(samples, rate, weighting="din")
+    except Exception:
+        return None
+
+    sones = float(N)
+    acum = float(sharp)
+
+    # Score curves chosen against a small mastered-music reference set.
+    if 18.0 <= sones <= 40.0:
+        loudness_score = 1.0
+    elif sones < 18.0:
+        loudness_score = max(0.0, sones / 18.0)
+    else:
+        loudness_score = max(0.0, 1.0 - (sones - 40.0) / 30.0)
+
+    if 0.8 <= acum <= 1.6:
+        sharpness_score = 1.0
+    elif acum < 0.8:
+        sharpness_score = max(0.0, acum / 0.8)
+    else:
+        sharpness_score = max(0.0, 1.0 - (acum - 1.6) / 1.5)
+
+    return PsychoScore(
+        sones=sones,
+        acum=acum,
+        loudness_score=loudness_score,
+        sharpness_score=sharpness_score,
+        overall=(loudness_score + sharpness_score) / 2.0,
+    )

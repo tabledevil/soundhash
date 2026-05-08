@@ -23,6 +23,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="dump the full SongSpec breakdown")
     p.add_argument("--score", action="store_true",
                    help="after audio render, print a heuristic quality score")
+    p.add_argument("--psy", action="store_true",
+                   help="also print psychoacoustic score (Zwicker loudness, DIN sharpness; needs mosqito)")
     p.add_argument("--version", action="version", version=__version__)
     args = p.parse_args(argv)
 
@@ -89,6 +91,13 @@ def main(argv: list[str] | None = None) -> int:
             if args.score:
                 from .quality import score_wav
                 print(f"  quality {score_wav(wav_bytes).summary()}", file=sys.stderr)
+            if args.psy:
+                from .quality import psychoacoustic_score
+                psy = psychoacoustic_score(wav_bytes)
+                if psy is None:
+                    print("  psy     unavailable (install mosqito)", file=sys.stderr)
+                else:
+                    print(f"  psy     {psy.summary()}", file=sys.stderr)
 
     # TODO: render via render.midi / render.audio
     return 0
