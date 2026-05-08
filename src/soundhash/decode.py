@@ -576,7 +576,9 @@ def hash_to_spec(
     melody_contour = _pick_contour(macro[20], mood)
     melody_scale = _pick_scale_subset(macro[18], mode)
 
-    bass_program = _pick_gm_program(macro[14], mood, "bass", default=33)
+    # Prefer the picked synth's gm_program (more specific than the mood palette).
+    bass_program = (bass_synth.get("gm_program")
+                    or _pick_gm_program(macro[14], mood, "bass", default=33))
     comp_program = _pick_gm_program(macro[16], mood, "comp", default=4)
     lead_program = _pick_gm_program(macro[21], mood, "lead", default=80)
     pad_program  = _pick_gm_program(macro[23], mood, "pad",  default=89)
