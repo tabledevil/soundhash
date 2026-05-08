@@ -103,6 +103,17 @@ def test_within_mood_layer_activation():
     assert not failures, f"layer silent on >45% of files: {failures}"
 
 
+def test_all_12_keys_reachable():
+    """All 12 chromatic roots should appear in the corpus.
+
+    A failure here means key selection is biased — likely a regression in
+    _pick_mood / family_to_moods / mood mode lists that locked to a subset.
+    """
+    specs = _build_corpus()
+    keys = {s.key_root for s in specs}
+    assert keys == set(range(12)), f"missing keys: {set(range(12)) - keys}"
+
+
 def test_total_duration_under_30s():
     specs = _build_corpus()
     for s in specs:
