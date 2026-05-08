@@ -732,6 +732,7 @@ def hash_to_spec(
     esc_algo, deesc_algo = _pick_escalation_algos(macro[12])
     humanization = _pick_humanization_profile(macro[27])
     mix_preset_id, mix_preset = _pick_mix_preset(macro[30])
+    fx_wet_scale = (0.5, 0.85, 1.0, 1.3)[macro[29] & 0x03]   # dry/normal/wet/very-wet
     bass_pat = _pick_bass_pattern(macro[13], mood, time_sig_str)
     bass_synth = _pick_bass_synth(macro[14], mood, bass_pat["id"])
     comp_role = _pick_comp_role(macro[15], mood)
@@ -861,6 +862,7 @@ def hash_to_spec(
         humanization_vel_jitter=int(humanization.get("vel_jitter", 4)),
         mix_preset_id=mix_preset_id,
         mix_levels=mix_preset,
+        fx_wet_scale=fx_wet_scale,
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,

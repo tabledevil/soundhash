@@ -87,7 +87,8 @@ def render_wav(midi_bytes: bytes, sample_rate: int = 44100,
                 f"fluidsynth exited {proc.returncode}: {proc.stderr.decode(errors='replace')[:400]}"
             )
         wav = _postprocess_wav(wav_path.read_bytes(),
-                               mood=(provenance or {}).get("mood") if apply_fx else None)
+                               mood=(provenance or {}).get("mood") if apply_fx else None,
+                               wet_scale=float((provenance or {}).get("fx_wet_scale", 1.0)))
         if provenance:
             wav = _embed_wav_provenance(wav, provenance)
         return wav
@@ -149,7 +150,8 @@ def _embed_wav_provenance(wav_bytes: bytes, prov: dict) -> bytes:
     return bytes(out)
 
 
-def _postprocess_wav(wav_bytes: bytes, mood: str | None = None) -> bytes:
+def _postprocess_wav(wav_bytes: bytes, mood: str | None = None,
+                     wet_scale: float = 1.0) -> bytes:
     """Cap length, apply fades, LUFS-norm, mood FX chain, peak-limit."""
     with wave.open(io.BytesIO(wav_bytes), "rb") as r:
         n_channels = r.getnchannels()
@@ -176,7 +178,7 @@ def _postprocess_wav(wav_bytes: bytes, mood: str | None = None) -> bytes:
     if mood:
         try:
             from .fx import apply_fx
-            samples = apply_fx(samples, rate, mood)
+            samples = apply_fx(samples, rate, mood, wet_scale=wet_scale)
         except Exception:
             pass
 

@@ -81,12 +81,17 @@ _MOOD_FX: dict[str, list[tuple[str, dict]]] = {
 }
 
 
-def apply_fx(samples: np.ndarray, sample_rate: int, mood: str) -> np.ndarray:
+def apply_fx(samples: np.ndarray, sample_rate: int, mood: str,
+             wet_scale: float = 1.0) -> np.ndarray:
     """Apply the mood's FX chain + master bus. samples: (n, 2) float32 in [-1, 1].
 
     Chain order: mood-specific plugins → master bus (HPF + low-shelf cut +
     presence shelf). The master bus is mood-independent and corrects the
     GM-soundfont's tendency to dominate the low band.
+
+    `wet_scale` (byte-29-driven) multiplies any `wet_level` / `mix` kwargs
+    on the mood plugins so the same chain can land 'dry' (0.5), normal (1.0),
+    or 'very-wet' (1.3) per-hash.
     """
     try:
         from pedalboard import (
@@ -107,6 +112,14 @@ def apply_fx(samples: np.ndarray, sample_rate: int, mood: str) -> np.ndarray:
         cls = cls_map.get(name)
         if cls is None:
             continue
+        # Scale any `wet_level` / `mix` kwargs by `wet_scale`. Cap at 1.0
+        # since pedalboard plugins reject >1.0 wet.
+        if wet_scale != 1.0:
+            scaled = dict(kwargs)
+            for k in ("wet_level", "mix"):
+                if k in scaled:
+                    scaled[k] = max(0.0, min(1.0, float(scaled[k]) * wet_scale))
+            kwargs = scaled
         plugins.append(cls(**kwargs))
 
     # Master bus: applied to every mood. Per the sound-design adversarial

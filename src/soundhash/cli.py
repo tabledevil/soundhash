@@ -85,6 +85,7 @@ def main(argv: list[str] | None = None) -> int:
                 "bars": len(spec.bars),
                 "groove_template_id": spec.groove_template_id,
                 "energy_curve_id": spec.energy_curve_id,
+                "fx_wet_scale": spec.fx_wet_scale,
             }
             wav_bytes = render_wav(midi_bytes,
                                    sample_rate=spec.render.sample_rate,
