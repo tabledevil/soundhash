@@ -91,6 +91,51 @@ class _VelJitter:
         return int((b / 255.0) * (2 * range_pm + 1)) - range_pm
 
 
+_ACCENT_SKELETON_CACHE: dict[str, tuple[bytes, list[dict]]] = {}
+
+
+def _accent_skeleton(spec) -> tuple[int, list[float], list[int]]:
+    """Return (skeleton_byte, micro_shape_3, strong_beat_targets_4).
+
+    `strong_beat_targets`: 4 indices into the current chord_pcs (i.e. which
+    chord-tone is the target on each successive strong beat). The decoder
+    weights {R, 3, 5, 7} → [0.35, 0.30, 0.25, 0.10] so byte mod 100 splits
+    35/30/25/10 when chord has 4 tones.
+    """
+    cache_key = spec.provenance.hash_hex
+    if cache_key not in _ACCENT_SKELETON_CACHE:
+        import hashlib as _h, hmac as _hm
+        prk = _hm.new(b"soundhash-v1",
+                      bytes.fromhex(spec.provenance.hash_hex),
+                      _h.sha256).digest()
+        info = b"soundhash/v1/melody/accent_skeleton"
+        out, t, c = b"", b"", 1
+        while len(out) < 5:                  # 1 skeleton-pick + 4 strong-beat targets
+            t = _hm.new(prk, t + info + bytes([c]), _h.sha256).digest()
+            out += t
+            c += 1
+        try:
+            data = tables.load("melody/accent_skeleton")
+            skeletons = data.get("skeletons", [])
+        except FileNotFoundError:
+            skeletons = []
+        _ACCENT_SKELETON_CACHE[cache_key] = (out[:5], skeletons)
+    seed_bytes, skeletons = _ACCENT_SKELETON_CACHE[cache_key]
+    if not skeletons:
+        return 0, [0.0, 0.0, 0.0], [0, 1, 2, 0]
+    sk = skeletons[seed_bytes[0] % len(skeletons)]
+    micro = sk.get("micro_shape", [0.0, 0.0, 0.0])
+    # Weighted draws: byte%100 → R/3/5/7 with [35/30/25/10] split.
+    targets = []
+    for i in range(4):
+        b = seed_bytes[1 + i] % 100
+        if b < 35:   targets.append(0)         # root
+        elif b < 65: targets.append(1)         # third
+        elif b < 90: targets.append(2)         # fifth
+        else:        targets.append(3)         # seventh / extension
+    return seed_bytes[0], list(micro), targets
+
+
 def _vel_jitter(spec, layer_name: str, range_pm: int = 5) -> int:
     key = (spec.provenance.hash_hex, layer_name)
     j = _VEL_JITTER_CACHE.get(key)
@@ -954,6 +999,10 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     # Pitch-bend events are stored separately and merged at the end.
     events = []
     bend_events: list[tuple[int, int]] = []
+    # Accent skeleton: highest-distinguishability sub-feature. One byte from
+    # HKDF melody/accent_skeleton picks 4 strong-beat chord-tone targets and
+    # a 3-value micro_shape applied to weak-slot contour samples.
+    _, micro_shape, strong_targets = _accent_skeleton(spec)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _gate(spec, "lead") or bar.drop_lead:
@@ -987,8 +1036,12 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
             base_octave_midi + ((spec.key_root + iv) % 12 + (bar.chord_root_pc + iv) // 12 * 0)
             for iv in ()  # placeholder; we recompute below for clarity
         )
-        chord_tones = sorted({base_octave_midi + ((bar.chord_root_pc + iv) % 12) + 12 * 0
-                              for iv in bar.chord_pcs})
+        # Chord-tone MIDI pitches in the lead octave, ordered by chord_pcs
+        # (so [R, 3, 5, 7] index map matches the accent-skeleton targets).
+        chord_tone_midis = [
+            max(48, min(96, base_octave_midi + ((bar.chord_root_pc + iv) % 12)))
+            for iv in bar.chord_pcs
+        ]
         for i, (start_beat, dur_beat) in enumerate(onsets):
             t = i / max(1, n_onsets - 1) if n_onsets > 1 else 0.0
             sample_idx = min(len(samples) - 1, int(round(t * (len(samples) - 1))))
@@ -997,20 +1050,32 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
             if bar.melody_invert and samples_mean:
                 scale_degree_1 = int(round(2 * samples_mean - scale_degree_1))
             scale_degree_1 = max(1, scale_degree_1 + bar.melody_transpose)
-            deg_idx = (scale_degree_1 - 1) % 7
-            octave_shift = (scale_degree_1 - 1) // 7
-            if deg_idx not in allowed_degs:
-                deg_idx = min(allowed_degs, key=lambda d: abs(d - deg_idx))
-            interval = theory.MODES[spec.mode][deg_idx]
-            pitch = base_octave_midi + spec.key_root + interval + 12 * octave_shift
-            pitch = max(48, min(96, pitch))
 
-            # Strong-beat chord-tone snap: on beats 0 and 2 (in 4/4), pull the
-            # picked pitch to the nearest chord tone of the current bar.
             beat_in_bar = start_beat % beats_per_bar
             is_strong = abs(beat_in_bar - 0.0) < 0.01 or abs(beat_in_bar - 2.0) < 0.01
-            if is_strong and chord_tones:
-                pitch = min(chord_tones, key=lambda c: abs(c - pitch))
+
+            if is_strong and chord_tone_midis:
+                # Accent-skeleton-driven chord-tone target. Strong-beat
+                # counter cycles through 4 song-wide targets at beats 0/2.
+                strong_idx = (bar.index * 2 + (1 if beat_in_bar >= 2.0 else 0)) % 4
+                tone_idx = strong_targets[strong_idx] % len(chord_tone_midis)
+                pitch = chord_tone_midis[tone_idx]
+            else:
+                # Weak slot: add the micro-shape offset to the contour-derived
+                # scale degree (3 weak slots per strong-strong segment).
+                last_strong = 0.0 if beat_in_bar < 2.0 else 2.0
+                pos = max(0.0, min(1.0, (beat_in_bar - last_strong) / 2.0))
+                weak_slot = max(0, min(2, int(pos * 3)))
+                offset = micro_shape[weak_slot] if weak_slot < len(micro_shape) else 0.0
+                # micro_shape values are in [-1,+1], scale to ±2 scale-degrees.
+                scale_degree_1 = max(1, scale_degree_1 + int(round(2 * offset)))
+                deg_idx = (scale_degree_1 - 1) % 7
+                octave_shift = (scale_degree_1 - 1) // 7
+                if deg_idx not in allowed_degs:
+                    deg_idx = min(allowed_degs, key=lambda d: abs(d - deg_idx))
+                interval = theory.MODES[spec.mode][deg_idx]
+                pitch = base_octave_midi + spec.key_root + interval + 12 * octave_shift
+                pitch = max(48, min(96, pitch))
 
             on_tick = bar_tick + int(round(start_beat * PPQ))
             dur_ticks = max(60, int(round(dur_beat * PPQ)) - 20)
