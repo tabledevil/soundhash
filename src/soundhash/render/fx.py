@@ -107,12 +107,16 @@ def apply_fx(samples: np.ndarray, sample_rate: int, mood: str) -> np.ndarray:
             continue
         plugins.append(cls(**kwargs))
 
-    # Master bus: applied to every mood. Tames sub rumble and lifts presence
-    # so spectral balance moves toward the target 25/45/30 distribution.
+    # Master bus: applied to every mood. Per the sound-design adversarial
+    # review (codex), MS Basic SF3 has two ugly regions: 200-400 Hz pad/bass
+    # mud and 2.5-4.5 kHz plasticky upper-mid. The shelves below cut those
+    # specifically; the HPF kills DC/sub rumble; the high-shelf at 8 kHz
+    # adds gentle air without lifting the plastic band.
     plugins.extend([
         HighpassFilter(cutoff_frequency_hz=40),
-        LowShelfFilter(cutoff_frequency_hz=110, gain_db=-1.5, q=0.7),
-        HighShelfFilter(cutoff_frequency_hz=4500, gain_db=+1.5, q=0.7),
+        LowShelfFilter(cutoff_frequency_hz=300, gain_db=-1.8, q=0.6),
+        HighShelfFilter(cutoff_frequency_hz=3500, gain_db=-1.2, q=0.6),
+        HighShelfFilter(cutoff_frequency_hz=8000, gain_db=+1.5, q=0.7),
     ])
 
     board = Pedalboard(plugins)

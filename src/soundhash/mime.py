@@ -39,21 +39,31 @@ def detect_mime(path: str) -> Optional[str]:
 
 
 def family_for_mime(mime: Optional[str]) -> str:
-    """Return one of the family slugs from mime_families.json."""
+    """Return one of the family slugs from mime_families.json.
+
+    Resolution order: exact match → prefix match → top-level fallback → unknown.
+    """
     if not mime:
         return "unknown"
-    # TODO: load mime_families.json and walk exact → prefix → ext → unknown.
-    # Stub: top-level type only.
+    mime = mime.split(";", 1)[0].strip().lower()
+    fams = _families().get("families", [])
+    # 1. Exact MIME match.
+    for fam in fams:
+        if mime in {m.lower() for m in fam.get("exact", [])}:
+            return fam["slug"]
+    # 2. Prefix match (e.g. "application/vnd.openxmlformats-..."
+    #    matched by "application/vnd.openxmlformats" prefix).
+    for fam in fams:
+        for pre in fam.get("prefix", []):
+            if mime.startswith(pre.lower()):
+                return fam["slug"]
+    # 3. Top-level fallback.
     top = mime.split("/", 1)[0]
-    return {
-        "text": "text-code",
-        "image": "image",
-        "audio": "audio",
-        "video": "video",
-        "font": "font",
-        "model": "model-3d",
-        "application": "unknown",
-    }.get(top, "unknown")
+    top_map = {
+        "text": "text-code", "image": "image", "audio": "audio",
+        "video": "video", "font": "font", "model": "model-3d",
+    }
+    return top_map.get(top, "unknown")
 
 
 def candidate_moods(family: str) -> list[str]:
