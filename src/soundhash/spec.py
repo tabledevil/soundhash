@@ -47,6 +47,8 @@ class Bar:
     bass_octave_shift: int = 0      # +12/-12 transpose for bass this bar
     bass_skip_last: bool = False    # rest the last bass cell (fill-style breath)
     bass_ghost_first: bool = False  # play first cell at ghost velocity
+    comp_drop_last: bool = False    # rest the last comp hit (per-bar ear-candy)
+    comp_vel_pull: int = 0          # ±5 velocity pull on comp this bar
     notes: tuple[Note, ...] = ()
     ccs: tuple[CCEvent, ...] = ()
     bends: tuple[PitchBend, ...] = ()

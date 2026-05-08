@@ -540,6 +540,12 @@ def hash_to_spec(
             octave_shift = {2: +12, 3: -12}.get(bass_op, 0)
             skip_last = (bass_op == 4)
             ghost_first = (bass_op == 5)
+        comp_seed = s.take(f"perbar/comp/{i}", 2)
+        if i == 0:
+            comp_drop_last, comp_vel_pull = False, 0
+        else:
+            comp_drop_last = (comp_seed[0] % 8 == 0)              # ~12.5% of bars drop last hit
+            comp_vel_pull = (comp_seed[1] % 11) - 5                # -5..+5 velocity pull
         bars.append(Bar(
             index=i,
             chord=f"{theory.name_for_pc(e['root_pc'])}{e['quality']}",
@@ -553,6 +559,8 @@ def hash_to_spec(
             bass_octave_shift=octave_shift,
             bass_skip_last=skip_last,
             bass_ghost_first=ghost_first,
+            comp_drop_last=comp_drop_last,
+            comp_vel_pull=comp_vel_pull,
         ))
     bars = tuple(bars)
 

@@ -156,6 +156,10 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     bass.append(MetaMessage("track_name", name="bass", time=0))
     bass.append(Message("program_change", channel=0,
                         program=_layer_program(spec, "bass", default=33), time=0))
+    # Initial portamento defaults: off, mid time. We turn it on/off per-bar
+    # below when bass_octave_shift fires.
+    bass.append(Message("control_change", channel=0, control=5, value=64, time=0))   # CC5 portamento time
+    bass.append(Message("control_change", channel=0, control=65, value=0, time=0))   # CC65 portamento off
 
     layer = next((l for l in spec.layers if l.name == "bass"), None)
     pattern = _find_bass_pattern(layer.pattern_id) if layer else None
@@ -170,6 +174,7 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     cells_to_ticks = ticks_per_bar // grid_cells
 
     events: list[tuple[int, int, int, int]] = []
+    cc_events: list[tuple[int, int, int]] = []   # (abs_tick, cc, value)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _ENERGY_GATE["bass"]:
@@ -178,6 +183,11 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
         # Find next bar's root for chromatic-approach handling.
         next_root_midi = (spec.bars[bar.index + 1].chord_root_midi
                           if bar.index + 1 < len(spec.bars) else bar.chord_root_midi)
+        # Portamento on for bars where bass_octave_shift is non-zero (synth
+        # bass voices glide between octaves instead of cutting).
+        if bar.bass_octave_shift != 0:
+            cc_events.append((bar.index * ticks_per_bar, 65, 127))   # on
+            cc_events.append(((bar.index + 1) * ticks_per_bar - 5, 65, 0))  # off at end
 
         cursor_cell = 0
         last_idx = len(grid) - 1
@@ -231,12 +241,19 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
             events.append((on_tick + dur_ticks, 1, pitch, 64))
             cursor_cell += length
 
-    events.sort(key=lambda ev: (ev[0], ev[1], ev[2]))
+    merged = list(events) + [(t, 2, cc, val) for t, cc, val in cc_events]
+    merged.sort(key=lambda ev: (ev[0], ev[1], ev[2]))
     cursor = 0
-    for abs_tick, kind, pitch, vel in events:
+    for abs_tick, kind, *rest in merged:
         delta = max(0, abs_tick - cursor)
-        msg_type = "note_on" if kind == 0 else "note_off"
-        bass.append(Message(msg_type, channel=0, note=pitch, velocity=vel, time=delta))
+        if kind == 2:
+            cc, val = rest
+            bass.append(Message("control_change", channel=0,
+                                control=cc, value=val, time=delta))
+        else:
+            pitch, vel = rest
+            msg_type = "note_on" if kind == 0 else "note_off"
+            bass.append(Message(msg_type, channel=0, note=pitch, velocity=vel, time=delta))
         cursor = abs_tick
     return bass
 
@@ -359,7 +376,10 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
         else:
             voice_pitches_per_hit = [full_pitches] * len(hits)
 
+        last_hit_idx = len(hits) - 1
         for hit_idx, hit in enumerate(hits):
+            if bar.comp_drop_last and hit_idx == last_hit_idx:
+                continue
             step = hit.get("step", 0)
             dur_steps = hit.get("duration_steps", 1)
             vel_factor = hit.get("vel_factor", 1.0)
@@ -367,7 +387,7 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
             on_tick = max(bar.index * ticks_per_bar,
                           on_tick + _groove_offset(spec, "comp", step))
             dur_ticks = max(40, dur_steps * cells_to_ticks - 10)
-            vel = max(20, min(120, int(vel_base * vel_factor)))
+            vel = max(20, min(120, int(vel_base * vel_factor) + bar.comp_vel_pull))
             vel = max(1, min(127, vel + _vel_jitter(spec, "comp", 4)))
             pitches = voice_pitches_per_hit[hit_idx]
             for p in pitches:
@@ -867,6 +887,14 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
             on_tick = bar_tick + int(round(start_beat * PPQ))
             dur_ticks = max(60, int(round(dur_beat * PPQ)) - 20)
             vel = max(50, min(115, int(60 + 60 * e)))
+            # Section-start accent on the first lead onset of any bar that
+            # begins a new section. Boost +15 velocity so the section change
+            # is audible on the lead.
+            prev_bar = spec.bars[bar.index - 1] if bar.index > 0 else None
+            is_section_start = (prev_bar is not None
+                                and prev_bar.section_letter != bar.section_letter)
+            if is_section_start and i == 0:
+                vel = min(127, vel + 15)
             events.append((on_tick, 0, pitch, vel))
             events.append((on_tick + dur_ticks, 1, pitch, 64))
 
