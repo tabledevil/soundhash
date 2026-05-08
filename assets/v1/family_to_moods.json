@@ -11,60 +11,129 @@
     "M7": "Techno",
     "M8": "DnB",
     "M9": "Glitch / IDM",
-    "M10": "Cinematic / Trailer"
+    "M10": "Cinematic / Trailer",
+    "M11": "Lofi",
+    "M12": "Chillout",
+    "M13": "Simple",
+    "M14": "Gameboy"
   },
   "comment": "Each family lists 2-4 candidate moods. Macro mood byte 0 picks among them via byte0 % len(candidates). Sub-flavor (byte 1) further differentiates. Rationales are mnemonic, not strict: the goal is that file flavor predicts a recognizable palette.",
   "mapping": {
     "text-code": {
-      "candidates": ["M5", "M7", "M9", "M6"],
+      "candidates": [
+        "M5",
+        "M9",
+        "M11",
+        "M14"
+      ],
       "rationale": "Code reads as structured/grid-like: synthwave arpeggios, techno repetition, glitch/IDM micro-edits, deep-house pulse all evoke 'machine logic'."
     },
     "image": {
-      "candidates": ["M0", "M3", "M1", "M5"],
+      "candidates": [
+        "M0",
+        "M12",
+        "M1",
+        "M13"
+      ],
       "rationale": "Static visual -> contemplative palettes: ambient pads, downtempo, ballad, synthwave-pastel."
     },
     "audio": {
-      "candidates": ["M2", "M4", "M6", "M1"],
+      "candidates": [
+        "M2",
+        "M4",
+        "M6",
+        "M1"
+      ],
       "rationale": "Already-musical files map to overtly musical, song-form moods: hip-hop, latin, house, ballad."
     },
     "video": {
-      "candidates": ["M10", "M8", "M5", "M7"],
+      "candidates": [
+        "M10",
+        "M8",
+        "M5",
+        "M7"
+      ],
       "rationale": "Moving picture -> cinematic, energetic propulsion: trailer, DnB, synthwave, techno."
     },
     "archive": {
-      "candidates": ["M9", "M2", "M7", "M3"],
+      "candidates": [
+        "M9",
+        "M2",
+        "M14",
+        "M3"
+      ],
       "rationale": "Archives are 'compressed/dense' -> glitch, boom-bap (chopped/sampled aesthetic), techno, downtempo."
     },
     "document-pdf": {
-      "candidates": ["M1", "M0", "M3", "M10"],
+      "candidates": [
+        "M1",
+        "M13",
+        "M3",
+        "M10"
+      ],
       "rationale": "Long-form reading material -> ballad, ambient, downtempo, cinematic underscore."
     },
     "spreadsheet": {
-      "candidates": ["M7", "M6", "M5", "M9"],
+      "candidates": [
+        "M7",
+        "M6",
+        "M5",
+        "M9"
+      ],
       "rationale": "Grids and rows -> four-on-the-floor pulses (techno/house), synthwave, glitch."
     },
     "executable": {
-      "candidates": ["M7", "M9", "M5", "M8"],
+      "candidates": [
+        "M7",
+        "M14",
+        "M9",
+        "M5"
+      ],
       "rationale": "Compiled binaries: machine, dense -> techno, glitch/IDM, synthwave, DnB."
     },
     "font": {
-      "candidates": ["M0", "M1", "M5", "M3"],
+      "candidates": [
+        "M0",
+        "M13",
+        "M5",
+        "M3"
+      ],
       "rationale": "Fonts are typographic, refined -> ambient, ballad, synthwave, downtempo."
     },
     "model-3d": {
-      "candidates": ["M10", "M0", "M5", "M7"],
+      "candidates": [
+        "M10",
+        "M14",
+        "M5",
+        "M0"
+      ],
       "rationale": "Spatial/sculptural -> cinematic, ambient drones, synthwave, techno."
     },
     "web-asset": {
-      "candidates": ["M6", "M5", "M9", "M2"],
+      "candidates": [
+        "M6",
+        "M11",
+        "M9",
+        "M2"
+      ],
       "rationale": "Web/UI artifacts -> house (lounge), synthwave, glitch, lo-fi hip-hop."
     },
     "database": {
-      "candidates": ["M7", "M9", "M0", "M3"],
+      "candidates": [
+        "M7",
+        "M9",
+        "M0",
+        "M3"
+      ],
       "rationale": "Stores of data -> techno regularity, glitch, ambient, downtempo."
     },
     "unknown": {
-      "candidates": ["M0", "M3", "M9", "M1"],
+      "candidates": [
+        "M0",
+        "M12",
+        "M13",
+        "M11"
+      ],
       "rationale": "Unknown content stays musically safe and ambient-leaning to avoid mismatched expectations."
     }
   }

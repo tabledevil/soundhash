@@ -35,10 +35,14 @@ _MIME_HINT = {
     "M7":  "text/css",
     "M8":  "video/mp4",
     "M9":  "application/zip",
-    "M10": "video/quicktime",       # video → trailer/cinematic candidate set
+    "M10": "video/quicktime",
+    "M11": None,
+    "M12": None,
+    "M13": None,
+    "M14": None,
 }
 
-ALL_MOODS = [f"M{i}" for i in range(11)]
+ALL_MOODS = [f"M{i}" for i in range(15)]
 
 
 def _find_seed_for_mood(mood: str, max_tries: int = 5000):

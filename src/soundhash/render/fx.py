@@ -60,6 +60,22 @@ _MOOD_FX: dict[str, list[tuple[str, dict]]] = {
     "M10": [("Reverb",       {"room_size": 0.90, "damping": 0.35, "wet_level": 0.45, "dry_level": 0.65, "width": 1.0}),
             ("HighShelfFilter", {"cutoff_frequency_hz": 9000, "gain_db": +2.0, "q": 0.7}),
             ("LowShelfFilter", {"cutoff_frequency_hz": 90, "gain_db": +1.0, "q": 0.7})],
+    # M11 Lofi — vinyl warmth: tape saturation, mid-room reverb, top-end roll-off, slow chorus wow-wobble.
+    "M11": [("Distortion",   {"drive_db": 6.0}),
+            ("HighShelfFilter", {"cutoff_frequency_hz": 5500, "gain_db": -3.0, "q": 0.7}),
+            ("Chorus",       {"rate_hz": 0.4, "depth": 0.30, "centre_delay_ms": 22, "feedback": 0.10, "mix": 0.25}),
+            ("Reverb",       {"room_size": 0.40, "damping": 0.7, "wet_level": 0.22, "dry_level": 0.82, "width": 0.85})],
+    # M12 Chillout — wide chorus, plate reverb, presence boost, dotted-eighth delay.
+    "M12": [("Chorus",       {"rate_hz": 0.5, "depth": 0.40, "centre_delay_ms": 18, "feedback": 0.10, "mix": 0.30}),
+            ("Delay",        {"delay_seconds": 0.450, "feedback": 0.20, "mix": 0.18}),
+            ("Reverb",       {"room_size": 0.65, "damping": 0.5, "wet_level": 0.32, "dry_level": 0.75, "width": 0.95}),
+            ("HighShelfFilter", {"cutoff_frequency_hz": 6000, "gain_db": +1.0, "q": 0.7})],
+    # M13 Simple — barely-there room reverb. Lets the silence breathe.
+    "M13": [("Reverb",       {"room_size": 0.20, "damping": 0.5, "wet_level": 0.10, "dry_level": 0.92, "width": 0.85})],
+    # M14 Gameboy — chiptune: light drive, bit-crush-ish high-shelf cut, no reverb (DMG had none).
+    "M14": [("HighShelfFilter", {"cutoff_frequency_hz": 8000, "gain_db": -4.0, "q": 0.7}),
+            ("Distortion",   {"drive_db": 2.0}),
+            ("Reverb",       {"room_size": 0.10, "damping": 0.4, "wet_level": 0.04, "dry_level": 0.96, "width": 0.6})],
 }
 
 

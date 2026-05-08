@@ -49,6 +49,12 @@ class Bar:
     bass_ghost_first: bool = False  # play first cell at ghost velocity
     comp_drop_last: bool = False    # rest the last comp hit (per-bar ear-candy)
     comp_vel_pull: int = 0          # ±5 velocity pull on comp this bar
+    # Layer dropouts (silence drives interest in soft moods). Each flag
+    # silences that layer for this bar even if the energy gate would pass.
+    drop_drums: bool = False
+    drop_lead: bool = False
+    drop_comp: bool = False
+    drop_pad: bool = False
     notes: tuple[Note, ...] = ()
     ccs: tuple[CCEvent, ...] = ()
     bends: tuple[PitchBend, ...] = ()

@@ -106,6 +106,10 @@ _MOOD_GROOVE_POOL: dict[str, tuple[str, ...]] = {
     "M8":  ("dnb_amen_lean", "straight_4_4"),
     "M9":  ("trap_triplet_hat", "straight_4_4"),
     "M10": ("straight_4_4", "gospel_12_8", "ambient_drift"),
+    "M11": ("dilla_feel", "boom_bap_60", "mpc60_swing", "neo_soul"),    # lofi swing
+    "M12": ("ambient_drift", "neo_soul", "straight_4_4"),               # chillout flow
+    "M13": ("straight_4_4",),                                            # simple = on the grid
+    "M14": ("straight_4_4",),                                            # gameboy = rigid
 }
 
 
@@ -173,6 +177,10 @@ _MOOD_FORM_PREF: dict[str, tuple[int, ...]] = {
     "M8":  (5, 7, 16, 19),                   # dnb
     "M9":  (8, 18, 21, 22),                  # glitch
     "M10": (4, 6, 13, 14, 18, 20),           # cinematic
+    "M11": (1, 4, 8, 17, 13),                # lofi: A_Aprime / ABA / theme_var / ostinato_layer / AABA
+    "M12": (0, 1, 4, 8, 17, 18, 23),         # chillout: through_composed / A_Aprime / ABA / theme_var
+    "M13": (1, 4, 13, 23),                   # simple: A_Aprime / ABA / AABA / pulse_only
+    "M14": (5, 13, 14, 4, 21),               # gameboy: ABAB / AABA / ABCA / ABA / pyramid
 }
 
 
@@ -223,6 +231,10 @@ _MOOD_CURVE_PREF: dict[str, tuple[int, ...]] = {
     "M8":  (8, 11, 7),
     "M9":  (12, 7, 13, 4),
     "M10": (5, 11, 7, 14, 15),
+    "M11": (1, 14, 5, 13, 6),                # lofi — flat-mid w/ breath, gentle arc, U
+    "M12": (1, 14, 6, 5, 15),                # chillout — flat, breath, U
+    "M13": (0, 1, 14, 6),                    # simple — flat low/mid, breath
+    "M14": (3, 5, 7, 13),                    # gameboy — rise, arc, two_arches, terraces
 }
 
 
@@ -542,6 +554,24 @@ def hash_to_spec(
         else:
             comp_drop_last = (comp_seed[0] % 8 == 0)              # ~12.5% of bars drop last hit
             comp_vel_pull = (comp_seed[1] % 11) - 5                # -5..+5 velocity pull
+
+        # Per-bar layer dropout seed. Soft moods (M0/M11/M12/M13) silence
+        # individual layers occasionally so the mix breathes — every 4-8
+        # bars some layer rests for a bar.
+        drop_seed = s.take(f"perbar/aux/{i}", 4)
+        soft_mood = mood in ("M0", "M11", "M12", "M13")
+        if i == 0:
+            drop_drums = drop_lead = drop_comp = drop_pad = False
+        elif soft_mood:
+            # Each layer has a 1-in-6 to 1-in-4 chance of resting this bar.
+            drop_drums = (drop_seed[0] % 6 == 0)
+            drop_lead  = (drop_seed[1] % 5 == 0)
+            drop_comp  = (drop_seed[2] % 6 == 0)
+            drop_pad   = (drop_seed[3] % 7 == 0)
+        else:
+            # On other moods only the lead occasionally rests (1-in-12 bars).
+            drop_drums = drop_comp = drop_pad = False
+            drop_lead = (drop_seed[1] % 12 == 0)
         bars.append(Bar(
             index=i,
             chord=f"{theory.name_for_pc(e['root_pc'])}{e['quality']}",
@@ -557,6 +587,10 @@ def hash_to_spec(
             bass_ghost_first=ghost_first,
             comp_drop_last=comp_drop_last,
             comp_vel_pull=comp_vel_pull,
+            drop_drums=drop_drums,
+            drop_lead=drop_lead,
+            drop_comp=drop_comp,
+            drop_pad=drop_pad,
         ))
     bars = tuple(bars)
 
@@ -646,7 +680,7 @@ def hash_to_spec(
         LayerSpec(name="drone", midi_channel=5, synth_id="drone/tonic_fifth",
                   program=89,                      # Pad 2 (warm)
                   pattern_id="",
-                  extra={"enabled": mood in ("M0", "M1", "M10")}),
+                  extra={"enabled": mood in ("M0", "M1", "M10", "M12")}),
         LayerSpec(name="riser", midi_channel=6, synth_id="riser/reverse_cymbal",
                   program=119,                     # GM Reverse Cymbal
                   pattern_id="",
@@ -656,7 +690,9 @@ def hash_to_spec(
                   # 14 Tubular Bells, 98 Crystal, 12 Marimba, 113 Tinkle Bell.
                   program=({"M0": 9, "M1": 11, "M2": 12, "M3": 11,
                             "M4": 12, "M5": 98, "M6": 9, "M7": 98,
-                            "M8": 12, "M9": 113, "M10": 14}.get(mood, 9)),
+                            "M8": 12, "M9": 113, "M10": 14,
+                            "M11": 11, "M12": 9, "M13": 9, "M14": 80}
+                           .get(mood, 9)),
                   pattern_id="",
                   extra={}),
     )

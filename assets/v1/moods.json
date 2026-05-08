@@ -11,6 +11,10 @@
     "M7":  {"name": "Techno",             "tempo_pool": [128, 130, 132, 135, 138],"time_sigs": ["4/4"],                 "modes": ["aeolian", "phrygian", "dorian"]},
     "M8":  {"name": "DnB",                "tempo_pool": [85, 130, 170, 172, 174, 176], "time_sigs": ["4/4"],            "modes": ["aeolian", "dorian", "phrygian"]},
     "M9":  {"name": "Glitch",             "tempo_pool": [90, 100, 110, 120, 130, 135], "time_sigs": ["4/4", "7/8", "5/4"], "modes": ["dorian", "phrygian", "aeolian"]},
-    "M10": {"name": "Cinematic",          "tempo_pool": [70, 80, 90, 100, 110],   "time_sigs": ["4/4", "12/8", "3/4"],  "modes": ["aeolian", "dorian", "lydian", "phrygian"]}
+    "M10": {"name": "Cinematic",          "tempo_pool": [70, 80, 90, 100, 110],   "time_sigs": ["4/4", "12/8", "3/4"],  "modes": ["aeolian", "dorian", "lydian", "phrygian"]},
+    "M11": {"name": "Lofi",               "tempo_pool": [70, 75, 80, 84, 88, 92], "time_sigs": ["4/4"],                 "modes": ["ionian", "aeolian", "dorian"]},
+    "M12": {"name": "Chillout",           "tempo_pool": [80, 85, 90, 95, 100],    "time_sigs": ["4/4", "6/8"],          "modes": ["ionian", "lydian", "aeolian", "dorian"]},
+    "M13": {"name": "Simple",             "tempo_pool": [70, 80, 90, 100, 110],   "time_sigs": ["4/4"],                 "modes": ["ionian", "aeolian"]},
+    "M14": {"name": "Gameboy",            "tempo_pool": [110, 120, 130, 140, 150],"time_sigs": ["4/4"],                 "modes": ["ionian", "aeolian", "dorian", "mixolydian"]}
   }
 }

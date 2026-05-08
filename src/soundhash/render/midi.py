@@ -29,10 +29,33 @@ _ENERGY_GATE = {"drums": 0.30, "comp": 0.20, "lead": 0.40, "bass": 0.0,
 _MOOD_GATE_OVERRIDES = {
     "M0": {"drums": 0.10, "comp": 0.10, "lead": 0.18, "pad": 0.18,
            "counter": 0.30, "ear_candy": 0.22},
-    # Cinematic builds slow; let counter come in earlier.
     "M10": {"counter": 0.55},
+    # Lofi: open mid-range, less peak energy needed.
+    "M11": {"counter": 0.45, "ear_candy": 0.40},
+    # Chillout: lower thresholds so layers come in slowly.
+    "M12": {"drums": 0.20, "lead": 0.30, "pad": 0.30, "counter": 0.45,
+            "ear_candy": 0.40},
+    # Simple = sparse on purpose. Drums and lead always; comp + pad
+    # often silent; counter / ear-candy off entirely.
+    "M13": {"drums": 0.15, "comp": 0.55, "lead": 0.15, "pad": 0.55,
+            "counter": 0.95, "ear_candy": 0.95},
+    # Gameboy: rigid, full-on grid. Layers ride hard once active.
+    "M14": {"drums": 0.20, "lead": 0.20, "pad": 0.20, "counter": 0.60,
+            "ear_candy": 0.50},
 }
 _PAD_ENERGY_CEILING = 0.85       # pad drops out at peak energy to keep mix open
+
+# Per-mood lead octave (C5 default = 72; soft moods drop to C4 = 60 so the
+# lead doesn't feel shrill and high-pitched).
+_MOOD_LEAD_OCTAVE_MIDI = {
+    "M0": 60, "M1": 60, "M3": 60, "M10": 60,
+    "M11": 60, "M12": 60, "M13": 60,
+    "M14": 84,                                   # gameboy: high (chiptune lead sits up there)
+}
+
+
+def _lead_octave(mood: str) -> int:
+    return _MOOD_LEAD_OCTAVE_MIDI.get(mood, 72)
 
 
 def _gate(spec, layer_name: str) -> float:
@@ -357,7 +380,7 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "comp"):
+        if e < _gate(spec, "comp") or bar.drop_comp:
             continue
         # Per-section comp pattern, falling back to the macro pick.
         pat_id = spec.section_comp_pattern_ids.get(bar.section_letter, layer.pattern_id if layer else "")
@@ -426,7 +449,7 @@ def _comp_track_sustain(spec: SongSpec, ticks_per_bar: int, comp: MidiTrack) -> 
     cursor = 0
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "comp"):
+        if e < _gate(spec, "comp") or bar.drop_comp:
             continue
         vel = max(45, min(95, int(45 + 50 * e)))
         voice_base = bar.chord_root_midi + 24
@@ -472,7 +495,7 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     mask = subset.get("mask", 127)
     allowed_degs = [d for d in range(7) if mask & (1 << d)] or list(range(7))
-    base_octave_midi = 72                       # C5
+    base_octave_midi = _lead_octave(spec.provenance.mood)
 
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
@@ -711,7 +734,7 @@ def _pad_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         e = _bar_energy(spec, bar.index)
         # Pad fills the mid-energy zone; drops out at peak so the lead/drums
         # are not crowded.
-        if e < _gate(spec, "pad") or e > _PAD_ENERGY_CEILING:
+        if e < _gate(spec, "pad") or e > _PAD_ENERGY_CEILING or bar.drop_pad:
             continue
         # Voice one octave above the comp (= chord_root_midi + 36) and only
         # use the bottom 3 chord tones — pads sit better when they are dense
@@ -811,7 +834,7 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     events: list[tuple[int, int, int, int]] = []  # (abs_tick, kind, pitch, vel)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "drums"):
+        if e < _gate(spec, "drums") or bar.drop_drums:
             continue
         # Density-aware: high-density pattern when energy ≥ 0.55, else low.
         pat = pat_high if e >= 0.55 else pat_low
@@ -932,7 +955,7 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     bend_events: list[tuple[int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "lead"):
+        if e < _gate(spec, "lead") or bar.drop_lead:
             continue
         # Lead drops out on fill bars (next section is different) so the drum
         # fill speaks. Standard production convention.

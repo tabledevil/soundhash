@@ -2,37 +2,978 @@
   "version": "soundhash/v1/melody/contours",
   "_doc": "Contour shapes as scale-degree sequences in chord-relative degree space (1=root, 2=2nd, 3=3rd, ...; negative = octave below; 8=octave). Resolver samples this onto motif onsets via nearest-neighbour in normalized time. min_onsets gates motif compatibility. anchor_end forces final sample to land on chord tone. peak_position_frac is the normalized position of the contour's apex. compatible_palettes restricts which scale_subsets allow this contour. compatible_phrase_shapes references phrase_shapes.json ids. mood_tags are M0..M10.",
   "contours": [
-    {"id": "c01_arch", "samples": [1,2,3,5,6,5,3,1], "min_onsets": 4, "anchor_end": true, "peak_position_frac": 0.55, "compatible_palettes": ["full_diatonic","pent_major","hexatonic_no_4","mode_characteristic"], "compatible_phrase_shapes": ["AABA","period_4_4","sentence_2_2_4","climb_release"], "mood_tags": ["M1","M5","M10","M0"]},
-    {"id": "c02_inv_arch", "samples": [5,3,2,1,2,3,5], "min_onsets": 3, "anchor_end": false, "peak_position_frac": 0.5, "compatible_palettes": ["full_diatonic","pent_major","pent_minor"], "compatible_phrase_shapes": ["q_a","period_4_4","call_response_2_2"], "mood_tags": ["M2","M3","M8","M10"]},
-    {"id": "c03_ascend", "samples": [1,2,3,4,5,6,7,8], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 1.0, "compatible_palettes": ["full_diatonic","mode_characteristic"], "compatible_phrase_shapes": ["climb_release","sentence_2_2_4"], "mood_tags": ["M5","M6","M7","M10"]},
-    {"id": "c04_descend", "samples": [8,7,6,5,4,3,2,1], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 0.0, "compatible_palettes": ["full_diatonic","mode_characteristic"], "compatible_phrase_shapes": ["q_a","AABA","period_4_4"], "mood_tags": ["M0","M1","M10"]},
-    {"id": "c05_zigzag", "samples": [1,3,2,4,3,5,4,6], "min_onsets": 4, "anchor_end": false, "peak_position_frac": 0.85, "compatible_palettes": ["full_diatonic","pent_major"], "compatible_phrase_shapes": ["period_4_4","sentence_2_2_4"], "mood_tags": ["M5","M6","M9"]},
-    {"id": "c06_chant", "samples": [1,1,1,2,1], "min_onsets": 1, "anchor_end": true, "peak_position_frac": 0.6, "compatible_palettes": ["full_diatonic","chord_tone_only","mode_characteristic"], "compatible_phrase_shapes": ["AABA","ostinato_loop","hook_first"], "mood_tags": ["M0","M1","M10"]},
-    {"id": "c07_pendulum", "samples": [1,5,1,5,1,5,1,5], "min_onsets": 4, "anchor_end": true, "peak_position_frac": 0.75, "compatible_palettes": ["chord_tone_only","arpeggio","pent_major","pent_minor"], "compatible_phrase_shapes": ["ostinato_loop","hook_first","call_response_2_2"], "mood_tags": ["M2","M6","M7","M8"]},
-    {"id": "c08_arp_up", "samples": [1,3,5,8,5,3,1], "min_onsets": 4, "anchor_end": true, "peak_position_frac": 0.5, "compatible_palettes": ["arpeggio","chord_tone_only","full_diatonic"], "compatible_phrase_shapes": ["AABA","climb_release","sentence_2_2_4"], "mood_tags": ["M1","M5","M10"]},
-    {"id": "c09_arp_dn", "samples": [8,5,3,1,3,5,3,1], "min_onsets": 4, "anchor_end": true, "peak_position_frac": 0.0, "compatible_palettes": ["arpeggio","chord_tone_only","full_diatonic"], "compatible_phrase_shapes": ["q_a","AABA","period_4_4"], "mood_tags": ["M1","M5","M10"]},
-    {"id": "c10_neighbor", "samples": [3,2,3,4,3,2,3], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.5, "compatible_palettes": ["full_diatonic","pent_major","mode_characteristic"], "compatible_phrase_shapes": ["AABA","period_4_4","ostinato_loop"], "mood_tags": ["M0","M1","M3","M10"]},
-    {"id": "c11_lift_drop", "samples": [1,3,5,7,8,3,1], "min_onsets": 4, "anchor_end": true, "peak_position_frac": 0.6, "compatible_palettes": ["full_diatonic","pent_major","arpeggio"], "compatible_phrase_shapes": ["climb_release","hook_first"], "mood_tags": ["M5","M6","M10"]},
-    {"id": "c12_drop_lift", "samples": [5,3,1,2,3,5,6], "min_onsets": 4, "anchor_end": false, "peak_position_frac": 0.85, "compatible_palettes": ["full_diatonic","pent_minor","blues"], "compatible_phrase_shapes": ["q_a","period_4_4"], "mood_tags": ["M2","M8","M10"]},
-    {"id": "c13_blue_bend", "samples": [3,3,2,1,1,2,3], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.0, "compatible_palettes": ["blues","pent_minor"], "compatible_phrase_shapes": ["q_a","call_response_2_2","hook_first"], "mood_tags": ["M2","M8"]},
-    {"id": "c14_double_arch", "samples": [1,3,5,3,1,3,5,3], "min_onsets": 5, "anchor_end": false, "peak_position_frac": 0.4, "compatible_palettes": ["full_diatonic","pent_major","arpeggio"], "compatible_phrase_shapes": ["period_4_4","AABA"], "mood_tags": ["M5","M6","M10"]},
-    {"id": "c15_terrace", "samples": [1,1,3,3,5,5,8,8], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 0.95, "compatible_palettes": ["full_diatonic","pent_major","arpeggio"], "compatible_phrase_shapes": ["climb_release","sentence_2_2_4"], "mood_tags": ["M5","M6","M10"]},
-    {"id": "c16_terrace_dn", "samples": [8,8,5,5,3,3,1,1], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 0.0, "compatible_palettes": ["full_diatonic","pent_major","arpeggio"], "compatible_phrase_shapes": ["q_a","AABA","period_4_4"], "mood_tags": ["M1","M10"]},
-    {"id": "c17_question", "samples": [1,2,3,5,6,7], "min_onsets": 3, "anchor_end": false, "peak_position_frac": 1.0, "compatible_palettes": ["full_diatonic","pent_major","mode_characteristic"], "compatible_phrase_shapes": ["q_a","call_response_2_2"], "mood_tags": ["M1","M5","M10"]},
-    {"id": "c18_answer", "samples": [6,5,3,2,1], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.0, "compatible_palettes": ["full_diatonic","pent_major","mode_characteristic"], "compatible_phrase_shapes": ["q_a","call_response_2_2"], "mood_tags": ["M1","M5","M10"]},
-    {"id": "c19_chromatic_climb", "samples": [1,2,3,3,4,5,5,6], "min_onsets": 5, "anchor_end": false, "peak_position_frac": 1.0, "compatible_palettes": ["full_diatonic","blues"], "compatible_phrase_shapes": ["climb_release","sentence_2_2_4"], "mood_tags": ["M2","M8","M10"]},
-    {"id": "c20_hook_oscill", "samples": [3,5,3,1,3,5,3,1], "min_onsets": 4, "anchor_end": true, "peak_position_frac": 0.55, "compatible_palettes": ["pent_major","pent_minor","chord_tone_only"], "compatible_phrase_shapes": ["hook_first","ostinato_loop","call_response_2_2"], "mood_tags": ["M5","M6","M2"]},
-    {"id": "c21_lydian_lift", "samples": [1,3,4,5,7,8], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.85, "compatible_palettes": ["full_diatonic","mode_characteristic"], "compatible_phrase_shapes": ["climb_release","AABA"], "mood_tags": ["M0","M5","M10"]},
-    {"id": "c22_phrygian_dark", "samples": [1,2,3,2,1,2,1], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.3, "compatible_palettes": ["full_diatonic","mode_characteristic"], "compatible_phrase_shapes": ["q_a","AABA","ostinato_loop"], "mood_tags": ["M2","M4","M7","M9"]},
-    {"id": "c23_dorian_swing", "samples": [1,3,4,6,5,3,1], "min_onsets": 4, "anchor_end": true, "peak_position_frac": 0.45, "compatible_palettes": ["full_diatonic","mode_characteristic"], "compatible_phrase_shapes": ["AABA","period_4_4"], "mood_tags": ["M2","M3","M4"]},
-    {"id": "c24_riser", "samples": [1,1,2,3,5,6,7,8], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 1.0, "compatible_palettes": ["full_diatonic","pent_major"], "compatible_phrase_shapes": ["climb_release","sentence_2_2_4"], "mood_tags": ["M5","M6","M7","M8","M10"]},
-    {"id": "c25_faller", "samples": [8,7,5,3,2,1,1,1], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 0.0, "compatible_palettes": ["full_diatonic","pent_major"], "compatible_phrase_shapes": ["q_a","AABA","period_4_4"], "mood_tags": ["M0","M1","M10"]},
-    {"id": "c26_static_emph", "samples": [3,3,3,3,5,5,3,1], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.55, "compatible_palettes": ["full_diatonic","chord_tone_only","pent_major"], "compatible_phrase_shapes": ["hook_first","ostinato_loop"], "mood_tags": ["M0","M1","M3","M10"]},
-    {"id": "c27_skip_lift", "samples": [1,5,3,7,5,8], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.85, "compatible_palettes": ["arpeggio","chord_tone_only","full_diatonic"], "compatible_phrase_shapes": ["climb_release","hook_first"], "mood_tags": ["M5","M10"]},
-    {"id": "c28_skip_drop", "samples": [8,3,5,2,3,1], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.0, "compatible_palettes": ["arpeggio","chord_tone_only","full_diatonic"], "compatible_phrase_shapes": ["q_a","period_4_4"], "mood_tags": ["M1","M10"]},
-    {"id": "c29_pivot", "samples": [3,2,1,2,3,4,3], "min_onsets": 3, "anchor_end": true, "peak_position_frac": 0.7, "compatible_palettes": ["full_diatonic","pent_major","mode_characteristic"], "compatible_phrase_shapes": ["AABA","period_4_4","call_response_2_2"], "mood_tags": ["M0","M1","M3","M10"]},
-    {"id": "c30_blue_walk", "samples": [1,2,3,4,5,4,3,1], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 0.55, "compatible_palettes": ["blues","pent_minor","full_diatonic"], "compatible_phrase_shapes": ["q_a","period_4_4","hook_first"], "mood_tags": ["M2","M8","M10"]},
-    {"id": "c31_minimal", "samples": [1,3], "min_onsets": 1, "anchor_end": true, "peak_position_frac": 1.0, "compatible_palettes": ["chord_tone_only","arpeggio","full_diatonic"], "compatible_phrase_shapes": ["ostinato_loop","hook_first"], "mood_tags": ["M0","M1","M10"]},
-    {"id": "c32_octave_jump", "samples": [1,3,5,8,5,3,1,8], "min_onsets": 5, "anchor_end": true, "peak_position_frac": 0.95, "compatible_palettes": ["arpeggio","chord_tone_only","pent_major"], "compatible_phrase_shapes": ["climb_release","hook_first","sentence_2_2_4"], "mood_tags": ["M5","M6","M10"]}
+    {
+      "id": "c01_arch",
+      "samples": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        5,
+        3,
+        1
+      ],
+      "min_onsets": 4,
+      "anchor_end": true,
+      "peak_position_frac": 0.55,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "hexatonic_no_4",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "AABA",
+        "period_4_4",
+        "sentence_2_2_4",
+        "climb_release"
+      ],
+      "mood_tags": [
+        "M1",
+        "M5",
+        "M10",
+        "M0",
+        "M11",
+        "M12",
+        "M13",
+        "M14"
+      ]
+    },
+    {
+      "id": "c02_inv_arch",
+      "samples": [
+        5,
+        3,
+        2,
+        1,
+        2,
+        3,
+        5
+      ],
+      "min_onsets": 3,
+      "anchor_end": false,
+      "peak_position_frac": 0.5,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "pent_minor"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "period_4_4",
+        "call_response_2_2"
+      ],
+      "mood_tags": [
+        "M2",
+        "M3",
+        "M8",
+        "M10",
+        "M11",
+        "M12",
+        "M13"
+      ]
+    },
+    {
+      "id": "c03_ascend",
+      "samples": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 1.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "sentence_2_2_4"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M7",
+        "M10"
+      ]
+    },
+    {
+      "id": "c04_descend",
+      "samples": [
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 0.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "AABA",
+        "period_4_4"
+      ],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M10"
+      ]
+    },
+    {
+      "id": "c05_zigzag",
+      "samples": [
+        1,
+        3,
+        2,
+        4,
+        3,
+        5,
+        4,
+        6
+      ],
+      "min_onsets": 4,
+      "anchor_end": false,
+      "peak_position_frac": 0.85,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major"
+      ],
+      "compatible_phrase_shapes": [
+        "period_4_4",
+        "sentence_2_2_4"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M9"
+      ]
+    },
+    {
+      "id": "c06_chant",
+      "samples": [
+        1,
+        1,
+        1,
+        2,
+        1
+      ],
+      "min_onsets": 1,
+      "anchor_end": true,
+      "peak_position_frac": 0.6,
+      "compatible_palettes": [
+        "full_diatonic",
+        "chord_tone_only",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "AABA",
+        "ostinato_loop",
+        "hook_first"
+      ],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M10"
+      ]
+    },
+    {
+      "id": "c07_pendulum",
+      "samples": [
+        1,
+        5,
+        1,
+        5,
+        1,
+        5,
+        1,
+        5
+      ],
+      "min_onsets": 4,
+      "anchor_end": true,
+      "peak_position_frac": 0.75,
+      "compatible_palettes": [
+        "chord_tone_only",
+        "arpeggio",
+        "pent_major",
+        "pent_minor"
+      ],
+      "compatible_phrase_shapes": [
+        "ostinato_loop",
+        "hook_first",
+        "call_response_2_2"
+      ],
+      "mood_tags": [
+        "M2",
+        "M6",
+        "M7",
+        "M8",
+        "M11",
+        "M12",
+        "M13"
+      ]
+    },
+    {
+      "id": "c08_arp_up",
+      "samples": [
+        1,
+        3,
+        5,
+        8,
+        5,
+        3,
+        1
+      ],
+      "min_onsets": 4,
+      "anchor_end": true,
+      "peak_position_frac": 0.5,
+      "compatible_palettes": [
+        "arpeggio",
+        "chord_tone_only",
+        "full_diatonic"
+      ],
+      "compatible_phrase_shapes": [
+        "AABA",
+        "climb_release",
+        "sentence_2_2_4"
+      ],
+      "mood_tags": [
+        "M1",
+        "M5",
+        "M10",
+        "M14"
+      ]
+    },
+    {
+      "id": "c09_arp_dn",
+      "samples": [
+        8,
+        5,
+        3,
+        1,
+        3,
+        5,
+        3,
+        1
+      ],
+      "min_onsets": 4,
+      "anchor_end": true,
+      "peak_position_frac": 0.0,
+      "compatible_palettes": [
+        "arpeggio",
+        "chord_tone_only",
+        "full_diatonic"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "AABA",
+        "period_4_4"
+      ],
+      "mood_tags": [
+        "M1",
+        "M5",
+        "M10",
+        "M14"
+      ]
+    },
+    {
+      "id": "c10_neighbor",
+      "samples": [
+        3,
+        2,
+        3,
+        4,
+        3,
+        2,
+        3
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.5,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "AABA",
+        "period_4_4",
+        "ostinato_loop"
+      ],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M3",
+        "M10"
+      ]
+    },
+    {
+      "id": "c11_lift_drop",
+      "samples": [
+        1,
+        3,
+        5,
+        7,
+        8,
+        3,
+        1
+      ],
+      "min_onsets": 4,
+      "anchor_end": true,
+      "peak_position_frac": 0.6,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "arpeggio"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "hook_first"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M10",
+        "M14"
+      ]
+    },
+    {
+      "id": "c12_drop_lift",
+      "samples": [
+        5,
+        3,
+        1,
+        2,
+        3,
+        5,
+        6
+      ],
+      "min_onsets": 4,
+      "anchor_end": false,
+      "peak_position_frac": 0.85,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_minor",
+        "blues"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "period_4_4"
+      ],
+      "mood_tags": [
+        "M2",
+        "M8",
+        "M10"
+      ]
+    },
+    {
+      "id": "c13_blue_bend",
+      "samples": [
+        3,
+        3,
+        2,
+        1,
+        1,
+        2,
+        3
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.0,
+      "compatible_palettes": [
+        "blues",
+        "pent_minor"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "call_response_2_2",
+        "hook_first"
+      ],
+      "mood_tags": [
+        "M2",
+        "M8"
+      ]
+    },
+    {
+      "id": "c14_double_arch",
+      "samples": [
+        1,
+        3,
+        5,
+        3,
+        1,
+        3,
+        5,
+        3
+      ],
+      "min_onsets": 5,
+      "anchor_end": false,
+      "peak_position_frac": 0.4,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "arpeggio"
+      ],
+      "compatible_phrase_shapes": [
+        "period_4_4",
+        "AABA"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M10",
+        "M11",
+        "M12",
+        "M13"
+      ]
+    },
+    {
+      "id": "c15_terrace",
+      "samples": [
+        1,
+        1,
+        3,
+        3,
+        5,
+        5,
+        8,
+        8
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 0.95,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "arpeggio"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "sentence_2_2_4"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M10"
+      ]
+    },
+    {
+      "id": "c16_terrace_dn",
+      "samples": [
+        8,
+        8,
+        5,
+        5,
+        3,
+        3,
+        1,
+        1
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 0.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "arpeggio"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "AABA",
+        "period_4_4"
+      ],
+      "mood_tags": [
+        "M1",
+        "M10"
+      ]
+    },
+    {
+      "id": "c17_question",
+      "samples": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7
+      ],
+      "min_onsets": 3,
+      "anchor_end": false,
+      "peak_position_frac": 1.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "call_response_2_2"
+      ],
+      "mood_tags": [
+        "M1",
+        "M5",
+        "M10"
+      ]
+    },
+    {
+      "id": "c18_answer",
+      "samples": [
+        6,
+        5,
+        3,
+        2,
+        1
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "call_response_2_2"
+      ],
+      "mood_tags": [
+        "M1",
+        "M5",
+        "M10"
+      ]
+    },
+    {
+      "id": "c19_chromatic_climb",
+      "samples": [
+        1,
+        2,
+        3,
+        3,
+        4,
+        5,
+        5,
+        6
+      ],
+      "min_onsets": 5,
+      "anchor_end": false,
+      "peak_position_frac": 1.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "blues"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "sentence_2_2_4"
+      ],
+      "mood_tags": [
+        "M2",
+        "M8",
+        "M10",
+        "M11",
+        "M12",
+        "M13"
+      ]
+    },
+    {
+      "id": "c20_hook_oscill",
+      "samples": [
+        3,
+        5,
+        3,
+        1,
+        3,
+        5,
+        3,
+        1
+      ],
+      "min_onsets": 4,
+      "anchor_end": true,
+      "peak_position_frac": 0.55,
+      "compatible_palettes": [
+        "pent_major",
+        "pent_minor",
+        "chord_tone_only"
+      ],
+      "compatible_phrase_shapes": [
+        "hook_first",
+        "ostinato_loop",
+        "call_response_2_2"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M2",
+        "M11",
+        "M12",
+        "M13",
+        "M14"
+      ]
+    },
+    {
+      "id": "c21_lydian_lift",
+      "samples": [
+        1,
+        3,
+        4,
+        5,
+        7,
+        8
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.85,
+      "compatible_palettes": [
+        "full_diatonic",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "AABA"
+      ],
+      "mood_tags": [
+        "M0",
+        "M5",
+        "M10"
+      ]
+    },
+    {
+      "id": "c22_phrygian_dark",
+      "samples": [
+        1,
+        2,
+        3,
+        2,
+        1,
+        2,
+        1
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.3,
+      "compatible_palettes": [
+        "full_diatonic",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "AABA",
+        "ostinato_loop"
+      ],
+      "mood_tags": [
+        "M2",
+        "M4",
+        "M7",
+        "M9"
+      ]
+    },
+    {
+      "id": "c23_dorian_swing",
+      "samples": [
+        1,
+        3,
+        4,
+        6,
+        5,
+        3,
+        1
+      ],
+      "min_onsets": 4,
+      "anchor_end": true,
+      "peak_position_frac": 0.45,
+      "compatible_palettes": [
+        "full_diatonic",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "AABA",
+        "period_4_4"
+      ],
+      "mood_tags": [
+        "M2",
+        "M3",
+        "M4"
+      ]
+    },
+    {
+      "id": "c24_riser",
+      "samples": [
+        1,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 1.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "sentence_2_2_4"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M7",
+        "M8",
+        "M10"
+      ]
+    },
+    {
+      "id": "c25_faller",
+      "samples": [
+        8,
+        7,
+        5,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 0.0,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "AABA",
+        "period_4_4"
+      ],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M10"
+      ]
+    },
+    {
+      "id": "c26_static_emph",
+      "samples": [
+        3,
+        3,
+        3,
+        3,
+        5,
+        5,
+        3,
+        1
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.55,
+      "compatible_palettes": [
+        "full_diatonic",
+        "chord_tone_only",
+        "pent_major"
+      ],
+      "compatible_phrase_shapes": [
+        "hook_first",
+        "ostinato_loop"
+      ],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M3",
+        "M10"
+      ]
+    },
+    {
+      "id": "c27_skip_lift",
+      "samples": [
+        1,
+        5,
+        3,
+        7,
+        5,
+        8
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.85,
+      "compatible_palettes": [
+        "arpeggio",
+        "chord_tone_only",
+        "full_diatonic"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "hook_first"
+      ],
+      "mood_tags": [
+        "M5",
+        "M10"
+      ]
+    },
+    {
+      "id": "c28_skip_drop",
+      "samples": [
+        8,
+        3,
+        5,
+        2,
+        3,
+        1
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.0,
+      "compatible_palettes": [
+        "arpeggio",
+        "chord_tone_only",
+        "full_diatonic"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "period_4_4"
+      ],
+      "mood_tags": [
+        "M1",
+        "M10"
+      ]
+    },
+    {
+      "id": "c29_pivot",
+      "samples": [
+        3,
+        2,
+        1,
+        2,
+        3,
+        4,
+        3
+      ],
+      "min_onsets": 3,
+      "anchor_end": true,
+      "peak_position_frac": 0.7,
+      "compatible_palettes": [
+        "full_diatonic",
+        "pent_major",
+        "mode_characteristic"
+      ],
+      "compatible_phrase_shapes": [
+        "AABA",
+        "period_4_4",
+        "call_response_2_2"
+      ],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M3",
+        "M10"
+      ]
+    },
+    {
+      "id": "c30_blue_walk",
+      "samples": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        4,
+        3,
+        1
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 0.55,
+      "compatible_palettes": [
+        "blues",
+        "pent_minor",
+        "full_diatonic"
+      ],
+      "compatible_phrase_shapes": [
+        "q_a",
+        "period_4_4",
+        "hook_first"
+      ],
+      "mood_tags": [
+        "M2",
+        "M8",
+        "M10",
+        "M14"
+      ]
+    },
+    {
+      "id": "c31_minimal",
+      "samples": [
+        1,
+        3
+      ],
+      "min_onsets": 1,
+      "anchor_end": true,
+      "peak_position_frac": 1.0,
+      "compatible_palettes": [
+        "chord_tone_only",
+        "arpeggio",
+        "full_diatonic"
+      ],
+      "compatible_phrase_shapes": [
+        "ostinato_loop",
+        "hook_first"
+      ],
+      "mood_tags": [
+        "M0",
+        "M1",
+        "M10",
+        "M11",
+        "M12",
+        "M13"
+      ]
+    },
+    {
+      "id": "c32_octave_jump",
+      "samples": [
+        1,
+        3,
+        5,
+        8,
+        5,
+        3,
+        1,
+        8
+      ],
+      "min_onsets": 5,
+      "anchor_end": true,
+      "peak_position_frac": 0.95,
+      "compatible_palettes": [
+        "arpeggio",
+        "chord_tone_only",
+        "pent_major"
+      ],
+      "compatible_phrase_shapes": [
+        "climb_release",
+        "hook_first",
+        "sentence_2_2_4"
+      ],
+      "mood_tags": [
+        "M5",
+        "M6",
+        "M10"
+      ]
+    }
   ]
 }
