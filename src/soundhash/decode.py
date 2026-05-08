@@ -372,6 +372,17 @@ def _pick_drum_pattern(byte: int, kit_id: str, time_sig: str) -> dict:
     return eligible[byte % len(eligible)]
 
 
+def _pick_humanization_profile(byte: int) -> dict:
+    try:
+        data = tables.load("expression/humanization_profiles")
+    except FileNotFoundError:
+        return {"name": "groove-tight", "vel_jitter": 4}
+    profs = data.get("profiles", [])
+    if not profs:
+        return {"name": "groove-tight", "vel_jitter": 4}
+    return profs[byte % len(profs)]
+
+
 _ESCALATION_CACHE: dict | None = None
 
 
@@ -692,6 +703,7 @@ def hash_to_spec(
     drum_pat = drum_pat_low or drum_pat_high or {}
     drum_fill_id = _pick_drum_fill(macro[11], drum_kit["id"])
     esc_algo, deesc_algo = _pick_escalation_algos(macro[12])
+    humanization = _pick_humanization_profile(macro[27])
     bass_pat = _pick_bass_pattern(macro[13], mood, time_sig_str)
     bass_synth = _pick_bass_synth(macro[14], mood, bass_pat["id"])
     comp_role = _pick_comp_role(macro[15], mood)
@@ -817,6 +829,8 @@ def hash_to_spec(
         groove_template_id=groove_id,
         voicing_style=voicing_style,
         sub_flavor=sub_flavor,
+        humanization_profile=humanization.get("name", "groove-tight"),
+        humanization_vel_jitter=int(humanization.get("vel_jitter", 4)),
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,

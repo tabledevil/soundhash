@@ -238,6 +238,20 @@ def _accent_skeleton(spec) -> tuple[int, list[float], list[int]]:
 
 
 def _vel_jitter(spec, layer_name: str, range_pm: int = 5) -> int:
+    """Return a deterministic ±range_pm velocity offset, scaled by the picked
+    humanization profile.
+
+    spec.humanization_vel_jitter is the profile's authoritative ±range
+    (5 = mid-default, 0 = 'machine' = no jitter, 14 = 'acoustic-lively').
+    The call-site range_pm acts as a per-layer relative weight; we scale
+    it by profile_range / 5.0 so a 'groove-loose' profile (9) ≈ 1.8× the
+    default jitter while 'machine' (0) zeros it out.
+    """
+    profile_range = getattr(spec, "humanization_vel_jitter", 5)
+    scale = profile_range / 5.0 if profile_range else 0.0
+    range_pm = max(0, int(round(range_pm * scale)))
+    if range_pm == 0:
+        return 0
     key = (spec.provenance.hash_hex, layer_name)
     j = _VEL_JITTER_CACHE.get(key)
     if j is None:
