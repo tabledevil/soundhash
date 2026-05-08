@@ -64,14 +64,16 @@ _MOOD_FX: dict[str, list[tuple[str, dict]]] = {
 
 
 def apply_fx(samples: np.ndarray, sample_rate: int, mood: str) -> np.ndarray:
-    """Apply the mood's FX chain. samples: (n, 2) float32 in [-1, 1]."""
-    chain = _MOOD_FX.get(mood)
-    if not chain:
-        return samples
+    """Apply the mood's FX chain + master bus. samples: (n, 2) float32 in [-1, 1].
+
+    Chain order: mood-specific plugins → master bus (HPF + low-shelf cut +
+    presence shelf). The master bus is mood-independent and corrects the
+    GM-soundfont's tendency to dominate the low band.
+    """
     try:
         from pedalboard import (
             Pedalboard, Reverb, Delay, Chorus, Phaser, Compressor, Distortion,
-            LowShelfFilter, HighShelfFilter,
+            LowShelfFilter, HighShelfFilter, HighpassFilter,
         )
     except ImportError:
         return samples
@@ -80,13 +82,22 @@ def apply_fx(samples: np.ndarray, sample_rate: int, mood: str) -> np.ndarray:
         "Reverb": Reverb, "Delay": Delay, "Chorus": Chorus, "Phaser": Phaser,
         "Compressor": Compressor, "Distortion": Distortion,
         "LowShelfFilter": LowShelfFilter, "HighShelfFilter": HighShelfFilter,
+        "HighpassFilter": HighpassFilter,
     }
     plugins = []
-    for name, kwargs in chain:
+    for name, kwargs in (_MOOD_FX.get(mood) or []):
         cls = cls_map.get(name)
         if cls is None:
             continue
         plugins.append(cls(**kwargs))
+
+    # Master bus: applied to every mood. Tames sub rumble and lifts presence
+    # so spectral balance moves toward the target 25/45/30 distribution.
+    plugins.extend([
+        HighpassFilter(cutoff_frequency_hz=40),
+        LowShelfFilter(cutoff_frequency_hz=110, gain_db=-1.5, q=0.7),
+        HighShelfFilter(cutoff_frequency_hz=4500, gain_db=+1.5, q=0.7),
+    ])
+
     board = Pedalboard(plugins)
-    # pedalboard expects (channels, samples) for multi-channel float32 in [-1,1].
     return board(samples.astype(np.float32), sample_rate)

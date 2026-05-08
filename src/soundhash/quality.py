@@ -72,12 +72,15 @@ def score_wav(wav_bytes: bytes, target_lufs: float = -16.0) -> QualityScore:
     peak = float(np.max(np.abs(mono))) or 1e-9
     crest_db = 20.0 * np.log10(peak / rms)
     # Plateau 9-14 dB → 1.0; falls off linearly outside ±5.
-    if 9.0 <= crest_db <= 14.0:
+    # Crest factor: 9-18 dB is a wide acceptance zone (raw mastered music
+    # falls anywhere in that range; broadcast-loud is 8-12, dynamic
+    # acoustic is 14-18). Penalize only obvious squashed/peaky cases.
+    if 9.0 <= crest_db <= 18.0:
         crest_score = 1.0
     elif crest_db < 9.0:
         crest_score = max(0.0, 1.0 - (9.0 - crest_db) / 5.0)
     else:
-        crest_score = max(0.0, 1.0 - (crest_db - 14.0) / 5.0)
+        crest_score = max(0.0, 1.0 - (crest_db - 18.0) / 5.0)
 
     # ---- Spectral balance ----------------------------------------------
     # FFT over a power-of-2 chunk in the middle of the track.
@@ -98,9 +101,17 @@ def score_wav(wav_bytes: bytes, target_lufs: float = -16.0) -> QualityScore:
     ])
     total = band_pow.sum() or 1e-9
     band_pct = tuple(p / total for p in band_pow)
-    target = (0.25, 0.45, 0.30)
-    deviation = sum(abs(b - t) for b, t in zip(band_pct, target))
-    spectrum_score = max(0.0, 1.0 - deviation / 0.6)
+    # Pleasantness reading of spectral balance is genre-relative (techno needs
+    # bass, ambient needs space). Penalize only the obvious failures:
+    #   - any band < 8%   → that band is missing → -0.3 per missing
+    #   - any band > 70%  → mix is one-band-dominated → -0.3
+    spectrum_score = 1.0
+    for b in band_pct:
+        if b < 0.08:
+            spectrum_score -= 0.30
+        if b > 0.70:
+            spectrum_score -= 0.30
+    spectrum_score = max(0.0, spectrum_score)
 
     # ---- Stereo width --------------------------------------------------
     L, R = samples[:, 0], samples[:, 1]
@@ -109,12 +120,14 @@ def score_wav(wav_bytes: bytes, target_lufs: float = -16.0) -> QualityScore:
     mid_rms = float(np.sqrt(np.mean(mid * mid))) or 1e-9
     side_rms = float(np.sqrt(np.mean(side * side)))
     width = side_rms / mid_rms
-    if 0.10 <= width <= 0.45:
+    # Stereo width: 0.08-0.80 is acceptable. Below 0.08 = nearly mono;
+    # above 0.80 = phase issues / poor mono-compatibility.
+    if 0.08 <= width <= 0.80:
         stereo_score = 1.0
-    elif width < 0.10:
-        stereo_score = max(0.0, 1.0 - (0.10 - width) / 0.10)
+    elif width < 0.08:
+        stereo_score = max(0.0, 1.0 - (0.08 - width) / 0.08)
     else:
-        stereo_score = max(0.0, 1.0 - (width - 0.45) / 0.55)
+        stereo_score = max(0.0, 1.0 - (width - 0.80) / 0.5)
 
     overall = float(np.mean([lufs_score, crest_score, spectrum_score, stereo_score]))
 
