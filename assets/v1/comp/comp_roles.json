@@ -40,7 +40,8 @@
         "M5",
         "M6",
         "M10",
-        "M7"
+        "M7",
+        "M14"
       ],
       "must_top_below_melody_median_minus_semitones": 5
     },
@@ -60,7 +61,8 @@
         "M1",
         "M3",
         "M5",
-        "M10"
+        "M10",
+        "M14"
       ],
       "must_top_below_melody_median_minus_semitones": 5
     },
@@ -178,7 +180,8 @@
         "M6",
         "M7",
         "M8",
-        "M9"
+        "M9",
+        "M14"
       ],
       "must_top_below_melody_median_minus_semitones": 5
     },
