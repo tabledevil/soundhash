@@ -283,7 +283,7 @@ soundhash/
 
 ## 13. Implementation status (current)
 
-End-to-end pipeline working: SHA-256 → SongSpec → MIDI (5 tracks) → WAV. 15 tests passing across 9 commits since milestone-1.
+End-to-end pipeline working: SHA-256 → SongSpec → MIDI (up to 9 musical tracks) → WAV. 20 tests passing across 23 commits since milestone-1.
 
 ### Wired in `src/soundhash/`
 
@@ -304,36 +304,48 @@ End-to-end pipeline working: SHA-256 → SongSpec → MIDI (5 tracks) → WAV. 1
 
 **Theory (`theory.resolve_progression`)** — Roman numeral + quality → (root_pc, root_midi, chord_pcs).
 
-**Render (`render.midi`)** — Type-1 PPQ-480 MIDI with up to 6 tracks (meta + bass + comp + drums + lead + pad). All events sorted by absolute tick before delta computation:
+**Render (`render.midi`)** — Type-1 PPQ-480 MIDI with up to **10 tracks** (meta + 9 musical layers). All events sorted by absolute tick before delta computation. Per-mood gate overrides ensure ambient moods (M0) don't starve their layers on flat-low energy curves.
 
-- **Bass**: reads pattern.grid (degree-rhythm cells) and emits R/3/5/7/CH per cell with articulation-driven duration; respects synth octave window; per-bar HKDF mutation (octave shift / skip-last / ghost-first); per-role groove timing offsets.
-- **Comp**: reads chord-rhythm pattern hits per section letter; voicing follows comp role's polyphony_mode (full_voicing / partial_voicing / monophonic_sequence using arp_shape.sequence + octave_offsets); silent on `no_comp`.
-- **Drums**: density-aware pair (low for energy<0.55, high for ≥0.55); section-transition fill in last span_steps cells; crash on each new-section downbeat; per-row groove timing offsets; deterministic ±5 velocity jitter.
-- **Lead**: motif onsets × contour scale-degrees × scale-subset bitmask; strong-beat chord-tone snap on beats 0/2; per-bar mutation (transpose ±1/±2 / invert about mean); silent on fill bars; per-bar CC11 expression swell (95→122→105); pitch-bend "fall" (0 → -8192) on phrase-end notes.
-- **Pad**: 5th layer, mood-keyed pad GM program; voices bottom 3 chord tones one octave above comp; energy-gated to mid-range (0.40–0.85) so peak bars stay open.
+- **Bass**: reads pattern.grid (degree-rhythm cells) and emits R/3/5/7/CH per cell with articulation-driven duration; respects synth octave window; per-bar HKDF mutation (octave shift / skip-last / ghost-first); per-role groove timing offsets; CC5/CC65 portamento on octave-shift bars; ±4 velocity jitter.
+- **Comp**: reads chord-rhythm pattern hits per *section* (each section letter gets its own pattern); voicing follows comp role's polyphony_mode (full_voicing / partial_voicing / monophonic_sequence using arp_shape.sequence + octave_offsets); per-bar `comp_drop_last` and ±5 `comp_vel_pull` mutations; silent on `no_comp`; ±4 velocity jitter.
+- **Drums**: density-aware pattern pair (low for energy<0.55, high for ≥0.55); section-transition fill in last span_steps cells; crash on each new-section downbeat; per-row groove timing offsets; ±5 velocity jitter.
+- **Lead**: motif onsets × contour scale-degrees × scale-subset bitmask; strong-beat chord-tone snap on beats 0/2; per-bar mutation (transpose ±1/±2 / invert about mean); silent on fill bars; per-bar CC11 expression swell (95→122→105); pitch-bend "fall" (0 → -8192) on phrase-end notes; +15 vel accent on first onset of each new section.
+- **Pad**: mood-keyed pad GM program; voices bottom 3 chord tones one octave above comp; energy-gated to mid-range (0.40–0.85) so peak bars stay open; ±3 vel jitter.
+- **Counter** (high-energy parallel third): mirrors lead motif/contour/scale-subset transposed +2 scale-degrees; energy-gated ≥0.65 (≥0.30 on M0); silent on fill bars; mood-keyed program (flute/choir/strings/synth); ±4 jitter.
+- **Drone** (M0/M1/M10 only): sustained tonic+fifth pedal in C2-B2, GM Pad 2 Warm, vel 48; one held interval across the whole song.
+- **Riser**: GM 119 Reverse Cymbal sweep on bars where `energy[i+1] - energy[i] >= 0.22`; CC11 ramp 20 → 127 across the bar then resets to 100.
+- **Ear-candy**: short percussive stabs at off-beat 16th positions sampled per-bar from `aux_layers.json`'s ear_candy_table via HKDF `aux/earcandy/main/<bar_idx>`; pitches walk chord tones; mood-keyed bell program (Glockenspiel/Vibraphone/Crystal/Tubular/Tinkle); energy-gated ≥0.50.
 
-**Audio (`render.audio`)** — shells out to `fluidsynth -ni` with cpu-cores=1, reverb/chorus off; reads the WAV back; applies 5 ms fade-in + 200 ms cosine fade-out, ≤30 s length cap, LUFS normalization to -16 (pyloudnorm ITU-R BS.1770-4) and peak ceiling at -1.5 dBFS. Deterministic across runs.
+**Audio (`render.audio`)** — shells out to `fluidsynth -ni` with cpu-cores=1, reverb/chorus off; reads the WAV back; applies 5 ms fade-in + 200 ms cosine fade-out, ≤30 s length cap, LUFS normalization to -16 (pyloudnorm ITU-R BS.1770-4) and peak ceiling at -1.5 dBFS. Inserts a RIFF `LIST/INFO` chunk with provenance (ISFT/ICMT/ICOP) after `fmt ` and patches the RIFF size header. Deterministic across runs.
 
 **MIME (`mime.family_for_mime`)** — pinned to `python-magic` with extension fallback for `octet-stream`.
+
+**Per-mood biases** (cumulative effect: each mood lands on a recognisable mix):
+
+- `_GM_PALETTE` — bass / comp / lead / pad / counter program candidates per mood.
+- `_MOOD_GROOVE_POOL` — groove template ids per mood (M2 → boom_bap_60 / dilla / mpc60_swing; M5 → synthwave_tight; M9 → trap_triplet_hat).
+- `_MOOD_CURVE_PREF` — energy curve ids per mood (M5 → rise/arc/late_drop/cliff).
+- `_MOOD_FORM_PREF` — form ids per mood (M5 → ABAB/build_drop/AABA/ABCA/late_drop).
+- `_MOOD_GATE_OVERRIDES` — per-mood layer activation gates (M0 lowered, M10 counter eased).
 
 ### Verified contract (within-arch byte-identity)
 
 - Same hash → same SongSpec → same MIDI → same WAV bytes (under bundled `MS-Basic.sf3` + fluidsynth 2.5.4 + Apple Silicon).
-- Test corpus: 1024 random-hash pairs all pass byte-identity.
-- 1000-hash audit shows all 11 moods reachable, all 15 groove templates used, 24 distinct forms appearing.
+- 20 tests pass (11 decoder invariants + 5 MIDI render + 1 audio render + 5 corpus regression).
+- Corpus regression test (60 hashes × 10 MIME types) checks: ≥8 moods reachable, all pitches in MIDI range, drums fire ≥90%, no critical layer silent on >45% of files in any mood, total duration ≤30s.
 
 ### Known gaps before v1 freeze
 
 - Audio render pinning is host-bound (Mac Apple Silicon / fluidsynth 2.5.4 / MS-Basic SF3). Cross-arch will require either Docker canonical or per-arch wheel testing.
-- Bass synth declares synth program but render still uses GM palette — synth_id↔asset wiring deferred.
-- Aux layers other than pad (counter-melody, drone, ad-libs, risers, ear-candy) not yet wired.
-- Form layout still always loops the picked progression to 8 bars; bar count doesn't yet derive from form.layout.
-- Strict `magic.mgc` SHA pinning + provenance metadata in WAV / MIDI not yet wired.
-- HKDF labels reserved but not yet consumed: `earcandy/positions`, `earcandy/types`, `harmony/substitutions`, `harmony/modulation`, `dither`, etc.
+- Bass `synth_id` declared but render still uses GM palette — sf2/sfz patch wiring deferred.
+- Strict `magic.mgc` SHA pinning not yet wired (provenance metadata in WAV is wired; MIDI markers are wired).
+- Several HKDF labels reserved but not yet consumed: `earcandy/types`, `harmony/substitutions`, `harmony/modulation`, `dither`.
+- Counter-melody is a parallel-3rd shadow of the lead; truer counter-melody (independent contour / contrary motion) not yet implemented.
+- Riser sample (GM 119) is the only non-musical layer; could add ad-libs / glitch stutters / vocal chops.
 
 ### Repo footprint
 
 - 58 JSON tables under `assets/v1/` (all valid; one curated `MS-Basic.sf3` SoundFont 49 MB, gitignored).
-- ~1100 LOC of Python in `src/soundhash/`.
+- ~1500 LOC of Python in `src/soundhash/`.
 - 14 dimensions of research findings in `research/`.
-- 9 commits on `main` since initial scaffold.
+- 23 commits on `main` since initial scaffold.
