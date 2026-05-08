@@ -516,6 +516,12 @@ def hash_to_spec(
     target_bars = _bars_from_layout(form, default_n=8, cap=max_bars_for_30s)
 
     # Loop the progression to fill target_bars.
+    if not chord_entries:
+        # Fallback: a single bar of the tonic. Should not happen with the
+        # curated table but guards against a runtime infinite-loop.
+        chord_entries = [{"rn": "I", "quality": "maj", "root_pc": key_root,
+                          "root_midi": (3 + 1) * 12 + key_root,
+                          "chord_pcs": [0, 4, 7], "bass_inversion": 0}]
     looped = []
     while len(looped) < target_bars:
         looped.extend(chord_entries)
@@ -617,7 +623,6 @@ def hash_to_spec(
     lead_program = _pick_gm_program(macro[21], mood, "lead", default=80)
     pad_program  = _pick_gm_program(macro[23], mood, "pad",  default=89)
     counter_program = _pick_gm_program(macro[22], mood, "counter", default=73)
-    counter_program = _pick_gm_program(macro[23] ^ 0x55, mood, "counter", default=73)
 
     # Per-section motif & contour overrides — introduces real variation between
     # form sections (A/B/C). Falls back to the macro melody picks for section A.

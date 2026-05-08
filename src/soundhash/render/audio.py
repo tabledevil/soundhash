@@ -169,16 +169,19 @@ def _postprocess_wav(wav_bytes: bytes, mood: str | None = None) -> bytes:
         samples = samples[:max_frames]
     n = len(samples)
 
-    # 2. LUFS normalisation (only if there's enough audio for the gating window).
-    samples = _normalise_loudness(samples, rate)
-
-    # 3. Per-mood FX chain (reverb / delay / chorus / EQ via pedalboard).
+    # 2. Per-mood FX chain FIRST. Reverb/delay/distortion change the
+    # integrated loudness, so the LUFS pass must come after the FX
+    # otherwise the "-16 LUFS" target is wrong by however much the FX
+    # added/removed.
     if mood:
         try:
             from .fx import apply_fx
             samples = apply_fx(samples, rate, mood)
         except Exception:
             pass
+
+    # 3. LUFS normalisation (only if there's enough audio for the gating window).
+    samples = _normalise_loudness(samples, rate)
 
     # 4. Cosine fades.
     fi = max(1, int(FADE_IN_MS * rate / 1000))
