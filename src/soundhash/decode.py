@@ -613,6 +613,10 @@ def hash_to_spec(
                   program=89,                      # Pad 2 (warm)
                   pattern_id="",
                   extra={"enabled": mood in ("M0", "M1", "M10")}),
+        LayerSpec(name="riser", midi_channel=6, synth_id="riser/reverse_cymbal",
+                  program=119,                     # GM Reverse Cymbal
+                  pattern_id="",
+                  extra={}),
     )
 
     provenance = Provenance(

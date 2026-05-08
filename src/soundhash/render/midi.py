@@ -137,6 +137,9 @@ def render_midi(spec: SongSpec) -> bytes:
     drone = _drone_track(spec, ticks_per_bar)
     if drone is not None:
         mf.tracks.append(drone)
+    riser = _riser_track(spec, ticks_per_bar)
+    if riser is not None:
+        mf.tracks.append(riser)
 
     buf = io.BytesIO()
     mf.save(file=buf)
@@ -480,6 +483,61 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         delta = max(0, abs_tick - cursor)
         msg_type = "note_on" if kind == 0 else "note_off"
         track.append(Message(msg_type, channel=4, note=pitch, velocity=vel, time=delta))
+        cursor = abs_tick
+    return track
+
+
+def _riser_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
+    """One-bar reverse-cymbal sweep before any large energy jump.
+
+    Triggered on bar i when bar_energies[i+1] - bar_energies[i] >= 0.25.
+    Uses GM program 119 (Reverse Cymbal); pitch 60 is irrelevant — the
+    sample is the timbre. CC11 ramp lets the swell crescendo in.
+    """
+    layer = next((l for l in spec.layers if l.name == "riser"), None)
+    if layer is None or len(spec.bar_energies) < 2:
+        return None
+
+    rises: list[int] = []
+    for i in range(len(spec.bar_energies) - 1):
+        if spec.bar_energies[i + 1] - spec.bar_energies[i] >= 0.25:
+            rises.append(i)
+    if not rises:
+        return None
+
+    track = MidiTrack()
+    track.append(MetaMessage("track_name", name="riser", time=0))
+    track.append(Message("program_change", channel=6,
+                         program=_layer_program(spec, "riser", default=119), time=0))
+
+    events: list[tuple[int, int, int, int]] = []   # (abs_tick, kind, *rest)
+    PITCH = 60
+    for bar_idx in rises:
+        bar_tick = bar_idx * ticks_per_bar
+        # CC11 swell across the bar: 20 → 127 in 8 steps.
+        for k in range(8):
+            t_in_bar = int(round((k / 8) * ticks_per_bar))
+            val = max(1, min(127, int(20 + 107 * k / 7)))
+            events.append((bar_tick + t_in_bar, 2, 11, val))
+        # One held note across the bar.
+        events.append((bar_tick, 0, PITCH, 80))
+        events.append((bar_tick + ticks_per_bar - 40, 1, PITCH, 64))
+        # Reset CC11 to a neutral value just after note-off so subsequent rises
+        # start from a known baseline.
+        events.append((bar_tick + ticks_per_bar - 20, 2, 11, 100))
+
+    events.sort(key=lambda e: (e[0], e[1], e[2]))
+    cursor = 0
+    for abs_tick, kind, *rest in events:
+        delta = max(0, abs_tick - cursor)
+        if kind == 2:
+            cc, val = rest
+            track.append(Message("control_change", channel=6,
+                                 control=cc, value=val, time=delta))
+        else:
+            pitch, vel = rest
+            msg_type = "note_on" if kind == 0 else "note_off"
+            track.append(Message(msg_type, channel=6, note=pitch, velocity=vel, time=delta))
         cursor = abs_tick
     return track
 
