@@ -588,6 +588,10 @@ def hash_to_spec(
                       "scale_subset_id": melody_scale.get("id", ""),
                       "transpose_degrees": 2,    # parallel third (in scale degrees)
                   }),
+        LayerSpec(name="drone", midi_channel=5, synth_id="drone/tonic_fifth",
+                  program=89,                      # Pad 2 (warm)
+                  pattern_id="",
+                  extra={"enabled": mood in ("M0", "M1", "M10")}),
     )
 
     provenance = Provenance(

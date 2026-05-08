@@ -134,6 +134,9 @@ def render_midi(spec: SongSpec) -> bytes:
     counter = _counter_track(spec, ticks_per_bar)
     if counter is not None:
         mf.tracks.append(counter)
+    drone = _drone_track(spec, ticks_per_bar)
+    if drone is not None:
+        mf.tracks.append(drone)
 
     buf = io.BytesIO()
     mf.save(file=buf)
@@ -478,6 +481,33 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         msg_type = "note_on" if kind == 0 else "note_off"
         track.append(Message(msg_type, channel=4, note=pitch, velocity=vel, time=delta))
         cursor = abs_tick
+    return track
+
+
+def _drone_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
+    """Sustained tonic+fifth pedal on the song key; only M0/M1/M10 by default."""
+    layer = next((l for l in spec.layers if l.name == "drone"), None)
+    if layer is None or not layer.extra.get("enabled"):
+        return None
+    track = MidiTrack()
+    track.append(MetaMessage("track_name", name="drone", time=0))
+    track.append(Message("program_change", channel=5,
+                         program=_layer_program(spec, "drone", default=89), time=0))
+    # One held tonic + fifth across the whole song. Two-octave register
+    # below the comp so the drone doesn't muddy the bass.
+    tonic = 36 + spec.key_root           # C2..B2 region
+    fifth = tonic + 7
+    if not spec.bars:
+        return None
+    on_tick = 0
+    off_tick = len(spec.bars) * ticks_per_bar - 60
+    if off_tick <= on_tick:
+        return None
+    vel = 48
+    track.append(Message("note_on", channel=5, note=tonic, velocity=vel, time=0))
+    track.append(Message("note_on", channel=5, note=fifth, velocity=vel, time=0))
+    track.append(Message("note_off", channel=5, note=tonic, velocity=64, time=off_tick))
+    track.append(Message("note_off", channel=5, note=fifth, velocity=64, time=0))
     return track
 
 
