@@ -331,21 +331,33 @@ End-to-end pipeline working: SHA-256 → SongSpec → MIDI (up to 9 musical trac
 ### Verified contract (within-arch byte-identity)
 
 - Same hash → same SongSpec → same MIDI → same WAV bytes (under bundled `MS-Basic.sf3` + fluidsynth 2.5.4 + Apple Silicon).
-- 20 tests pass (11 decoder invariants + 5 MIDI render + 1 audio render + 5 corpus regression).
-- Corpus regression test (60 hashes × 10 MIME types) checks: ≥8 moods reachable, all pitches in MIDI range, drums fire ≥90%, no critical layer silent on >45% of files in any mood, total duration ≤30s.
+- **21 fast tests** + 1 audio-render quality-baseline test (skippable on systems without fluidsynth).
+- Corpus regression (60 hashes × 10 MIME types) asserts: all 12 keys reached, ≥8 moods reachable, all pitches in MIDI range, drums fire ≥60%, no critical layer silent on >60% of files in any mood, total duration ≤30s, audio quality average ≥0.65.
+- HKDF label registry test enforces: every label used in code must appear in `assets/v1/labels.json`.
 
-### Known gaps before v1 freeze
+### Adversarial-review status
 
-- Audio render pinning is host-bound (Mac Apple Silicon / fluidsynth 2.5.4 / MS-Basic SF3). Cross-arch will require either Docker canonical or per-arch wheel testing.
-- Bass `synth_id` declared but render still uses GM palette — sf2/sfz patch wiring deferred.
-- Strict `magic.mgc` SHA pinning not yet wired (provenance metadata in WAV is wired; MIDI markers are wired).
-- Several HKDF labels reserved but not yet consumed: `earcandy/types`, `harmony/substitutions`, `harmony/modulation`, `dither`.
-- Counter-melody is a parallel-3rd shadow of the lead; truer counter-melody (independent contour / contrary motion) not yet implemented.
-- Riser sample (GM 119) is the only non-musical layer; could add ad-libs / glitch stutters / vocal chops.
+The post-research-pass adversarial review (codex + gemini, 5 areas: implementation, sound design, musical spectrum, quality measurement, dimensions audit) flagged 18 P0/P1/P2 items. **17 of 18 closed.** One remaining:
+
+- **#84** — `time_sig` + `swing` are still hardcoded `(4, 4)` / `straight` in `decode.py`. Render assumes 4/4 in many places (drum patterns, comp grid_steps, melody motif beats) so de-hardcoding is multi-day work; queued.
+
+### Macro-byte budget — current state
+
+Of the 32-byte macro stream, **31 bytes drive at least one observable decision**. Only byte 21 (phrase shape) is still inert; phrase shape is implicit in motif `total_beats`. Full byte map in `BYTES.md`.
+
+Recently wired (since the post-adversarial-review batch):
+- byte 1 → 4 mood sub-flavors (tempo + lead octave nudge)
+- byte 8 → 10 voicing styles (close/open/sus/quartal/power/shell/drop2/drop3/rootless A/B)
+- byte 12 → 8 drum escalation algos picked (2 with active render behaviour)
+- byte 25 → 16 layer-activation matrices (lead-audible filter applied)
+- byte 27 → 6 humanization profiles (vel-jitter scale)
+- byte 29 → 4 FX wet scales (0.6 / 0.9 / 1.0 / 1.15)
+- byte 30 → 4 mix-balance presets (CC7 per layer)
 
 ### Repo footprint
 
 - 58 JSON tables under `assets/v1/` (all valid; one curated `MS-Basic.sf3` SoundFont 49 MB, gitignored).
-- ~1500 LOC of Python in `src/soundhash/`.
+- ~1900 LOC of Python in `src/soundhash/`.
 - 14 dimensions of research findings in `research/`.
-- 23 commits on `main` since initial scaffold.
+- 5-area adversarial review summaries in `research/adv-review/`.
+- ~60 commits on `main` since initial scaffold.
