@@ -16,6 +16,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--midi", action="store_true", help="emit a .mid file")
     p.add_argument("--audio", action="store_true",
                    help="emit a .wav file (requires fluidsynth on PATH)")
+    p.add_argument("--mp3", action="store_true",
+                   help="also emit a .mp3 (requires lame on PATH)")
+    p.add_argument("--flac", action="store_true",
+                   help="also emit a .flac (requires flac on PATH)")
     p.add_argument("--mood", help="override mood (M0..M10)")
     p.add_argument("--mime", default="auto",
                    help="auto | off | strict | <mime/type>")
@@ -98,6 +102,24 @@ def main(argv: list[str] | None = None) -> int:
                     print("  psy     unavailable (install mosqito)", file=sys.stderr)
                 else:
                     print(f"  psy     {psy.summary()}", file=sys.stderr)
+            if args.mp3:
+                import shutil, subprocess
+                if shutil.which("lame"):
+                    mp3_path = args.file + ".soundhash.mp3"
+                    subprocess.run(["lame", "-q", "2", "-b", "192",
+                                    "--silent", wav_path, mp3_path], check=True)
+                    print(f"  wrote   {mp3_path}", file=sys.stderr)
+                else:
+                    print("  mp3     skipped (lame not on PATH)", file=sys.stderr)
+            if args.flac:
+                import shutil, subprocess
+                if shutil.which("flac"):
+                    flac_path = args.file + ".soundhash.flac"
+                    subprocess.run(["flac", "-f", "-s", "-o", flac_path, wav_path],
+                                   check=True)
+                    print(f"  wrote   {flac_path}", file=sys.stderr)
+                else:
+                    print("  flac    skipped (flac CLI not on PATH)", file=sys.stderr)
 
     # TODO: render via render.midi / render.audio
     return 0
