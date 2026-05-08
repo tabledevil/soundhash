@@ -53,6 +53,12 @@ def _find_seed_for_mood(mood: str, max_tries: int = 5000):
     return None
 
 
+def _spec_from_file_for_mood(file_path: str, mood: str):
+    from .decode import hash_to_spec
+    h = hashlib.sha256(open(file_path, "rb").read()).digest()
+    return f"{Path(file_path).name}-{mood}", h, hash_to_spec(h, mood_override=mood)
+
+
 def _render_one(seed: str, h: bytes, spec, out_dir: Path):
     from .render.midi import render_midi
     from .render.audio import render_wav
@@ -107,6 +113,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="silence between samples in stitched WAV")
     ap.add_argument("--score", action="store_true",
                     help="print quality score per sample")
+    ap.add_argument("--file", metavar="PATH",
+                    help="render this file in every requested mood (cross-mood demo)")
     args = ap.parse_args(argv)
 
     out_dir = Path(args.out)
@@ -121,7 +129,10 @@ def main(argv: list[str] | None = None) -> int:
         from .quality import score_wav
 
     for mood in args.moods:
-        result = _find_seed_for_mood(mood)
+        if args.file:
+            result = _spec_from_file_for_mood(args.file, mood)
+        else:
+            result = _find_seed_for_mood(mood)
         if result is None:
             print(f"  {mood}: no hash found in 1000 tries", file=sys.stderr)
             continue
