@@ -27,7 +27,7 @@ How the SHA-256's 32 bytes (after HKDF expansion) map to musical decisions.
 | 18 | melody scale subset | mode | 1–8 |
 | 19 | melody motif rhythm | time-sig × mood | 32 / 4-4 |
 | 20 | melody contour | mood | 7–32 of 32 |
-| 21 | melody phrase shape | always | reserved (currently unused) |
+| 21 | melody phrase shape | always | 16 (recorded on SongSpec; render-side hook reserved) |
 | 22 | melody tessitura + lead synth | mood | 5–8 leads / mood |
 | 23 | aux-layer mask + counter mode | always | counter mode = 4 |
 | 24 | energy curve | form × `_MOOD_CURVE_PREF` | 3–7 of 16 |
@@ -95,9 +95,9 @@ matrix:   arp_lead, 4floor_house, bass_lead_duo, band_basic, band_full,
           minimal_pad — 10 of 16 reachable (lead-silent matrices filtered)
 ```
 
-## Reserved bytes (declared but not yet consumed)
+## Reserved bytes (all consumed)
 
-Only `byte 21` (melody phrase shape) is still unwired in the macro budget — the runtime ignores it; phrase shape is implicit in the picked motif's `total_beats` field.
+Every macro byte 0..31 now drives at least one observable decision (recorded on SongSpec or directly affecting render). Byte 21's `phrase_shape_id` is surfaced on SongSpec but not yet consulted at render time — render uses form-driven section letters for phrase structure today.
 
 The pending invasive work tracked separately:
 - **#84** de-hardcode `time_sig` and `swing` (currently both forced to `4/4` straight; render touches dozens of places that assume 4/4).

@@ -399,6 +399,23 @@ def _pick_mix_preset(byte: int) -> tuple[str, dict]:
     return name, dict(levels)
 
 
+def _pick_phrase_shape(byte: int) -> str:
+    """Pick a phrase-shape id (e.g. 'ps_AABA', 'ps_period_4_4').
+
+    Currently surfaced on the SongSpec but not yet driving render
+    behaviour — the form's section_letters do most of the work.
+    Reserved for future per-phrase mutation patterns.
+    """
+    try:
+        data = tables.load("melody/phrase_shapes")
+    except FileNotFoundError:
+        return "ps_AABA"
+    shapes = data.get("shapes", []) or []
+    if not shapes:
+        return "ps_AABA"
+    return shapes[byte % len(shapes)].get("id", "ps_AABA")
+
+
 def _pick_humanization_profile(byte: int) -> dict:
     try:
         data = tables.load("expression/humanization_profiles")
@@ -735,6 +752,7 @@ def hash_to_spec(
     # Wet-level scales clamped to 1.15 max — 1.3 was over-saturating reverb
     # tails on already-wet moods (cinematic, ambient) and pulling LUFS down.
     fx_wet_scale = (0.6, 0.9, 1.0, 1.15)[macro[29] & 0x03]
+    phrase_shape_id = _pick_phrase_shape(macro[21])
     bass_pat = _pick_bass_pattern(macro[13], mood, time_sig_str)
     bass_synth = _pick_bass_synth(macro[14], mood, bass_pat["id"])
     comp_role = _pick_comp_role(macro[15], mood)
@@ -865,6 +883,7 @@ def hash_to_spec(
         mix_preset_id=mix_preset_id,
         mix_levels=mix_preset,
         fx_wet_scale=fx_wet_scale,
+        phrase_shape_id=phrase_shape_id,
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,
