@@ -69,9 +69,13 @@ After P-stack closed, all remaining "reserved/unused" macro bytes were wired:
 - DESIGN.md §13 — implementation status with 31/32 bytes wired, only #84 invasive deferred.
 - showcase/showcase.html — browser preview of 15-mood demo.
 
+## Late additions
+
+- **All 8 drum escalation algos** now render-active (linear_add, ghost_note_stack, subdivision_double, snare_roll_crescendo, tom_rollup, hat_density_ramp, polyrhythm_overlay, reverse_cymbal_sweep). Each picks deterministically from byte 12; render applies on rising-energy bars (Δ ≥ 0.08).
+- **`--self-test` CLI** subcommand: renders a fixed seed and verifies its MIDI SHA against a baseline. Catches accidental output drift from refactors / dep upgrades.
+
 ## Known deferred work
 
 - **#84 time_sig + swing de-hardcode** — render currently assumes 4/4 in dozens of places (drum patterns 16-cell grid, comp chord_rhythm grid, melody motif `total_beats`). Multi-day rework.
 - **Phrase shape (byte 21)** — phrase_shapes.json on disk; phrase shape is implicit in motif `total_beats` for now.
 - **Cross-arch determinism** — host-bound to Apple Silicon + fluidsynth 2.5.4 + MS-Basic SF3. Docker canonical or per-arch wheel matrix is the next step.
-- **6 of 8 escalation algos** — picked deterministically but not yet rendered (subdivision_double, tom_rollup, snare_roll_crescendo, hat_density_ramp, reverse_cymbal_sweep, polyrhythm_overlay).
