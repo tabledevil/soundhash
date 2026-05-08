@@ -179,10 +179,31 @@ def _bars_from_layout(form: dict, default_n: int = 8, cap: int = 99) -> int:
     return max(lo, min(hi, total))
 
 
-def _pick_energy_curve(byte: int, form: dict) -> dict:
+# Per-mood curve-id preferences (intersected with form.allowed_curves).
+# IDs: 0 flat_low, 1 flat_mid, 2 flat_high, 3 rise, 4 fall, 5 arc, 6 U,
+# 7 two_arches, 8 late_drop, 9 early_drop, 10 plateau_fall,
+# 11 slow_build_cliff, 12 sawtooth_2, 13 terraces, 14 breath, 15 reverse_arc.
+_MOOD_CURVE_PREF: dict[str, tuple[int, ...]] = {
+    "M0":  (0, 1, 6, 14, 15),
+    "M1":  (5, 7, 14, 10),
+    "M2":  (1, 13, 7),
+    "M3":  (5, 14, 13),
+    "M4":  (5, 13, 7, 3),
+    "M5":  (3, 5, 8, 11),
+    "M6":  (3, 13, 8, 11, 5),
+    "M7":  (3, 11, 8, 13),
+    "M8":  (8, 11, 7),
+    "M9":  (12, 7, 13, 4),
+    "M10": (5, 11, 7, 14, 15),
+}
+
+
+def _pick_energy_curve(byte: int, form: dict, mood: str = "") -> dict:
     curves = tables.load("energy_curves")["curves"]
-    allowed_ids = form.get("allowed_curves") or [c["id"] for c in curves]
-    eligible = [c for c in curves if c.get("id") in allowed_ids] or curves
+    allowed_ids = set(form.get("allowed_curves") or [c["id"] for c in curves])
+    pref_ids = set(_MOOD_CURVE_PREF.get(mood, ())) & allowed_ids
+    chosen_ids = pref_ids if pref_ids else allowed_ids
+    eligible = [c for c in curves if c.get("id") in chosen_ids] or curves
     eligible.sort(key=lambda c: c.get("id", 0))
     return eligible[byte % len(eligible)]
 
@@ -463,7 +484,7 @@ def hash_to_spec(
     while len(looped) < target_bars:
         looped.extend(chord_entries)
     looped = looped[:target_bars]
-    energy_curve = _pick_energy_curve(macro[24], form)
+    energy_curve = _pick_energy_curve(macro[24], form, mood)
     groove_id = _pick_groove_template(macro[5], mood)
     section_letters = _expand_form_layout(form, target_bars)
     if target_bars > 1:
