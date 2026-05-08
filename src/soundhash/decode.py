@@ -153,12 +153,40 @@ def _pick_form(byte: int, n_bars: int) -> dict:
     return eligible[byte % len(eligible)]
 
 
-def _pick_form_unconstrained(byte: int, max_bars: int) -> dict:
-    """Pick a form whose min_bars fits within max_bars (the 30-second cap)."""
+# Per-mood form-id preferences. Empty intersection with the 30-s-fit set
+# falls back to the unfiltered list. IDs reference forms.json:
+#   0 through_composed,  1 A_Aprime,  2 AB_simple,  3 AAB,  4 ABA,
+#   5 ABAB,  6 intro_A_fill_A_out,  7 A_build_drop_A,  8 theme_var,
+#   9 call_response,  10 intro_A,  11 A_outro,  12 AB_with_fill,
+#   13 AABA,  14 ABCA,  15 breakdown_form,  16 riser_drop_loop,
+#   17 ostinato_layer,  18 two_arches,  19 late_drop,  20 plateau_fall,
+#   21 pyramid,  22 medley,  23 pulse_only.
+_MOOD_FORM_PREF: dict[str, tuple[int, ...]] = {
+    "M0":  (0, 1, 8, 17, 23),                # ambient: through-composed / ostinato / pulse
+    "M1":  (1, 4, 6, 11, 13, 18),            # ballad: A_Aprime, ABA, AABA, two_arches
+    "M2":  (2, 5, 8, 13, 14),                # hip-hop: AB / ABAB / theme_var / AABA / ABCA
+    "M3":  (0, 1, 8, 17, 18),                # downtempo
+    "M4":  (5, 13, 14, 8),                   # latin: ABAB / AABA / ABCA / theme_var
+    "M5":  (5, 7, 13, 14, 19),               # synthwave: ABAB / build_drop / late_drop
+    "M6":  (5, 14, 15, 19, 16),              # house
+    "M7":  (15, 16, 19, 21, 23),             # techno
+    "M8":  (5, 7, 16, 19),                   # dnb
+    "M9":  (8, 18, 21, 22),                  # glitch
+    "M10": (4, 6, 13, 14, 18, 20),           # cinematic
+}
+
+
+def _pick_form_unconstrained(byte: int, max_bars: int, mood: str = "") -> dict:
+    """Pick a form whose min_bars fits within max_bars (the 30-second cap),
+    biased toward mood-preferred forms when possible."""
     forms = tables.load("forms")["forms"]
-    eligible = [f for f in forms if f.get("min_bars", 1) <= max_bars]
+    fits = [f for f in forms if f.get("min_bars", 1) <= max_bars]
+    if not fits:
+        fits = forms
+    pref = set(_MOOD_FORM_PREF.get(mood, ()))
+    eligible = [f for f in fits if f.get("id") in pref] if pref else []
     if not eligible:
-        eligible = forms
+        eligible = fits
     eligible.sort(key=lambda f: f.get("id", 0))
     return eligible[byte % len(eligible)]
 
@@ -476,7 +504,7 @@ def hash_to_spec(
     # in 30 seconds at the chosen tempo (leave 2 s for reverb tail).
     beats_per_bar = 4
     max_bars_for_30s = max(2, int(28.0 * tempo / (60.0 * beats_per_bar)))
-    form = _pick_form_unconstrained(macro[6], max_bars_for_30s)
+    form = _pick_form_unconstrained(macro[6], max_bars_for_30s, mood)
     target_bars = _bars_from_layout(form, default_n=8, cap=max_bars_for_30s)
 
     # Loop the progression to fill target_bars.
