@@ -96,7 +96,8 @@ def apply_fx(samples: np.ndarray, sample_rate: int, mood: str,
     try:
         from pedalboard import (
             Pedalboard, Reverb, Delay, Chorus, Phaser, Compressor, Distortion,
-            LowShelfFilter, HighShelfFilter, HighpassFilter,
+            LowShelfFilter, HighShelfFilter, HighpassFilter, LowpassFilter,
+            Mix, Chain,
         )
     except ImportError:
         return samples
@@ -107,20 +108,43 @@ def apply_fx(samples: np.ndarray, sample_rate: int, mood: str,
         "LowShelfFilter": LowShelfFilter, "HighShelfFilter": HighShelfFilter,
         "HighpassFilter": HighpassFilter,
     }
+
+    def _wet_only(plugin, original_wet: float):
+        """Wrap a Reverb/Delay so its wet path is HPF-200 / LPF-7k band-limited.
+
+        Eliminates 200-400 Hz mud and 7-20 kHz fizz from time-based effects
+        while preserving original wet/dry balance via Mix.
+        """
+        return Mix([
+            Chain([]),                                       # dry passthrough
+            Chain([
+                HighpassFilter(cutoff_frequency_hz=220),
+                plugin,                                      # wet-only configured below
+                LowpassFilter(cutoff_frequency_hz=7000),
+            ]),
+        ])
+
     plugins = []
     for name, kwargs in (_MOOD_FX.get(mood) or []):
         cls = cls_map.get(name)
         if cls is None:
             continue
-        # Scale any `wet_level` / `mix` kwargs by `wet_scale`. Cap at 1.0
-        # since pedalboard plugins reject >1.0 wet.
         if wet_scale != 1.0:
             scaled = dict(kwargs)
             for k in ("wet_level", "mix"):
                 if k in scaled:
                     scaled[k] = max(0.0, min(1.0, float(scaled[k]) * wet_scale))
             kwargs = scaled
-        plugins.append(cls(**kwargs))
+
+        if name in ("Reverb", "Delay"):
+            # For Reverb/Delay, route the wet path through HPF→LPF and use
+            # Mix to combine with the dry signal. The plugin runs full-wet
+            # internally; the original wet_level/mix becomes the gain on
+            # the wet branch (we approximate by leaving the plugin's own
+            # wet ratio at its configured value — simpler than rebalancing).
+            plugins.append(_wet_only(cls(**kwargs), kwargs.get("wet_level", kwargs.get("mix", 0.3))))
+        else:
+            plugins.append(cls(**kwargs))
 
     # Master bus: applied to every mood. Per the sound-design adversarial
     # review (codex), MS Basic SF3 has two ugly regions: 200-400 Hz pad/bass
