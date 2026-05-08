@@ -12,7 +12,7 @@ from .mime import detect_mime
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="soundhash", description=__doc__)
-    p.add_argument("file", help="file to hash")
+    p.add_argument("file", nargs="?", help="file to hash (omit for --self-test)")
     p.add_argument("--midi", action="store_true", help="emit a .mid file")
     p.add_argument("--audio", action="store_true",
                    help="emit a .wav file (requires fluidsynth on PATH)")
@@ -29,8 +29,13 @@ def main(argv: list[str] | None = None) -> int:
                    help="after audio render, print a heuristic quality score")
     p.add_argument("--psy", action="store_true",
                    help="also print psychoacoustic score (Zwicker loudness, DIN sharpness; needs mosqito)")
+    p.add_argument("--self-test", action="store_true",
+                   help="render a fixed seed and compare its MIDI hash against a baseline; exits 0 on match, 1 on drift")
     p.add_argument("--version", action="version", version=__version__)
     args = p.parse_args(argv)
+
+    if args.self_test:
+        return _self_test()
 
     with open(args.file, "rb") as f:
         digest = hashlib.sha256(f.read()).digest()
@@ -126,6 +131,39 @@ def main(argv: list[str] | None = None) -> int:
 
     # TODO: render via render.midi / render.audio
     return 0
+
+
+_SELF_TEST_SEED = "soundhash-self-test-v1"
+_SELF_TEST_MIME = "application/json"
+_SELF_TEST_MIDI_SHA = "d2adc21a57841d4429d36059a802258b768b73282b9af282d5b10a923b075f3a"
+
+
+def _self_test() -> int:
+    """Render a fixed seed and compare its MIDI hash to a baseline.
+
+    Catches accidental output drift from refactors / dependency upgrades.
+    Reports diff on mismatch but does not gate WAV output on platform-bound
+    fluidsynth/SF2 paths.
+    """
+    import hashlib
+    from .decode import hash_to_spec
+    from .render.midi import render_midi
+    h = hashlib.sha256(_SELF_TEST_SEED.encode()).digest()
+    spec = hash_to_spec(h, mime=_SELF_TEST_MIME)
+    midi = render_midi(spec)
+    sha = hashlib.sha256(midi).hexdigest()
+    ok = sha == _SELF_TEST_MIDI_SHA
+    print(f"  seed     {_SELF_TEST_SEED}", file=sys.stderr)
+    print(f"  spec     mood={spec.provenance.mood} tempo={spec.tempo_bpm:.2f} "
+          f"key={spec.key_root} {spec.mode} form={spec.form_id}",
+          file=sys.stderr)
+    print(f"  midi_sha {sha}", file=sys.stderr)
+    if ok:
+        print("  PASS — output matches baseline", file=sys.stderr)
+        return 0
+    print(f"  expected {_SELF_TEST_MIDI_SHA}", file=sys.stderr)
+    print("  FAIL — output drifted from the v0.0.1 baseline", file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":
