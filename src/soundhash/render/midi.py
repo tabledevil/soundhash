@@ -1210,6 +1210,32 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                     v = max(30, min(120, 60 + 10 * k + _vel_jitter(spec, "drums", 3)))
                     events.append((abs_tick, 0, snare_key, v))
                     events.append((abs_tick + DRUM_LEN, 1, snare_key, 64))
+        elif rising and esc_algo == "tom_rollup":
+            # Tom rollup on the last beat: high → mid → low → low (1 each).
+            tom_h = gm_map.get("tom_high"); tom_m = gm_map.get("tom_mid"); tom_l = gm_map.get("tom_low")
+            if tom_h and tom_m and tom_l and steps >= 16:
+                for s, key, vel in ((12, tom_h, 80), (13, tom_h, 90),
+                                    (14, tom_m, 100), (15, tom_l, 115)):
+                    abs_tick = bar_offset_ticks + s * ticks_per_step
+                    v = max(40, min(127, vel + _vel_jitter(spec, "drums", 4)))
+                    events.append((abs_tick, 0, key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, key, 64))
+        elif rising and esc_algo == "hat_density_ramp":
+            # Hat density ramps from current to full 16ths across the bar.
+            hat_key = gm_map.get("hat_closed")
+            existing = {h["s"] for h in pat.get("rows", {}).get("hat_closed", [])}
+            if hat_key is not None:
+                # Add hits on every 16th cell that's currently silent, with
+                # rising vel through the bar (later cells louder = a build).
+                for s in range(steps):
+                    if s in existing:
+                        continue
+                    abs_tick = bar_offset_ticks + s * ticks_per_step
+                    abs_tick += _groove_offset(spec, "hat_closed", s)
+                    ramp = 50 + int(40 * (s / max(1, steps - 1)))
+                    v = max(30, min(110, ramp + _vel_jitter(spec, "drums", 3)))
+                    events.append((abs_tick, 0, hat_key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, hat_key, 64))
 
         # Overlay the fill in the last fill_span cells.
         if is_fill_bar:
