@@ -22,7 +22,22 @@ PPQ = 480
 # Bass is the harmonic floor and plays whenever the song plays.
 _ENERGY_GATE = {"drums": 0.30, "comp": 0.20, "lead": 0.40, "bass": 0.0,
                 "pad": 0.40, "counter": 0.65}
+
+# Per-mood gate overrides. Ambient (M0) uses flat-low curves whose energies
+# hover around 0.30 — without lower gates the lead/pad/counter/ear-candy
+# would never fire, leaving the soundhash an unmusical thump.
+_MOOD_GATE_OVERRIDES = {
+    "M0": {"drums": 0.10, "comp": 0.10, "lead": 0.18, "pad": 0.18,
+           "counter": 0.30, "ear_candy": 0.22},
+    # Cinematic builds slow; let counter come in earlier.
+    "M10": {"counter": 0.55},
+}
 _PAD_ENERGY_CEILING = 0.85       # pad drops out at peak energy to keep mix open
+
+
+def _gate(spec, layer_name: str) -> float:
+    overrides = _MOOD_GATE_OVERRIDES.get(spec.provenance.mood, {})
+    return overrides.get(layer_name, _ENERGY_GATE.get(layer_name, 0.0))
 
 
 def _bar_energy(spec, bar_index: int) -> float:
@@ -180,7 +195,7 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     cc_events: list[tuple[int, int, int]] = []   # (abs_tick, cc, value)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _ENERGY_GATE["bass"]:
+        if e < _gate(spec, "bass"):
             continue
         vel_base = max(50, min(110, int(60 + 50 * e)))
         # Find next bar's root for chromatic-approach handling.
@@ -268,7 +283,7 @@ def _bass_track_root_pulse(spec: SongSpec, ticks_per_bar: int, track: MidiTrack)
     beats_per_bar = ticks_per_bar // PPQ
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _ENERGY_GATE["bass"]:
+        if e < _gate(spec, "bass"):
             continue
         vel = max(50, min(110, int(60 + 50 * e)))
         root = bar.chord_root_midi
@@ -342,7 +357,7 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _ENERGY_GATE["comp"]:
+        if e < _gate(spec, "comp"):
             continue
         # Per-section comp pattern, falling back to the macro pick.
         pat_id = spec.section_comp_pattern_ids.get(bar.section_letter, layer.pattern_id if layer else "")
@@ -411,7 +426,7 @@ def _comp_track_sustain(spec: SongSpec, ticks_per_bar: int, comp: MidiTrack) -> 
     cursor = 0
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _ENERGY_GATE["comp"]:
+        if e < _gate(spec, "comp"):
             continue
         vel = max(45, min(95, int(45 + 50 * e)))
         voice_base = bar.chord_root_midi + 24
@@ -462,7 +477,7 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _ENERGY_GATE["counter"]:
+        if e < _gate(spec, "counter"):
             continue
         # Drop on fill bars too, so the fill speaks.
         next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
@@ -553,7 +568,8 @@ def _ear_candy_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < 0.50:
+        ec_gate = _MOOD_GATE_OVERRIDES.get(spec.provenance.mood, {}).get("ear_candy", 0.50)
+        if e < ec_gate:
             continue
         # Drop on fill bars so the fill speaks.
         next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
@@ -695,7 +711,7 @@ def _pad_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         e = _bar_energy(spec, bar.index)
         # Pad fills the mid-energy zone; drops out at peak so the lead/drums
         # are not crowded.
-        if e < _ENERGY_GATE["pad"] or e > _PAD_ENERGY_CEILING:
+        if e < _gate(spec, "pad") or e > _PAD_ENERGY_CEILING:
             continue
         # Voice one octave above the comp (= chord_root_midi + 36) and only
         # use the bottom 3 chord tones — pads sit better when they are dense
@@ -795,7 +811,7 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     events: list[tuple[int, int, int, int]] = []  # (abs_tick, kind, pitch, vel)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _ENERGY_GATE["drums"]:
+        if e < _gate(spec, "drums"):
             continue
         # Density-aware: high-density pattern when energy ≥ 0.55, else low.
         pat = pat_high if e >= 0.55 else pat_low
@@ -916,7 +932,7 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     bend_events: list[tuple[int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _ENERGY_GATE["lead"]:
+        if e < _gate(spec, "lead"):
             continue
         # Lead drops out on fill bars (next section is different) so the drum
         # fill speaks. Standard production convention.
