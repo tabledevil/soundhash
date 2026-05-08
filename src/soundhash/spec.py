@@ -106,6 +106,8 @@ class SongSpec:
     sub_flavor: int = 0          # 0..3 — within-mood shade modulation (byte 1)
     humanization_profile: str = "groove-tight"
     humanization_vel_jitter: int = 4
+    mix_preset_id: str = "balanced"
+    mix_levels: dict = field(default_factory=dict)        # layer_name → CC7 value (0..127)
     bars: tuple[Bar, ...] = ()
     layers: tuple[LayerSpec, ...] = ()
     bar_energies: tuple[float, ...] = ()  # one 0..1 per bar from the energy curve

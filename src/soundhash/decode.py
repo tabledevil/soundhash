@@ -372,6 +372,33 @@ def _pick_drum_pattern(byte: int, kit_id: str, time_sig: str) -> dict:
     return eligible[byte % len(eligible)]
 
 
+# 4 mix-balance presets per byte 30. Values are CC7 channel-volume targets
+# (0-127). Drums use ch10, others use the per-layer channels we set in spec.
+_MIX_PRESETS = [
+    # 0 balanced — workmanlike default
+    ("balanced",     {"drums": 110, "bass": 100, "comp": 85, "lead": 100,
+                      "pad": 70, "counter": 80, "drone": 60,
+                      "riser": 95, "ear_candy": 75}),
+    # 1 bass-forward — hip-hop / house feel
+    ("bass_forward", {"drums": 100, "bass": 118, "comp": 75, "lead": 90,
+                      "pad": 60, "counter": 70, "drone": 55,
+                      "riser": 90, "ear_candy": 70}),
+    # 2 lead-forward — synthwave / cinematic feel
+    ("lead_forward", {"drums": 90, "bass": 90, "comp": 75, "lead": 120,
+                      "pad": 75, "counter": 95, "drone": 60,
+                      "riser": 95, "ear_candy": 80}),
+    # 3 minimal — sparse / lofi feel
+    ("minimal",      {"drums": 80, "bass": 90, "comp": 65, "lead": 95,
+                      "pad": 55, "counter": 65, "drone": 70,
+                      "riser": 85, "ear_candy": 65}),
+]
+
+
+def _pick_mix_preset(byte: int) -> tuple[str, dict]:
+    name, levels = _MIX_PRESETS[byte % len(_MIX_PRESETS)]
+    return name, dict(levels)
+
+
 def _pick_humanization_profile(byte: int) -> dict:
     try:
         data = tables.load("expression/humanization_profiles")
@@ -704,6 +731,7 @@ def hash_to_spec(
     drum_fill_id = _pick_drum_fill(macro[11], drum_kit["id"])
     esc_algo, deesc_algo = _pick_escalation_algos(macro[12])
     humanization = _pick_humanization_profile(macro[27])
+    mix_preset_id, mix_preset = _pick_mix_preset(macro[30])
     bass_pat = _pick_bass_pattern(macro[13], mood, time_sig_str)
     bass_synth = _pick_bass_synth(macro[14], mood, bass_pat["id"])
     comp_role = _pick_comp_role(macro[15], mood)
@@ -831,6 +859,8 @@ def hash_to_spec(
         sub_flavor=sub_flavor,
         humanization_profile=humanization.get("name", "groove-tight"),
         humanization_vel_jitter=int(humanization.get("vel_jitter", 4)),
+        mix_preset_id=mix_preset_id,
+        mix_levels=mix_preset,
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,

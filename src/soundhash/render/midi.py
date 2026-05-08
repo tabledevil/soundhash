@@ -358,6 +358,7 @@ def render_midi(spec: SongSpec) -> bytes:
 def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     bass = MidiTrack()
     bass.append(MetaMessage("track_name", name="bass", time=0))
+    _emit_mix_volume(spec, bass, 0, "bass")
     bass.append(Message("program_change", channel=0,
                         program=_layer_program(spec, "bass", default=33), time=0))
     # Initial portamento defaults: off, mid time. We turn it on/off per-bar
@@ -526,6 +527,7 @@ def _bass_degree_to_midi(deg: str, bar, next_root_midi: int) -> int | None:
 def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     comp = MidiTrack()
     comp.append(MetaMessage("track_name", name="comp", time=0))
+    _emit_mix_volume(spec, comp, 1, "comp")
     comp.append(Message("program_change", channel=1,
                         program=_layer_program(spec, "comp", default=4), time=0))
 
@@ -718,6 +720,7 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     track = MidiTrack()
     track.append(MetaMessage("track_name", name="counter", time=0))
+    _emit_mix_volume(spec, track, 4, "counter")
     track.append(Message("program_change", channel=4,
                          program=_layer_program(spec, "counter", default=73), time=0))
 
@@ -815,6 +818,7 @@ def _ear_candy_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     track = MidiTrack()
     track.append(MetaMessage("track_name", name="ear_candy", time=0))
+    _emit_mix_volume(spec, track, 7, "ear_candy")
     track.append(Message("program_change", channel=7,
                          program=_layer_program(spec, "ear_candy", default=9), time=0))
 
@@ -893,6 +897,7 @@ def _riser_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     track = MidiTrack()
     track.append(MetaMessage("track_name", name="riser", time=0))
+    _emit_mix_volume(spec, track, 6, "riser")
     track.append(Message("program_change", channel=6,
                          program=_layer_program(spec, "riser", default=119), time=0))
 
@@ -935,6 +940,7 @@ def _drone_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         return None
     track = MidiTrack()
     track.append(MetaMessage("track_name", name="drone", time=0))
+    _emit_mix_volume(spec, track, 5, "drone")
     track.append(Message("program_change", channel=5,
                          program=_layer_program(spec, "drone", default=89), time=0))
     # One held tonic + fifth across the whole song. Two-octave register
@@ -961,6 +967,7 @@ def _pad_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         return None
     pad = MidiTrack()
     pad.append(MetaMessage("track_name", name="pad", time=0))
+    _emit_mix_volume(spec, pad, 3, "pad")
     pad.append(Message("program_change", channel=3,
                        program=_layer_program(spec, "pad", default=89), time=0))
 
@@ -1092,6 +1099,7 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     track = MidiTrack()
     track.append(MetaMessage("track_name", name="drums", time=0))
+    _emit_mix_volume(spec, track, 9, "drums")
 
     gm_map = kit["gm_map"]
     DRUM_LEN = 80
@@ -1228,6 +1236,7 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     track = MidiTrack()
     track.append(MetaMessage("track_name", name="lead", time=0))
+    _emit_mix_volume(spec, track, 2, "lead")
     track.append(Message("program_change", channel=2,
                          program=_layer_program(spec, "lead", default=80), time=0))
     # CC11 expression curve: slow swell across the song to keep sustained
@@ -1390,6 +1399,19 @@ def _find_motif(motif_id: str, time_sig: str) -> dict | None:
             if m.get("id") == motif_id:
                 return m
     return None
+
+
+def _emit_mix_volume(spec: SongSpec, track: MidiTrack, channel: int, layer_name: str) -> None:
+    """Send CC7 (channel volume) for this layer at the track's start.
+
+    Should be called immediately after the track_name/program_change events
+    so the volume is set before any notes. The byte-30-picked mix preset
+    drives the relative balance across layers; default 100 if unknown.
+    """
+    val = (spec.mix_levels or {}).get(layer_name, 100)
+    val = max(1, min(127, int(val)))
+    track.append(Message("control_change", channel=channel,
+                         control=7, value=val, time=0))
 
 
 def _layer_program(spec: SongSpec, name: str, default: int) -> int:
