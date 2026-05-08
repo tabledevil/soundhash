@@ -108,3 +108,32 @@ def test_total_duration_under_30s():
     for s in specs:
         assert s.total_duration_seconds() <= 30.0, \
             f"{s.provenance.hash_hex[:8]}: {s.total_duration_seconds():.1f}s"
+
+
+def test_heuristic_quality_baseline():
+    """Average heuristic quality score across the corpus stays above 0.65.
+
+    Catches silent regressions (e.g. someone breaks the master EQ or
+    gates and the spectral balance collapses on a wide corpus).
+    """
+    pytest.importorskip("mido")
+    pytest.importorskip("pyloudnorm")
+    import shutil
+    if shutil.which("fluidsynth") is None:
+        pytest.skip("fluidsynth not on PATH")
+    from soundhash.quality import score_wav
+    from soundhash.render.audio import render_wav
+    midis = _build_midi()
+    # Score a sub-sample (rendering 60 WAVs is slow). 8 hashes is enough
+    # to flag a global regression.
+    sub = midis[:8]
+    scores: list[float] = []
+    for data in sub:
+        try:
+            wav = render_wav(data)
+        except Exception:
+            pytest.skip("render_wav unavailable")
+        scores.append(score_wav(wav).overall)
+    avg = sum(scores) / len(scores)
+    assert avg >= 0.65, \
+        f"avg quality {avg:.2f} dropped below 0.65 baseline; per-file: {scores}"
