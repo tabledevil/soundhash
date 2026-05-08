@@ -38,7 +38,8 @@ def main(argv: list[str] | None = None) -> int:
     else:
         mime = args.mime
 
-    spec = hash_to_spec(digest, mime=mime, version=SPEC_VERSION)
+    spec = hash_to_spec(digest, mime=mime, version=SPEC_VERSION,
+                        mood_override=args.mood)
 
     print(f"soundhash {__version__}  spec={spec.version}", file=sys.stderr)
     print(f"  hash    {digest.hex()}", file=sys.stderr)

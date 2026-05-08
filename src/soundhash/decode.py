@@ -463,6 +463,7 @@ def hash_to_spec(
     hash_bytes: bytes,
     mime: Optional[str] = None,
     version: str = "v1",
+    mood_override: Optional[str] = None,
 ) -> SongSpec:
     """Pure: same (hash, mime, version) → same SongSpec.
 
@@ -483,7 +484,10 @@ def hash_to_spec(
     family = family_for_mime(mime)
 
     # Macro decisions.
-    mood = _pick_mood(macro, family)
+    if mood_override and mood_override.startswith("M") and mood_override[1:].isdigit():
+        mood = mood_override
+    else:
+        mood = _pick_mood(macro, family)
     tempo = _pick_tempo(macro[2], mood)
     key_root = macro[3] % 12
     mode = _pick_mode(macro[4], mood)
