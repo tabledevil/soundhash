@@ -63,6 +63,28 @@ def _gate(spec, layer_name: str) -> float:
     return overrides.get(layer_name, _ENERGY_GATE.get(layer_name, 0.0))
 
 
+# Layer index in the activation matrix rows (matches assets/v1/layer_activation.json).
+_ACTIVATION_LAYERS = ["drums", "bass", "comp", "lead", "counter", "drone", "fx_riser", "ad_lib"]
+
+
+def _activation_silent(spec, bar, layer_name: str) -> bool:
+    """Return True if the activation matrix marks this layer silent for this bar.
+
+    Falls back to row 'A' when the bar's section_letter has no row, and
+    finally to 'never silent' if neither the section nor 'A' is present.
+    """
+    if not spec.activation_rows:
+        return False
+    if layer_name not in _ACTIVATION_LAYERS:
+        return False
+    layer_idx = _ACTIVATION_LAYERS.index(layer_name)
+    row = (spec.activation_rows.get(bar.section_letter)
+           or spec.activation_rows.get("A"))
+    if not row or layer_idx >= len(row):
+        return False
+    return row[layer_idx] == "-"
+
+
 def _bar_energy(spec, bar_index: int) -> float:
     if spec.bar_energies and bar_index < len(spec.bar_energies):
         return spec.bar_energies[bar_index]
@@ -266,7 +288,7 @@ def _bass_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     cc_events: list[tuple[int, int, int]] = []   # (abs_tick, cc, value)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "bass"):
+        if e < _gate(spec, "bass") or _activation_silent(spec, bar, "bass"):
             continue
         vel_base = max(50, min(110, int(60 + 50 * e)))
         # Find next bar's root for chromatic-approach handling.
@@ -434,7 +456,7 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "comp") or bar.drop_comp:
+        if e < _gate(spec, "comp") or bar.drop_comp or _activation_silent(spec, bar, "comp"):
             continue
         # Per-section comp pattern, falling back to the macro pick.
         pat_id = spec.section_comp_pattern_ids.get(bar.section_letter, layer.pattern_id if layer else "")
@@ -611,7 +633,7 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "counter"):
+        if e < _gate(spec, "counter") or _activation_silent(spec, bar, "counter"):
             continue
         # Drop on fill bars too, so the fill speaks.
         next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
@@ -981,7 +1003,7 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     events: list[tuple[int, int, int, int]] = []  # (abs_tick, kind, pitch, vel)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "drums") or bar.drop_drums:
+        if e < _gate(spec, "drums") or bar.drop_drums or _activation_silent(spec, bar, "drums"):
             continue
         # Density-aware: high-density pattern when energy ≥ 0.55, else low.
         pat = pat_high if e >= 0.55 else pat_low
@@ -1106,7 +1128,7 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     _, micro_shape, strong_targets = _accent_skeleton(spec)
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
-        if e < _gate(spec, "lead") or bar.drop_lead:
+        if e < _gate(spec, "lead") or bar.drop_lead or _activation_silent(spec, bar, "lead"):
             continue
         # Lead drops out on fill bars (next section is different) so the drum
         # fill speaks. Standard production convention.

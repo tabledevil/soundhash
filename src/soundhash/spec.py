@@ -108,6 +108,10 @@ class SongSpec:
     section_motif_ids: dict[str, str] = field(default_factory=dict)
     section_contour_ids: dict[str, str] = field(default_factory=dict)
     section_comp_pattern_ids: dict[str, str] = field(default_factory=dict)
+    # Per-section layer activity from layer_activation matrix:
+    # {section_letter: [drums, bass, comp, lead, counter, drone, fx_riser, ad_lib]}
+    # cell values: '-' silent, 's' sparse, 'n' normal, 'd' dense, '*' energy-scaled.
+    activation_rows: dict[str, list[str]] = field(default_factory=dict)
     render: RenderHints = field(default_factory=RenderHints)
 
     def total_duration_seconds(self) -> float:

@@ -148,6 +148,26 @@ def _expand_form_layout(form: dict, n_bars: int) -> list[str]:
     return out
 
 
+def _pick_activation_matrix(byte: int, form_id: int) -> dict:
+    """Pick a layer-activation matrix that's compatible with the form.
+
+    Falls back to any matrix if the form has no compatibles listed.
+    """
+    try:
+        data = tables.load("layer_activation")
+    except FileNotFoundError:
+        return {}
+    matrices = data.get("matrices", [])
+    if not matrices:
+        return {}
+    eligible = [m for m in matrices if not m.get("compatible_forms")
+                or form_id in m.get("compatible_forms", [])]
+    if not eligible:
+        eligible = matrices
+    eligible = sorted(eligible, key=lambda m: m.get("id", 0))
+    return eligible[byte % len(eligible)]
+
+
 def _pick_form(byte: int, n_bars: int) -> dict:
     forms = tables.load("forms")["forms"]
     eligible = [f for f in forms if f.get("min_bars", 1) <= n_bars <= f.get("max_bars", 99)]
@@ -540,6 +560,7 @@ def hash_to_spec(
     energy_curve = _pick_energy_curve(macro[24], form, mood)
     groove_id = _pick_groove_template(macro[5], mood)
     section_letters = _expand_form_layout(form, target_bars)
+    activation_matrix = _pick_activation_matrix(macro[25], form.get("id", 0))
     if target_bars > 1:
         bar_energies = tuple(
             _sample_energy_curve(energy_curve, (i + 0.5) / target_bars)
@@ -736,7 +757,7 @@ def hash_to_spec(
         mode=mode,
         form_id=form.get("name", progression["id"]),
         energy_curve_id=energy_curve.get("name", "arc"),
-        activation_matrix_id="band_basic",
+        activation_matrix_id=activation_matrix.get("name", "band_basic"),
         groove_template_id=groove_id,
         bars=bars,
         layers=layers,
@@ -744,5 +765,6 @@ def hash_to_spec(
         section_motif_ids=section_motifs,
         section_contour_ids=section_contours,
         section_comp_pattern_ids=section_comp_pats,
+        activation_rows=dict(activation_matrix.get("rows", {})),
         render=RenderHints(),
     )
