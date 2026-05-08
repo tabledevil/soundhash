@@ -437,7 +437,13 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
         cells_to_ticks = ticks_per_bar // grid_steps
         hits = pattern.get("hits", [])
         vel_base = max(45, min(95, int(45 + 50 * e)))
+        # Register guard: keep the comp top below the lead's median by ≥5
+        # semitones so the comp doesn't crowd the melody. Drop voice-base
+        # by an octave if the chord's top tone would breach.
         voice_base = bar.chord_root_midi + 24
+        lead_median = _lead_octave(spec.provenance.mood) + 6  # ~3rd above lead base
+        if bar.chord_pcs and (voice_base + max(bar.chord_pcs)) > lead_median - 5:
+            voice_base -= 12
         full_pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
         # Role-aware voicing.
         if polyphony == "monophonic_sequence":
