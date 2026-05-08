@@ -7,7 +7,7 @@ How the SHA-256's 32 bytes (after HKDF expansion) map to musical decisions.
 | Byte | Decision | Filter chain | Table size |
 |---|---|---|---|
 | 0 | macro mood | family-of-MIME → 4 candidates | 4 of 15 |
-| 1 | mood sub-flavor | mood | reserved (currently unused) |
+| 1 | mood sub-flavor (4 shades: stock/brighter/darker/tighter) | mood | 4 |
 | 2 | tempo | mood's `tempo_pool` | 5–8 BPMs |
 | 3 | key root | uniform 0–11 | 12 |
 | 4 | mode | mood's `modes` list | 2–5 |
@@ -17,8 +17,8 @@ How the SHA-256's 32 bytes (after HKDF expansion) map to musical decisions.
 | 8 | voicing style | progression's `allowed_voicing_styles` | 1–5 of 10 |
 | 9 | drum kit | mood-filtered | 1–6 of 12 |
 | 10 | drum pattern (low + high nibbles) | kit + density 1-2 / 3-4 | 8 each |
-| 11 | drum fill arming | kit | reserved (currently unused) |
-| 12 | drum escalation algo | always | reserved (declared, not consumed) |
+| 11 | drum fill | kit's fill bank | 4–5 / kit |
+| 12 | drum escalation algo (high) + de-escalation (low) | always | 8 each (2 implemented) |
 | 13 | bass archetype | mood ∩ time-sig | 2–8 |
 | 14 | bass synth + octave | mood ∩ pattern_compat | 1–4 |
 | 15 | comp role | mood | 1–6 of 12 |
@@ -33,10 +33,10 @@ How the SHA-256's 32 bytes (after HKDF expansion) map to musical decisions.
 | 24 | energy curve | form × `_MOOD_CURVE_PREF` | 3–7 of 16 |
 | 25 | layer activation matrix | form-compatible × lead-audible | 3–10 of 16 |
 | 26 | per-bar mutation seed | per-bar HKDF spillover | n/a |
-| 27 | velocity curve + humanization | always | reserved (currently unused) |
-| 28 | FX preset | mood | inlined in render/fx.py |
-| 29 | FX send levels | always | reserved (currently unused) |
-| 30 | mix balance preset | always | reserved (currently unused) |
+| 27 | humanization profile (vel-jitter scale) | always | 6 |
+| 28 | FX preset (per-mood chain in `render/fx.py`) | mood | n/a |
+| 29 | FX wet-level scale (dry/85%/normal/wet) | always | 4 |
+| 30 | mix balance preset (CC7 per layer) | always | 4 |
 | 31 | counter-mode (low 2 bits) + variation salt | always | counter mode = 4 |
 
 ## Per-bar / per-section sub-streams
@@ -97,4 +97,7 @@ matrix:   arp_lead, 4floor_house, bass_lead_duo, band_basic, band_full,
 
 ## Reserved bytes (declared but not yet consumed)
 
-`byte 1` (mood sub-flavor), `byte 11` (drum fill arming), `byte 12` (escalation algo), `byte 21` (melody phrase shape), `byte 27` (velocity / humanization profile), `byte 29` (FX send levels), `byte 30` (mix balance preset). Wiring these is tracked under tasks `P1-#84`, `P2-#93`, etc.
+Only `byte 21` (melody phrase shape) is still unwired in the macro budget — the runtime ignores it; phrase shape is implicit in the picked motif's `total_beats` field.
+
+The pending invasive work tracked separately:
+- **#84** de-hardcode `time_sig` and `swing` (currently both forced to `4/4` straight; render touches dozens of places that assume 4/4).
