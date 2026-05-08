@@ -103,6 +103,7 @@ class SongSpec:
     activation_matrix_id: str
     groove_template_id: str = "straight_4_4"
     voicing_style: str = "close_triad"
+    sub_flavor: int = 0          # 0..3 — within-mood shade modulation (byte 1)
     bars: tuple[Bar, ...] = ()
     layers: tuple[LayerSpec, ...] = ()
     bar_energies: tuple[float, ...] = ()  # one 0..1 per bar from the energy curve

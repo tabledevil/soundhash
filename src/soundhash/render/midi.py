@@ -54,8 +54,18 @@ _MOOD_LEAD_OCTAVE_MIDI = {
 }
 
 
-def _lead_octave(mood: str) -> int:
-    return _MOOD_LEAD_OCTAVE_MIDI.get(mood, 72)
+def _lead_octave(spec_or_mood) -> int:
+    """Accept either a mood string or a SongSpec.
+
+    SongSpec form lets the lead-octave include the sub-flavor shift
+    (sub-flavor 2 'darker' moves the lead down an octave).
+    """
+    if isinstance(spec_or_mood, str):
+        return _MOOD_LEAD_OCTAVE_MIDI.get(spec_or_mood, 72)
+    base = _MOOD_LEAD_OCTAVE_MIDI.get(spec_or_mood.provenance.mood, 72)
+    if getattr(spec_or_mood, "sub_flavor", 0) == 2:    # darker
+        base -= 12
+    return base
 
 
 def _gate(spec, layer_name: str) -> float:
@@ -540,7 +550,7 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
         # semitones so the comp doesn't crowd the melody. Drop voice-base
         # by an octave if the chord's top tone would breach.
         voice_base = bar.chord_root_midi + 24
-        lead_median = _lead_octave(spec.provenance.mood) + 6  # ~3rd above lead base
+        lead_median = _lead_octave(spec) + 6  # ~3rd above lead base
         if bar.chord_pcs and (voice_base + max(bar.chord_pcs)) > lead_median - 5:
             voice_base -= 12
         full_pitches = sorted({p for p in _voice_chord(spec, voice_base, bar.chord_pcs)
@@ -699,7 +709,7 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     mask = subset.get("mask", 127)
     allowed_degs = [d for d in range(7) if mask & (1 << d)] or list(range(7))
-    base_octave_midi = _lead_octave(spec.provenance.mood)
+    base_octave_midi = _lead_octave(spec)
 
     events: list[tuple[int, int, int, int]] = []
     for bar in spec.bars:
@@ -1219,7 +1229,7 @@ def _lead_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
 
     mask = subset.get("mask", 127)
     allowed_degs = [d for d in range(7) if mask & (1 << d)] or list(range(7))
-    base_octave_midi = _lead_octave(spec.provenance.mood)
+    base_octave_midi = _lead_octave(spec)
 
     # Build (abs_tick, kind, pitch, vel) events; deltas computed at the end.
     # Pitch-bend events are stored separately and merged at the end.

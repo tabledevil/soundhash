@@ -570,7 +570,17 @@ def hash_to_spec(
         mood = mood_override
     else:
         mood = _pick_mood(macro, family)
+
+    # Byte 1: 4 sub-flavors per mood — subtle modulations layered on top of the
+    # mood's macro character. Same mood, different "shade".
+    #   sub 0: stock        (no nudge)
+    #   sub 1: brighter     (+2% tempo, smaller reverb)
+    #   sub 2: darker       (-3% tempo, lead -12, larger reverb)
+    #   sub 3: tighter      (+1% tempo, smaller reverb)
+    sub_flavor = macro[1] & 0x03
     tempo = _pick_tempo(macro[2], mood)
+    tempo_nudge = {0: 1.0, 1: 1.02, 2: 0.97, 3: 1.01}[sub_flavor]
+    tempo = round(tempo * tempo_nudge, 2)
     key_root = macro[3] % 12
     mode = _pick_mode(macro[4], mood)
     progression = _pick_progression(macro[7], mood, mode)
@@ -806,6 +816,7 @@ def hash_to_spec(
         activation_matrix_id=activation_matrix.get("name", "band_basic"),
         groove_template_id=groove_id,
         voicing_style=voicing_style,
+        sub_flavor=sub_flavor,
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,
