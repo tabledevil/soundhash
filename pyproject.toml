@@ -11,15 +11,19 @@ dependencies = [
     "mido>=1.3.0",
     "python-magic>=0.4.27",
     "numpy>=1.26",
-    "soxr>=0.3.7",
-    "pyloudnorm>=0.1.1",
 ]
 
 [project.optional-dependencies]
-render = [
-    "pyfluidsynth>=1.3.3",
-    "sfizz>=1.2",
+# Audio rendering needs fluidsynth (system binary, install via brew/apt)
+# plus pyloudnorm for LUFS normalisation and pedalboard for FX chains.
+audio = [
+    "pyloudnorm>=0.1.1",
     "pedalboard>=0.9",
+]
+# Heuristic + psychoacoustic quality scoring.
+quality = [
+    "pyloudnorm>=0.1.1",
+    "mosqito>=1.2",
 ]
 dev = [
     "pytest>=8",
