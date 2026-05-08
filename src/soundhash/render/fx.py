@@ -42,9 +42,11 @@ _MOOD_FX: dict[str, list[tuple[str, dict]]] = {
     "M5":  [("Chorus",       {"rate_hz": 1.1, "depth": 0.25, "centre_delay_ms": 8, "feedback": 0.05, "mix": 0.20}),
             ("Delay",        {"delay_seconds": 0.214, "feedback": 0.30, "mix": 0.16}),
             ("Reverb",       {"room_size": 0.45, "damping": 0.4, "wet_level": 0.24, "dry_level": 0.82, "width": 1.0})],
-    # M6 House — tight ambience + sidechain-feel low pump (use compressor).
-    "M6":  [("Reverb",       {"room_size": 0.30, "damping": 0.5, "wet_level": 0.18, "dry_level": 0.85, "width": 0.9}),
-            ("Compressor",   {"threshold_db": -16.0, "ratio": 3.0, "attack_ms": 8, "release_ms": 80})],
+    # M6 House — compressor BEFORE reverb so the verb tails don't pump
+    # (reviewer flagged the prior order as 'pumping reverb tails'). Tight
+    # ambience after the glue compression.
+    "M6":  [("Compressor",   {"threshold_db": -16.0, "ratio": 3.0, "attack_ms": 8, "release_ms": 80}),
+            ("Reverb",       {"room_size": 0.30, "damping": 0.5, "wet_level": 0.18, "dry_level": 0.85, "width": 0.9})],
     # M7 Techno — tight, slightly dark, light delay.
     "M7":  [("Delay",        {"delay_seconds": 0.1875, "feedback": 0.18, "mix": 0.12}),
             ("HighShelfFilter", {"cutoff_frequency_hz": 9000, "gain_db": -1.5, "q": 0.7}),

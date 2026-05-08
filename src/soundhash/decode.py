@@ -294,17 +294,28 @@ def _pick_drum_kit(byte: int, mood: str) -> dict:
 
 # (gm_program, name) — stick to widely-supported GM patches so MS Basic / GeneralUser cover them.
 _GM_PALETTE: dict[str, dict[str, tuple[int, ...]]] = {
-    "M0":  {"bass": (32,),               "comp": (88, 89, 91),       "lead": (54, 75, 73),   "pad": (88, 89, 94),    "counter": (52, 73, 91)},   # Ambient
-    "M1":  {"bass": (32, 33),            "comp": (0, 4, 24),         "lead": (73, 71, 56),   "pad": (89, 91, 95),    "counter": (40, 41, 73)},
-    "M2":  {"bass": (33, 34, 36),        "comp": (4, 5, 11),         "lead": (80, 81, 28),   "pad": (89, 95, 91),    "counter": (4, 5, 11)},
-    "M3":  {"bass": (33, 36),            "comp": (4, 5, 88, 89),     "lead": (80, 73, 78),   "pad": (89, 91, 94),    "counter": (52, 91, 73)},
-    "M4":  {"bass": (32, 35),            "comp": (24, 25, 32),       "lead": (56, 11, 24),   "pad": (89, 91, 94),    "counter": (60, 56, 73)},
-    "M5":  {"bass": (38, 39, 33),        "comp": (81, 89, 80),       "lead": (81, 80, 84),   "pad": (90, 89, 94),    "counter": (82, 81, 84)},
-    "M6":  {"bass": (38, 39, 36),        "comp": (16, 17, 81),       "lead": (80, 81, 53),   "pad": (90, 89, 95),    "counter": (54, 80, 81)},
-    "M7":  {"bass": (38, 39),            "comp": (81, 89, 90),       "lead": (80, 81, 87),   "pad": (90, 94, 89),    "counter": (87, 80, 81)},
-    "M8":  {"bass": (38, 39, 87),        "comp": (89, 88, 91),       "lead": (81, 80, 87),   "pad": (89, 91, 94),    "counter": (54, 81, 91)},
-    "M9":  {"bass": (38, 39, 87),        "comp": (90, 91, 102),      "lead": (88, 81, 102),  "pad": (95, 91, 94),    "counter": (102, 88, 91)},
-    "M10": {"bass": (32, 43, 44),        "comp": (48, 49, 50, 89),   "lead": (60, 73, 71),   "pad": (49, 51, 94),    "counter": (49, 73, 71)},  # strings/choir
+    # Lead palettes expanded to 5-8 candidates per mood for "main voice variety".
+    # Per sound-design adv review: dropped GM 82 Calliope and reduced 87 reliance.
+    "M0":  {"bass": (32,),               "comp": (88, 89, 91),       "lead": (54, 75, 73, 91, 11, 70),   "pad": (88, 89, 94),    "counter": (52, 73, 71)},
+    "M1":  {"bass": (32, 33),            "comp": (0, 4, 24),         "lead": (73, 71, 56, 68, 41, 11),   "pad": (89, 91, 95),    "counter": (52, 73, 68)},
+    "M2":  {"bass": (33, 34, 36),        "comp": (4, 5, 11),         "lead": (80, 81, 28, 4, 5, 6),      "pad": (89, 95, 91),    "counter": (52, 73, 25)},   # counter de-aliased from comp
+    "M3":  {"bass": (33, 36),            "comp": (4, 5, 88, 89),     "lead": (80, 73, 78, 4, 5, 11),     "pad": (89, 91, 94),    "counter": (73, 71, 4)},
+    "M4":  {"bass": (32, 35),            "comp": (24, 25, 32),       "lead": (56, 11, 24, 73, 12, 25),   "pad": (89, 91, 94),    "counter": (24, 56, 11)},
+    "M5":  {"bass": (38, 39, 33),        "comp": (81, 89, 80),       "lead": (81, 80, 84, 87, 88, 89),   "pad": (90, 89, 94),    "counter": (88, 81, 89)},
+    "M6":  {"bass": (38, 39, 36),        "comp": (16, 17, 81),       "lead": (80, 81, 53, 87, 89, 84),   "pad": (90, 89, 95),    "counter": (53, 89, 84)},
+    "M7":  {"bass": (38, 39),            "comp": (81, 89, 90),       "lead": (80, 81, 87, 88, 89, 90),   "pad": (90, 94, 89),    "counter": (89, 90, 81)},
+    "M8":  {"bass": (38, 39, 36),        "comp": (89, 88, 91),       "lead": (81, 80, 88, 84, 90, 87),   "pad": (89, 91, 94),    "counter": (89, 81, 53)},   # bass 87 dropped per adv-review
+    "M9":  {"bass": (38, 39, 87),        "comp": (90, 91, 102),      "lead": (88, 81, 102, 87, 100, 99), "pad": (95, 91, 94),    "counter": (102, 88, 91)},
+    "M10": {"bass": (32, 43, 44),        "comp": (48, 49, 50, 89),   "lead": (60, 73, 71, 11, 49, 91),   "pad": (49, 51, 94),    "counter": (49, 51, 73)},
+    # M11 lofi: warm Rhodes / EP / soft pads.
+    "M11": {"bass": (33, 32, 35),        "comp": (4, 5, 0, 24),      "lead": (4, 5, 11, 73, 71, 26),     "pad": (89, 91, 94),    "counter": (4, 5, 73)},
+    # M12 chillout: smooth pads + soft reeds + mellow synths.
+    "M12": {"bass": (32, 33, 38),        "comp": (88, 89, 91, 4),    "lead": (73, 71, 75, 91, 89, 11),   "pad": (89, 91, 95),    "counter": (52, 91, 73)},
+    # M13 simple: piano + acoustic, sparse.
+    "M13": {"bass": (32, 33),            "comp": (0, 4, 24),         "lead": (0, 73, 11, 24, 71, 25),    "pad": (89, 88),        "counter": (4, 73, 11)},
+    # M14 gameboy: GM approximations of NES/GB chips. Calliope dropped per
+    # adv-review; replaced with extra Square + Clarinet (triangle-ish).
+    "M14": {"bass": (38, 39, 80),        "comp": (80, 81, 71),       "lead": (80, 81, 88, 84, 99, 38),   "pad": (90, 88, 95),    "counter": (80, 71, 81)},
 }
 
 
