@@ -67,6 +67,75 @@ def _gate(spec, layer_name: str) -> float:
 _ACTIVATION_LAYERS = ["drums", "bass", "comp", "lead", "counter", "drone", "fx_riser", "ad_lib"]
 
 
+def _voice_chord(spec, voice_base: int, chord_pcs: tuple[int, ...]) -> list[int]:
+    """Apply the picked voicing style to a chord-pcs tuple.
+
+    Re-voices the offsets-from-root list `chord_pcs` (e.g. (0,4,7,10) for
+    a dom7) into MIDI pitches starting from `voice_base`. Falls back to
+    the close-triad layout (raw chord_pcs added to voice_base) for unknown
+    styles.
+    """
+    if not chord_pcs:
+        return []
+    style = spec.voicing_style
+    if style in ("close_triad", "open_triad", "sus_open", "quartal", "power",
+                 "shell", "drop2_7th", "drop3_7th", "rootless_A", "rootless_B"):
+        if style == "close_triad":
+            offsets = list(chord_pcs)
+        elif style == "open_triad":
+            # Spread: keep root, lift 3rd + 5th by an octave to widen.
+            offsets = list(chord_pcs)
+            for i in range(1, min(3, len(offsets))):
+                offsets[i] += 12
+        elif style == "sus_open":
+            # Replace 3rd (index 1) with a 4th (5 semitones from root).
+            offsets = list(chord_pcs)
+            if len(offsets) >= 2:
+                offsets[1] = 5
+            for i in range(1, min(3, len(offsets))):
+                offsets[i] += 12
+        elif style == "quartal":
+            # Stack of fourths from root: 0, 5, 10, 15.
+            offsets = [0, 5, 10, 15][:max(2, len(chord_pcs))]
+        elif style == "power":
+            # Just root + 5th (no 3rd) — rock voicing.
+            fifth = chord_pcs[2] if len(chord_pcs) >= 3 else 7
+            offsets = [0, fifth, 12]
+        elif style == "shell":
+            # Jazz shell: root + 3rd + 7th (no 5th).
+            third = chord_pcs[1] if len(chord_pcs) >= 2 else 4
+            seventh = chord_pcs[3] if len(chord_pcs) >= 4 else 10
+            offsets = [0, third, seventh]
+        elif style == "drop2_7th":
+            # 4-note voicing with the 2nd-from-top voice dropped an octave.
+            # close = [R, 3, 5, 7]; drop-2 = [5-12, R, 3, 7] = [-5, 0, 4, 11].
+            if len(chord_pcs) >= 4:
+                R, T, F, S = chord_pcs[0], chord_pcs[1], chord_pcs[2], chord_pcs[3]
+                offsets = [F - 12, R, T, S]
+            else:
+                offsets = list(chord_pcs)
+        elif style == "drop3_7th":
+            # 4-note voicing, 3rd-from-top voice dropped an octave.
+            # close [R, 3, 5, 7] → [3-12, R, 5, 7].
+            if len(chord_pcs) >= 4:
+                R, T, F, S = chord_pcs[0], chord_pcs[1], chord_pcs[2], chord_pcs[3]
+                offsets = [T - 12, R, F, S]
+            else:
+                offsets = list(chord_pcs)
+        elif style.startswith("rootless"):
+            # Rootless A: 3, 5, 7, 9 ; Rootless B: 7, 9, 3, 5
+            if len(chord_pcs) >= 4:
+                T, F, S = chord_pcs[1], chord_pcs[2], chord_pcs[3]
+                ninth = chord_pcs[1] + 14            # add 9 (M2 above 3rd ≈ 9th)
+                offsets = ([T, F, S, ninth] if style == "rootless_A"
+                           else [S - 12, ninth - 12, T, F])
+            else:
+                offsets = list(chord_pcs)[1:] or list(chord_pcs)
+    else:
+        offsets = list(chord_pcs)
+    return [voice_base + o for o in offsets]
+
+
 def _activation_silent(spec, bar, layer_name: str) -> bool:
     """Return True if the activation matrix marks this layer silent for this bar.
 
@@ -474,7 +543,8 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
         lead_median = _lead_octave(spec.provenance.mood) + 6  # ~3rd above lead base
         if bar.chord_pcs and (voice_base + max(bar.chord_pcs)) > lead_median - 5:
             voice_base -= 12
-        full_pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
+        full_pitches = sorted({p for p in _voice_chord(spec, voice_base, bar.chord_pcs)
+                               if 30 <= p <= 96})
         # Role-aware voicing.
         if polyphony == "monophonic_sequence":
             shape = _find_arp_shape((layer.extra or {}).get("arp_shape_id", ""))
@@ -544,7 +614,8 @@ def _comp_track_strum(spec: SongSpec, ticks_per_bar: int, comp: MidiTrack,
             continue
         vel_base = max(40, min(100, int(45 + 50 * e) + bar.comp_vel_pull))
         voice_base = bar.chord_root_midi + 24
-        full_pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
+        full_pitches = sorted({p for p in _voice_chord(spec, voice_base, bar.chord_pcs)
+                               if 30 <= p <= 96})
         for stroke in strokes:
             step = stroke.get("step", 0)
             direction = stroke.get("dir", "D")

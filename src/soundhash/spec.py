@@ -102,6 +102,7 @@ class SongSpec:
     energy_curve_id: str
     activation_matrix_id: str
     groove_template_id: str = "straight_4_4"
+    voicing_style: str = "close_triad"
     bars: tuple[Bar, ...] = ()
     layers: tuple[LayerSpec, ...] = ()
     bar_energies: tuple[float, ...] = ()  # one 0..1 per bar from the energy curve

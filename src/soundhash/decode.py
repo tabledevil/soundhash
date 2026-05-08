@@ -535,6 +535,10 @@ def hash_to_spec(
     key_root = macro[3] % 12
     mode = _pick_mode(macro[4], mood)
     progression = _pick_progression(macro[7], mood, mode)
+    # Byte 8: pick voicing style from progression's allowed list. Was unused.
+    allowed_voicings = progression.get("allowed_voicing_styles") \
+        or [progression.get("default_voicing_style", "close_triad")]
+    voicing_style = allowed_voicings[macro[8] % len(allowed_voicings)]
 
     # Resolve progression to per-bar chord entries.
     chord_entries = theory.resolve_progression(progression, key_root, mode)
@@ -759,6 +763,7 @@ def hash_to_spec(
         energy_curve_id=energy_curve.get("name", "arc"),
         activation_matrix_id=activation_matrix.get("name", "band_basic"),
         groove_template_id=groove_id,
+        voicing_style=voicing_style,
         bars=bars,
         layers=layers,
         bar_energies=bar_energies,
