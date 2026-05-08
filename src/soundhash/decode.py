@@ -424,27 +424,19 @@ def _all_contours() -> list[dict]:
     return sorted(contours, key=lambda x: x.get("id", ""))
 
 
-def _pick_melody_motif(byte: int, time_sig: str) -> dict:
-    data = tables.load("melody/motif_rhythms")
-    pools = data.get("pools", data)
-    pool = pools.get(time_sig) or pools.get(time_sig.replace("/", "_")) or next(iter(pools.values()))
-    if isinstance(pool, dict):
-        # Some schemas group by idiom sub-pool.
-        flat = []
-        for v in pool.values():
-            if isinstance(v, list):
-                flat.extend(v)
-        pool = flat or list(pool.values())
-    eligible = sorted(pool, key=lambda x: x.get("id", str(x)))
+def _pick_melody_motif(byte: int, time_sig: str, mood: str = "") -> dict:
+    pool = _all_motifs_for_time_sig(time_sig)
+    eligible = [m for m in pool if mood in m.get("mood_tags", [])] if mood else []
+    if not eligible:
+        eligible = pool
     return eligible[byte % len(eligible)]
 
 
-def _pick_contour(byte: int) -> dict:
-    data = tables.load("melody/contours")
-    contours = data.get("contours", data)
-    if isinstance(contours, dict):
-        contours = list(contours.values())
-    eligible = sorted(contours, key=lambda x: x.get("id", str(x)))
+def _pick_contour(byte: int, mood: str = "") -> dict:
+    pool = _all_contours()
+    eligible = [c for c in pool if mood in c.get("mood_tags", [])] if mood else []
+    if not eligible:
+        eligible = pool
     return eligible[byte % len(eligible)]
 
 
@@ -576,8 +568,8 @@ def hash_to_spec(
     comp_synth = _pick_comp_synth(macro[16], mood, comp_role["id"])
     comp_pat = _pick_comp_pattern(macro[17], mood, time_sig_str)
     arp_shape = _pick_arp_shape(macro[17], mood)
-    melody_motif = _pick_melody_motif(macro[19], time_sig_str)
-    melody_contour = _pick_contour(macro[20])
+    melody_motif = _pick_melody_motif(macro[19], time_sig_str, mood)
+    melody_contour = _pick_contour(macro[20], mood)
     melody_scale = _pick_scale_subset(macro[18], mode)
 
     bass_program = _pick_gm_program(macro[14], mood, "bass", default=33)
