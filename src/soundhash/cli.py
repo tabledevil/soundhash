@@ -21,6 +21,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="auto | off | strict | <mime/type>")
     p.add_argument("--verbose", "-v", action="store_true",
                    help="dump the full SongSpec breakdown")
+    p.add_argument("--score", action="store_true",
+                   help="after audio render, print a heuristic quality score")
     p.add_argument("--version", action="version", version=__version__)
     args = p.parse_args(argv)
 
@@ -77,11 +79,15 @@ def main(argv: list[str] | None = None) -> int:
                 "groove_template_id": spec.groove_template_id,
                 "energy_curve_id": spec.energy_curve_id,
             }
+            wav_bytes = render_wav(midi_bytes,
+                                   sample_rate=spec.render.sample_rate,
+                                   provenance=prov)
             with open(wav_path, "wb") as fh:
-                fh.write(render_wav(midi_bytes,
-                                    sample_rate=spec.render.sample_rate,
-                                    provenance=prov))
+                fh.write(wav_bytes)
             print(f"  wrote   {wav_path}", file=sys.stderr)
+            if args.score:
+                from .quality import score_wav
+                print(f"  quality {score_wav(wav_bytes).summary()}", file=sys.stderr)
 
     # TODO: render via render.midi / render.audio
     return 0

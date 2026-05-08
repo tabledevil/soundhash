@@ -57,7 +57,8 @@ def _find_soundfont() -> str:
 
 
 def render_wav(midi_bytes: bytes, sample_rate: int = 44100,
-               provenance: dict | None = None) -> bytes:
+               provenance: dict | None = None,
+               apply_fx: bool = True) -> bytes:
     """Run fluidsynth on the MIDI, return the WAV bytes (with optional metadata)."""
     if shutil.which("fluidsynth") is None:
         raise RuntimeError("fluidsynth CLI not found on PATH")
@@ -85,7 +86,8 @@ def render_wav(midi_bytes: bytes, sample_rate: int = 44100,
             raise RuntimeError(
                 f"fluidsynth exited {proc.returncode}: {proc.stderr.decode(errors='replace')[:400]}"
             )
-        wav = _postprocess_wav(wav_path.read_bytes())
+        wav = _postprocess_wav(wav_path.read_bytes(),
+                               mood=(provenance or {}).get("mood") if apply_fx else None)
         if provenance:
             wav = _embed_wav_provenance(wav, provenance)
         return wav
@@ -147,8 +149,8 @@ def _embed_wav_provenance(wav_bytes: bytes, prov: dict) -> bytes:
     return bytes(out)
 
 
-def _postprocess_wav(wav_bytes: bytes) -> bytes:
-    """Cap length, apply fades, normalise to TARGET_LUFS, peak-limit. Pure on bytes."""
+def _postprocess_wav(wav_bytes: bytes, mood: str | None = None) -> bytes:
+    """Cap length, apply fades, LUFS-norm, mood FX chain, peak-limit."""
     with wave.open(io.BytesIO(wav_bytes), "rb") as r:
         n_channels = r.getnchannels()
         sample_width = r.getsampwidth()
@@ -170,7 +172,15 @@ def _postprocess_wav(wav_bytes: bytes) -> bytes:
     # 2. LUFS normalisation (only if there's enough audio for the gating window).
     samples = _normalise_loudness(samples, rate)
 
-    # 3. Cosine fades.
+    # 3. Per-mood FX chain (reverb / delay / chorus / EQ via pedalboard).
+    if mood:
+        try:
+            from .fx import apply_fx
+            samples = apply_fx(samples, rate, mood)
+        except Exception:
+            pass
+
+    # 4. Cosine fades.
     fi = max(1, int(FADE_IN_MS * rate / 1000))
     fo = max(1, int(FADE_OUT_MS * rate / 1000))
     if n >= fi:
@@ -180,7 +190,7 @@ def _postprocess_wav(wav_bytes: bytes) -> bytes:
         ramp = 0.5 * (1.0 + np.cos(np.linspace(0.0, np.pi, fo, dtype=np.float32)))
         samples[-fo:] *= ramp[:, None]
 
-    # 4. Peak limiter at PEAK_CEILING_DBFS (linear-domain; deterministic).
+    # 5. Peak limiter at PEAK_CEILING_DBFS (linear-domain; deterministic).
     ceiling = 10 ** (PEAK_CEILING_DBFS / 20.0)
     peak = float(np.max(np.abs(samples))) if samples.size else 0.0
     if peak > ceiling:
