@@ -72,7 +72,13 @@ pip install -e ".[dev,render]"               # python deps + tests
 pip install pyloudnorm pedalboard mosqito    # quality scoring (optional)
 ```
 
-A CC0/permissive GM SoundFont must be at `assets/v1/sf2/MS-Basic.sf3`. The repo's `.gitignore` excludes the `sf2/` directory; download MuseScore's MS Basic SF3 (~50 MB) from the MuseScore source repo, or set `SOUNDHASH_SOUNDFONT=/path/to/your.sf2`.
+A CC0/permissive GM SoundFont must be at `assets/v1/sf2/MS-Basic.sf3`. Bootstrap with:
+
+```bash
+python -m soundhash.setup_assets   # ~50 MB MuseScore MS Basic SF3
+```
+
+The repo's `.gitignore` excludes the `sf2/` directory. To use a different soundfont, set `SOUNDHASH_SOUNDFONT=/path/to/your.sf2`.
 
 ## Repo layout
 
