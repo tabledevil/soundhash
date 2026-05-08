@@ -498,9 +498,13 @@ def _riser_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     if layer is None or len(spec.bar_energies) < 2:
         return None
 
+    # Trigger threshold: delta ≥ 0.22. We picked 0.22 over 0.25 after observing
+    # that build-ups in late_drop / slow_build_cliff curves often peak at
+    # ~0.225 — the riser was inaudible because every late-drop track skipped
+    # exactly when the build hits.
     rises: list[int] = []
     for i in range(len(spec.bar_energies) - 1):
-        if spec.bar_energies[i + 1] - spec.bar_energies[i] >= 0.25:
+        if spec.bar_energies[i + 1] - spec.bar_energies[i] >= 0.22:
             rises.append(i)
     if not rises:
         return None
