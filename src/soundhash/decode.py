@@ -151,7 +151,11 @@ def _expand_form_layout(form: dict, n_bars: int) -> list[str]:
 def _pick_activation_matrix(byte: int, form_id: int) -> dict:
     """Pick a layer-activation matrix that's compatible with the form.
 
-    Falls back to any matrix if the form has no compatibles listed.
+    Filters out matrices whose A row silences the lead — for a 30-second
+    soundhash a lead-silent matrix produces a melody-less output across
+    the whole song, which is uniformly drab. Section-specific intro/outro
+    matrices (which only fire on those section letters) can still be
+    picked because they're whitelisted via compatible_forms.
     """
     try:
         data = tables.load("layer_activation")
@@ -160,10 +164,23 @@ def _pick_activation_matrix(byte: int, form_id: int) -> dict:
     matrices = data.get("matrices", [])
     if not matrices:
         return {}
-    eligible = [m for m in matrices if not m.get("compatible_forms")
-                or form_id in m.get("compatible_forms", [])]
-    if not eligible:
-        eligible = matrices
+    layers = data.get("layers", []) or [
+        "drums", "bass", "comp", "lead", "counter", "drone", "fx_riser", "ad_lib",
+    ]
+    lead_idx = layers.index("lead") if "lead" in layers else 3
+
+    def _has_lead_in_A(m: dict) -> bool:
+        rows = m.get("rows", {})
+        a_row = rows.get("A") or (list(rows.values())[0] if rows else [])
+        return len(a_row) > lead_idx and a_row[lead_idx] != "-"
+
+    form_eligible = [m for m in matrices if not m.get("compatible_forms")
+                     or form_id in m.get("compatible_forms", [])]
+    if not form_eligible:
+        form_eligible = matrices
+    # Prefer matrices that don't silence the lead. Fall back to all if none.
+    melody_eligible = [m for m in form_eligible if _has_lead_in_A(m)]
+    eligible = melody_eligible or form_eligible
     eligible = sorted(eligible, key=lambda m: m.get("id", 0))
     return eligible[byte % len(eligible)]
 
