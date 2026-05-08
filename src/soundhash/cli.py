@@ -135,7 +135,7 @@ def main(argv: list[str] | None = None) -> int:
 
 _SELF_TEST_SEED = "soundhash-self-test-v1"
 _SELF_TEST_MIME = "application/json"
-_SELF_TEST_MIDI_SHA = "d2adc21a57841d4429d36059a802258b768b73282b9af282d5b10a923b075f3a"
+_SELF_TEST_MIDI_SHA = "95d015285f34fb363248f10773d32de726e41835fd1383cff76183975424c05e"
 
 
 def _self_test() -> int:

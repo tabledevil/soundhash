@@ -1186,6 +1186,30 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                     v = max(20, min(60, int(45 * vel_scale)) + _vel_jitter(spec, "drums", 4))
                     events.append((abs_tick, 0, snare_key, v))
                     events.append((abs_tick + DRUM_LEN, 1, snare_key, 64))
+        elif rising and esc_algo == "subdivision_double":
+            # Double hat density: for every existing hat hit on an even step,
+            # add a softer companion hit on the odd cell after it (8ths→16ths).
+            hat_steps = sorted({h["s"] for h in pat.get("rows", {}).get("hat_closed", [])})
+            hat_key = gm_map.get("hat_closed")
+            if hat_key is not None:
+                for s in hat_steps:
+                    if s % 2 != 0 or s + 1 >= steps or (s + 1) in hat_steps:
+                        continue
+                    new_s = s + 1
+                    abs_tick = bar_offset_ticks + new_s * ticks_per_step
+                    abs_tick += _groove_offset(spec, "hat_closed", new_s)
+                    v = max(40, min(95, int(65 * vel_scale)) + _vel_jitter(spec, "drums", 4))
+                    events.append((abs_tick, 0, hat_key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, hat_key, 64))
+        elif rising and esc_algo == "snare_roll_crescendo":
+            # Crescendo snare roll on the last beat of the bar (16th notes).
+            snare_key = gm_map.get("snare")
+            if snare_key is not None and steps >= 16:
+                for k, s in enumerate((12, 13, 14, 15)):
+                    abs_tick = bar_offset_ticks + s * ticks_per_step
+                    v = max(30, min(120, 60 + 10 * k + _vel_jitter(spec, "drums", 3)))
+                    events.append((abs_tick, 0, snare_key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, snare_key, 64))
 
         # Overlay the fill in the last fill_span cells.
         if is_fill_bar:
