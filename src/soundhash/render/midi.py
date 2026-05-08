@@ -1220,6 +1220,26 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                     v = max(40, min(127, vel + _vel_jitter(spec, "drums", 4)))
                     events.append((abs_tick, 0, key, v))
                     events.append((abs_tick + DRUM_LEN, 1, key, 64))
+        elif rising and esc_algo == "polyrhythm_overlay":
+            # 3-against-4 perc overlay: 3 hits evenly across the 16-cell bar.
+            # Cells 0, 5, 10 give a tight 3:4 cross-rhythm.
+            perc_key = gm_map.get("perc_1") or gm_map.get("hat_open") or gm_map.get("ride")
+            if perc_key is not None:
+                for s in (0, 5, 10):
+                    abs_tick = bar_offset_ticks + s * ticks_per_step
+                    v = max(40, min(105, int(70 * vel_scale)) + _vel_jitter(spec, "drums", 4))
+                    events.append((abs_tick, 0, perc_key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, perc_key, 64))
+        elif rising and esc_algo == "reverse_cymbal_sweep":
+            # Mark a single GM-119-style cymbal hit on the upbeat preceding
+            # the next bar (cell 14). The dedicated riser layer handles the
+            # main reverse-cymbal sweep; this is a per-bar drum echo.
+            crash_key = gm_map.get("crash") or 49
+            if steps >= 16:
+                abs_tick = bar_offset_ticks + 14 * ticks_per_step
+                v = max(50, min(115, int(80 * vel_scale)) + _vel_jitter(spec, "drums", 3))
+                events.append((abs_tick, 0, crash_key, v))
+                events.append((abs_tick + DRUM_LEN * 6, 1, crash_key, 64))
         elif rising and esc_algo == "hat_density_ramp":
             # Hat density ramps from current to full 16ths across the bar.
             hat_key = gm_map.get("hat_closed")
