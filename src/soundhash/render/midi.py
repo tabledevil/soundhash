@@ -1072,10 +1072,15 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     gm_map = kit["gm_map"]
     DRUM_LEN = 80
     events: list[tuple[int, int, int, int]] = []  # (abs_tick, kind, pitch, vel)
+    esc_algo = layer.extra.get("esc_algo", "")
     for bar in spec.bars:
         e = _bar_energy(spec, bar.index)
         if e < _gate(spec, "drums") or bar.drop_drums or _activation_silent(spec, bar, "drums"):
             continue
+        # Energy-delta escalation: when this bar's energy is rising sharply
+        # over the previous bar (delta ≥ 0.08), apply the picked algo.
+        prev_e = _bar_energy(spec, bar.index - 1) if bar.index > 0 else e
+        rising = (e - prev_e) >= 0.08
         # Density-aware: high-density pattern when energy ≥ 0.55, else low.
         pat = pat_high if e >= 0.55 else pat_low
         steps = pat.get("steps", 16)
@@ -1122,6 +1127,33 @@ def _drum_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                 v = max(1, min(127, int(round(ev["v"] * vel_scale)) + _vel_jitter(spec, "drums", 5)))
                 events.append((abs_tick, 0, gm_key, v))
                 events.append((abs_tick + DRUM_LEN, 1, gm_key, 64))
+
+        # Escalation algo overlay on rising-energy bars. Only `linear_add`
+        # and `ghost_note_stack` have render-time behaviour for now; the
+        # other 6 algos are picked deterministically (recorded on the
+        # layer.extra) but don't yet mutate the drum events.
+        if rising and esc_algo == "linear_add":
+            # Add 1 extra closed-hat hit at every other 16th-step that's
+            # currently silent — gradually thickens the bar.
+            hat_key = gm_map.get("hat_closed")
+            if hat_key is not None:
+                existing_hat_steps = {h["s"] for h in pat.get("rows", {}).get("hat_closed", [])}
+                add_steps = [s for s in range(1, steps, 2) if s not in existing_hat_steps][:2]
+                for s in add_steps:
+                    abs_tick = bar_offset_ticks + s * ticks_per_step
+                    abs_tick += _groove_offset(spec, "hat_closed", s)
+                    v = max(40, min(100, int(70 * vel_scale)) + _vel_jitter(spec, "drums", 4))
+                    events.append((abs_tick, 0, hat_key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, hat_key, 64))
+        elif rising and esc_algo == "ghost_note_stack":
+            # Sprinkle 2 ghost snares between strong beats.
+            snare_key = gm_map.get("snare")
+            if snare_key is not None:
+                for s in (3, 11):
+                    abs_tick = bar_offset_ticks + s * ticks_per_step
+                    v = max(20, min(60, int(45 * vel_scale)) + _vel_jitter(spec, "drums", 4))
+                    events.append((abs_tick, 0, snare_key, v))
+                    events.append((abs_tick + DRUM_LEN, 1, snare_key, 64))
 
         # Overlay the fill in the last fill_span cells.
         if is_fill_bar:

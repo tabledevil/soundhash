@@ -372,6 +372,28 @@ def _pick_drum_pattern(byte: int, kit_id: str, time_sig: str) -> dict:
     return eligible[byte % len(eligible)]
 
 
+_ESCALATION_CACHE: dict | None = None
+
+
+def _escalation_algos() -> tuple[list, list]:
+    global _ESCALATION_CACHE
+    if _ESCALATION_CACHE is None:
+        try:
+            data = tables.load("drums/escalation_algorithms")
+            _ESCALATION_CACHE = (data.get("escalation", []), data.get("deescalation", []))
+        except FileNotFoundError:
+            _ESCALATION_CACHE = ([], [])
+    return _ESCALATION_CACHE
+
+
+def _pick_escalation_algos(byte: int) -> tuple[str, str]:
+    """Byte 12 split: high nibble = escalation algo, low nibble = de-escalation."""
+    esc, deesc = _escalation_algos()
+    e_id = esc[(byte >> 4) % len(esc)]["id"] if esc else ""
+    d_id = deesc[(byte & 0x0F) % len(deesc)]["id"] if deesc else ""
+    return e_id, d_id
+
+
 def _pick_drum_fill(byte: int, kit_id: str) -> str:
     try:
         fills = tables.load(f"drums/fills/{kit_id}")["fills"]
@@ -659,6 +681,7 @@ def hash_to_spec(
     drum_pat_low, drum_pat_high = _pick_drum_pattern_pair(macro[10], drum_kit["id"], time_sig_str)
     drum_pat = drum_pat_low or drum_pat_high or {}
     drum_fill_id = _pick_drum_fill(macro[11], drum_kit["id"])
+    esc_algo, deesc_algo = _pick_escalation_algos(macro[12])
     bass_pat = _pick_bass_pattern(macro[13], mood, time_sig_str)
     bass_synth = _pick_bass_synth(macro[14], mood, bass_pat["id"])
     comp_role = _pick_comp_role(macro[15], mood)
@@ -710,6 +733,8 @@ def hash_to_spec(
                       "pattern_low": drum_pat_low.get("id", ""),
                       "pattern_high": drum_pat_high.get("id", ""),
                       "fill_id": drum_fill_id,
+                      "esc_algo": esc_algo,
+                      "deesc_algo": deesc_algo,
                   }),
         LayerSpec(name="bass", midi_channel=0, synth_id=bass_synth["id"],
                   program=bass_program, pattern_id=bass_pat["id"],
