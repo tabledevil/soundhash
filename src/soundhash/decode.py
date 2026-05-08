@@ -653,6 +653,14 @@ def hash_to_spec(
                   program=119,                     # GM Reverse Cymbal
                   pattern_id="",
                   extra={}),
+        LayerSpec(name="ear_candy", midi_channel=7, synth_id="ear_candy/bell",
+                  # Mood-keyed bell-ish patch: 9 Glockenspiel, 11 Vibraphone,
+                  # 14 Tubular Bells, 98 Crystal, 12 Marimba, 113 Tinkle Bell.
+                  program=({"M0": 9, "M1": 11, "M2": 12, "M3": 11,
+                            "M4": 12, "M5": 98, "M6": 9, "M7": 98,
+                            "M8": 12, "M9": 113, "M10": 14}.get(mood, 9)),
+                  pattern_id="",
+                  extra={}),
     )
 
     provenance = Provenance(

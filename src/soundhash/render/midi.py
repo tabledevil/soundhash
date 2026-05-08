@@ -140,6 +140,9 @@ def render_midi(spec: SongSpec) -> bytes:
     riser = _riser_track(spec, ticks_per_bar)
     if riser is not None:
         mf.tracks.append(riser)
+    ec = _ear_candy_track(spec, ticks_per_bar)
+    if ec is not None:
+        mf.tracks.append(ec)
 
     buf = io.BytesIO()
     mf.save(file=buf)
@@ -503,6 +506,91 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
         delta = max(0, abs_tick - cursor)
         msg_type = "note_on" if kind == 0 else "note_off"
         track.append(Message(msg_type, channel=4, note=pitch, velocity=vel, time=delta))
+        cursor = abs_tick
+    return track
+
+
+_EAR_CANDY_TABLE: list | None = None
+
+
+def _ear_candy_table() -> list:
+    """Lazily load and cache the ear_candy_table from aux_layers.json."""
+    global _EAR_CANDY_TABLE
+    if _EAR_CANDY_TABLE is None:
+        try:
+            data = tables.load("aux_layers")
+            _EAR_CANDY_TABLE = data.get("ear_candy_table", {}).get("rows", []) or []
+        except FileNotFoundError:
+            _EAR_CANDY_TABLE = []
+    return _EAR_CANDY_TABLE
+
+
+def _ear_candy_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
+    """Off-beat percussive stabs at high-energy bars.
+
+    Each bar samples one row from the ear_candy_table via
+    HKDF(aux/earcandy/main/<bar_idx>)[0] % len(rows). Positions are 16th-cell
+    indices avoiding the downbeats (per the table's contract). Pitches walk
+    the chord tones for melodic colour.
+    """
+    layer = next((l for l in spec.layers if l.name == "ear_candy"), None)
+    if layer is None:
+        return None
+    rows = _ear_candy_table()
+    if not rows:
+        return None
+
+    track = MidiTrack()
+    track.append(MetaMessage("track_name", name="ear_candy", time=0))
+    track.append(Message("program_change", channel=7,
+                         program=_layer_program(spec, "ear_candy", default=9), time=0))
+
+    import hashlib as _h, hmac as _hm
+    prk = _hm.new(b"soundhash-v1",
+                  bytes.fromhex(spec.provenance.hash_hex), _h.sha256).digest()
+
+    cells_to_ticks = ticks_per_bar // 16
+    events: list[tuple[int, int, int, int]] = []
+    for bar in spec.bars:
+        e = _bar_energy(spec, bar.index)
+        if e < 0.50:
+            continue
+        # Drop on fill bars so the fill speaks.
+        next_bar = spec.bars[bar.index + 1] if bar.index + 1 < len(spec.bars) else None
+        if next_bar is not None and next_bar.section_letter != bar.section_letter:
+            continue
+        info = f"soundhash/v1/aux/earcandy/main/{bar.index}".encode("ascii")
+        out, t, c = b"", b"", 1
+        while len(out) < 4:
+            t = _hm.new(prk, t + info + bytes([c]), _h.sha256).digest()
+            out += t
+            c += 1
+        row_idx = out[0] % len(rows)
+        positions = rows[row_idx] or []
+        bar_tick = bar.index * ticks_per_bar
+        # Pitches: cycle chord tones in the C5 octave, picking a different
+        # tone per stab for melodic interest.
+        chord_tones = sorted({72 + ((bar.chord_root_pc + iv) % 12)
+                              for iv in (bar.chord_pcs or (0, 4, 7))})
+        for j, pos in enumerate(positions):
+            if not 1 <= pos <= 15 or pos == 8:
+                continue
+            on_tick = bar_tick + pos * cells_to_ticks
+            pitch = chord_tones[j % len(chord_tones)]
+            vel = max(40, min(95, int(45 + 50 * (e - 0.5))))
+            vel = max(1, min(127, vel + _vel_jitter(spec, "ear_candy", 4)))
+            dur = max(60, cells_to_ticks - 20)
+            events.append((on_tick, 0, pitch, vel))
+            events.append((on_tick + dur, 1, pitch, 64))
+
+    if not events:
+        return None
+    events.sort(key=lambda ev: (ev[0], ev[1], ev[2]))
+    cursor = 0
+    for abs_tick, kind, pitch, vel in events:
+        delta = max(0, abs_tick - cursor)
+        msg_type = "note_on" if kind == 0 else "note_off"
+        track.append(Message(msg_type, channel=7, note=pitch, velocity=vel, time=delta))
         cursor = abs_tick
     return track
 
