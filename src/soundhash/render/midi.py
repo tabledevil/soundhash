@@ -529,7 +529,11 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
     subset_id = layer.extra.get("scale_subset_id")
     if not (motif_id and contour_id and subset_id):
         return None
-    transpose = int(layer.extra.get("transpose_degrees", 2))
+    counter_mode = layer.extra.get("counter_mode", "parallel_3rd")
+    # Modes resolved at sample-time: parallel_3rd (+2 deg), parallel_6th (+5),
+    # contrary (mirror about contour mean), octave_below (-7 = octave + 5th down)
+    mode_transpose = {"parallel_3rd": 2, "parallel_6th": 5, "octave_below": -7}.get(counter_mode, 2)
+    is_contrary = (counter_mode == "contrary")
 
     ts_str = f"{spec.time_sig[0]}/{spec.time_sig[1]}"
     contours_list = tables.load("melody/contours")["contours"]
@@ -565,14 +569,21 @@ def _counter_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack | None:
                        default_contour)
         samples = contour["samples"]
         onsets = motif["onsets"]
+        samples_mean = sum(samples) / len(samples) if samples else 1.0
         bar_tick = bar.index * ticks_per_bar
         n_onsets = len(onsets)
         for i, (start_beat, dur_beat) in enumerate(onsets):
             t = i / max(1, n_onsets - 1) if n_onsets > 1 else 0.0
             sample_idx = min(len(samples) - 1, int(round(t * (len(samples) - 1))))
             scale_degree_1 = samples[sample_idx]
-            # Apply per-bar lead mutation, then add the harmony transpose.
-            scale_degree_1 = max(1, scale_degree_1 + bar.melody_transpose + transpose)
+            # Counter-melody modes:
+            #   parallel_3rd / 6th / octave_below: add a fixed scale-degree
+            #     offset (mode_transpose) to follow the lead in harmony.
+            #   contrary: mirror around the contour mean so the counter moves
+            #     in the opposite direction to the lead.
+            if is_contrary and samples_mean:
+                scale_degree_1 = int(round(2 * samples_mean - scale_degree_1))
+            scale_degree_1 = max(1, scale_degree_1 + bar.melody_transpose + mode_transpose)
             deg_idx = (scale_degree_1 - 1) % 7
             octave_shift = (scale_degree_1 - 1) // 7
             if deg_idx not in allowed_degs:

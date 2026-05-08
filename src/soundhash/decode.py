@@ -685,13 +685,16 @@ def hash_to_spec(
         LayerSpec(name="pad", midi_channel=3, synth_id="pad/aux_wash",
                   program=pad_program, pattern_id="",
                   extra={"role": "pad_wash"}),
-        LayerSpec(name="counter", midi_channel=4, synth_id="counter/parallel_third",
+        LayerSpec(name="counter", midi_channel=4,
+                  synth_id=("counter/" + ["parallel_3rd","parallel_6th","contrary","octave_below"][macro[31] & 0x03]),
                   program=counter_program, pattern_id=melody_motif.get("id", ""),
                   extra={
                       "motif_id": melody_motif.get("id", ""),
                       "contour_id": melody_contour.get("id", ""),
                       "scale_subset_id": melody_scale.get("id", ""),
-                      "transpose_degrees": 2,    # parallel third (in scale degrees)
+                      # 4 counter-melody modes selected by 2 bits of byte 31:
+                      #   0=parallel_3rd, 1=parallel_6th, 2=contrary, 3=octave_below.
+                      "counter_mode": ["parallel_3rd","parallel_6th","contrary","octave_below"][macro[31] & 0x03],
                   }),
         LayerSpec(name="drone", midi_channel=5, synth_id="drone/tonic_fifth",
                   program=89,                      # Pad 2 (warm)
