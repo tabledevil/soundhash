@@ -185,6 +185,8 @@ def render_midi(spec: SongSpec) -> bytes:
     # Reset stateful caches so render is idempotent within a process.
     _VEL_JITTER_CACHE.clear()
     _GROOVE_CACHE.clear()
+    global _STRUM_CACHE, _ACCENT_SKELETON_CACHE
+    _ACCENT_SKELETON_CACHE.clear()
     mf = MidiFile(ticks_per_beat=PPQ, type=1)
 
     num, den_pow2 = spec.time_sig
@@ -419,6 +421,12 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
     if polyphony == "silent":
         return comp                          # no_comp role → just program-change track
 
+    # Guitar-strum role overrides chord_rhythm with the strum_patterns table.
+    if role and role.get("id") == "guitar_strum":
+        strum = _pick_strum_pattern(spec, spec.provenance.mood)
+        if strum is not None:
+            return _comp_track_strum(spec, ticks_per_bar, comp, strum)
+
     default_pattern = _find_comp_pattern(layer.pattern_id) if layer else None
     if default_pattern is None and not spec.section_comp_pattern_ids:
         return _comp_track_sustain(spec, ticks_per_bar, comp)
@@ -486,6 +494,53 @@ def _comp_track(spec: SongSpec, ticks_per_bar: int) -> MidiTrack:
             for p in pitches:
                 events.append((on_tick, 0, p, vel))
                 events.append((on_tick + dur_ticks, 1, p, 64))
+
+    events.sort(key=lambda ev: (ev[0], ev[1], ev[2]))
+    cursor = 0
+    for abs_tick, kind, pitch, vel in events:
+        delta = max(0, abs_tick - cursor)
+        msg_type = "note_on" if kind == 0 else "note_off"
+        comp.append(Message(msg_type, channel=1, note=pitch, velocity=vel, time=delta))
+        cursor = abs_tick
+    return comp
+
+
+def _comp_track_strum(spec: SongSpec, ticks_per_bar: int, comp: MidiTrack,
+                      strum: dict) -> MidiTrack:
+    """Guitar-strum comp: read strum_patterns.json strokes and apply per-string
+    spread. Down strokes arpeggiate high→low, up strokes low→high."""
+    grid_steps = strum.get("grid_steps", 16)
+    cells_to_ticks = ticks_per_bar // grid_steps
+    spread_ms = strum.get("inter_string_spread_ms", 14)
+    spread_ticks = max(2, int(spread_ms * spec.tempo_bpm * PPQ / 60_000.0))
+    strokes = strum.get("strokes", [])
+
+    events: list[tuple[int, int, int, int]] = []
+    for bar in spec.bars:
+        e = _bar_energy(spec, bar.index)
+        if e < _gate(spec, "comp") or bar.drop_comp:
+            continue
+        vel_base = max(40, min(100, int(45 + 50 * e) + bar.comp_vel_pull))
+        voice_base = bar.chord_root_midi + 24
+        full_pitches = sorted({voice_base + iv for iv in bar.chord_pcs})
+        for stroke in strokes:
+            step = stroke.get("step", 0)
+            direction = stroke.get("dir", "D")
+            vel_factor = stroke.get("vel_factor", 1.0)
+            base_tick = bar.index * ticks_per_bar + step * cells_to_ticks
+            base_tick = max(bar.index * ticks_per_bar,
+                            base_tick + _groove_offset(spec, "comp", step))
+            ordered = list(full_pitches if direction == "U" else reversed(full_pitches))
+            for j, p in enumerate(ordered):
+                on_tick = base_tick + j * spread_ticks
+                # Strum tail-off: trailing strings slightly quieter (real guitar feel).
+                vel = max(20, min(120,
+                                  int(vel_base * vel_factor)
+                                  - j * 4
+                                  + _vel_jitter(spec, "comp", 4)))
+                # Sustain through to next stroke or bar end (long enough to ring).
+                events.append((on_tick, 0, p, vel))
+                events.append((on_tick + cells_to_ticks * 4 - 20, 1, p, 64))
 
     events.sort(key=lambda ev: (ev[0], ev[1], ev[2]))
     cursor = 0
@@ -848,6 +903,35 @@ def _find_arp_shape(shape_id: str) -> dict | None:
     if isinstance(shapes, dict):
         shapes = list(shapes.values())
     return next((s for s in shapes if s.get("id") == shape_id), None)
+
+
+_STRUM_CACHE: dict | None = None
+
+
+def _strum_patterns():
+    """Load + cache strum_patterns.json."""
+    global _STRUM_CACHE
+    if _STRUM_CACHE is None:
+        try:
+            data = tables.load("comp/strum_patterns")
+            _STRUM_CACHE = data.get("patterns") or data.get("strum_patterns") or []
+        except FileNotFoundError:
+            _STRUM_CACHE = []
+    return _STRUM_CACHE
+
+
+def _pick_strum_pattern(spec, mood: str) -> dict | None:
+    """Deterministic mood-filtered pick from strum_patterns.json."""
+    pats = _strum_patterns()
+    if not pats:
+        return None
+    eligible = [p for p in pats if mood in p.get("mood_tags", [])]
+    if not eligible:
+        eligible = pats
+    eligible = sorted(eligible, key=lambda p: p.get("id", ""))
+    # Use a stable byte from the spec hash so repeated renders match.
+    seed = bytes.fromhex(spec.provenance.hash_hex)[16] if spec.provenance.hash_hex else 0
+    return eligible[seed % len(eligible)]
 
 
 def _find_comp_pattern(pattern_id: str) -> dict | None:
