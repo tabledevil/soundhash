@@ -96,12 +96,14 @@ def main(argv: list[str] | None = None) -> int:
                 from .quality import score_wav
                 print(f"  quality {score_wav(wav_bytes).summary()}", file=sys.stderr)
             if args.psy:
-                from .quality import psychoacoustic_score
+                from .quality import psychoacoustic_score, triage_score
                 psy = psychoacoustic_score(wav_bytes)
                 if psy is None:
                     print("  psy     unavailable (install mosqito)", file=sys.stderr)
                 else:
                     print(f"  psy     {psy.summary()}", file=sys.stderr)
+                tri = triage_score(wav_bytes)
+                print(f"  {tri.summary()}", file=sys.stderr)
             if args.mp3:
                 import shutil, subprocess
                 if shutil.which("lame"):
