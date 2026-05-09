@@ -18,6 +18,11 @@ mhash path/to/file                  # hash + render + play (default)
 mhash -o path/to/file               # write path/to/file.soundhash.wav, no playback
 mhash --out my.wav path/to/file     # write to a specific path
 mhash --mood M14 path/to/file       # force a mood (M0..M14)
+mhash -                             # read stdin
+cat foo.bin | mhash                 # ditto, auto-detected
+mhash -c 4 some.iso                 # chunk mode: split into 4-MB chunks,
+                                    #   play one song per chunk in order
+mhash -q path/to/file               # silence dashboard + progress (just play)
 
 # Power CLI (full flag surface — emits midi/mp3/flac, prints scores, etc.):
 soundhash --audio --mp3 --score path/to/file

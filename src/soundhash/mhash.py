@@ -1,9 +1,12 @@
-"""`mhash` — minimal "hear what this file sounds like" CLI.
+"""`mhash` — quick-play CLI for the deterministic musical hash.
 
 Usage:
     mhash <file>              # render and play
-    mhash -o <file>           # write <file>.wav next to the file (no playback)
-    mhash -o out.wav <file>   # write to a specific path (no playback)
+    mhash -                   # read from stdin (also auto-detected via pipe)
+    cat foo | mhash           # ditto
+    mhash -o <file>           # write <file>.soundhash.wav, no playback
+    mhash --out PATH <file>   # write to a specific path, no playback
+    mhash -c 4 <file>         # split into 4-MB chunks, play one song per chunk
 """
 from __future__ import annotations
 
@@ -17,19 +20,45 @@ from pathlib import Path
 
 
 def main(argv: list[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except KeyboardInterrupt:
+        # Clear any in-progress progress-bar line and print a tidy exit.
+        sys.stderr.write("\r" + " " * 80 + "\r")
+        sys.stderr.flush()
+        print("mhash: interrupted", file=sys.stderr)
+        return 130
+    except BrokenPipeError:
+        # `mhash foo | head` and friends: don't whine, just exit.
+        try:
+            sys.stderr.close()
+        except Exception:
+            pass
+        return 0
+
+
+def _main(argv: list[str] | None) -> int:
     p = argparse.ArgumentParser(
         prog="mhash",
-        description="Play a file's deterministic musical hash. "
-                    "Use -o to write a .wav instead of playing.")
-    p.add_argument("file", help="file to hash")
+        description="Play (or save) a file's deterministic musical hash.")
+    p.add_argument("file", nargs="?", default=None,
+                   help="file to hash (use '-' or pipe via stdin to read stdin)")
     p.add_argument("-o", "--output", action="store_true",
                    help="write <file>.soundhash.wav next to the input and exit "
                         "without playing")
     p.add_argument("--out", default=None, metavar="PATH",
                    help="like -o but write to a specific path")
+    p.add_argument("-c", "--chunk", type=float, default=None, metavar="MB",
+                   help="split input into MB-sized chunks; play one song per "
+                        "chunk in order")
     p.add_argument("--mood", help="override mood (M0..M14)")
-    p.add_argument("--mime", default="auto")
-    p.add_argument("-q", "--quiet", action="store_true")
+    p.add_argument("--mime", default="auto",
+                   help="auto | off | <mime/type> (mime auto-detected from "
+                        "filename if not given)")
+    p.add_argument("-q", "--quiet", action="store_true",
+                   help="suppress dashboard + progress output")
+    p.add_argument("--no-show", action="store_true",
+                   help="skip the styled dashboard but keep progress bar")
     args = p.parse_args(argv)
 
     if not _ensure_fluidsynth():
@@ -37,23 +66,95 @@ def main(argv: list[str] | None = None) -> int:
     if not _ensure_soundfont(quiet=args.quiet):
         return 3
 
+    # Resolve input source ---------------------------------------------------
+    stdin_mode = (args.file in (None, "-")
+                  and not (sys.stdin.isatty() if args.file is None else False))
+    if args.file in (None, "-"):
+        # Either explicit '-' or no file given. If stdin is a tty AND no file,
+        # that's a usage error.
+        if args.file is None and sys.stdin.isatty():
+            p.error("no input: pass a file or pipe data into stdin")
+        try:
+            data = sys.stdin.buffer.read()
+        except KeyboardInterrupt:
+            return 130
+        source_label = "<stdin>"
+    else:
+        try:
+            with open(args.file, "rb") as f:
+                data = f.read()
+        except OSError as e:
+            print(f"mhash: {e}", file=sys.stderr)
+            return 1
+        source_label = args.file
+
+    if not data:
+        print("mhash: empty input", file=sys.stderr)
+        return 1
+
+    # Chunk mode: hash + render + play one song per chunk -------------------
+    if args.chunk is not None and args.chunk > 0:
+        chunk_bytes = max(1, int(args.chunk * 1_000_000))
+        n_chunks = (len(data) + chunk_bytes - 1) // chunk_bytes
+        if not args.quiet:
+            print(f"  chunk mode: {len(data)/1e6:.2f} MB → {n_chunks} chunk(s) "
+                  f"of ≤{args.chunk:.2f} MB each", file=sys.stderr)
+        rc = 0
+        for i in range(n_chunks):
+            piece = data[i*chunk_bytes : (i+1)*chunk_bytes]
+            label = f"{source_label}#chunk{i+1}/{n_chunks} ({len(piece)/1e6:.2f} MB)"
+            rc |= _render_one(piece, label, args, mime_for_naming=args.file)
+            if rc:
+                break
+        return rc
+
+    return _render_one(data, source_label, args, mime_for_naming=args.file)
+
+
+def _render_one(data: bytes, source_label: str, args, mime_for_naming) -> int:
     from .decode import hash_to_spec
     from .mime import detect_mime
     from .render.audio import render_wav
     from .render.midi import render_midi
+    from .dashboard import Progress, print_dashboard
     from . import SPEC_VERSION
 
-    try:
-        with open(args.file, "rb") as f:
-            digest = hashlib.sha256(f.read()).digest()
-    except OSError as e:
-        print(f"mhash: {e}", file=sys.stderr)
-        return 1
+    show = not (args.quiet or args.no_show)
 
-    mime = detect_mime(args.file) if args.mime == "auto" else args.mime
+    progress = Progress(["hash", "decode", "midi", "fluidsynth", "fx+lufs", "ready"]) \
+        if not args.quiet else None
+
+    def step(name: str):
+        if progress:
+            progress.begin(name)
+        return name
+
+    step("hash")
+    digest = hashlib.sha256(data).digest()
+    if progress: progress.end("hash")
+
+    step("decode")
+    if args.mime == "auto":
+        mime = detect_mime(mime_for_naming) if mime_for_naming and mime_for_naming != "-" else None
+    elif args.mime == "off":
+        mime = None
+    else:
+        mime = args.mime
     spec = hash_to_spec(digest, mime=mime, version=SPEC_VERSION,
                         mood_override=args.mood)
+    if progress: progress.end("decode")
+
+    if progress:
+        progress.finish()
+
+    if show:
+        print_dashboard(spec, source_label=source_label, mime=mime)
+
+    step("midi")
     midi = render_midi(spec)
+    if progress: progress.end("midi")
+
+    step("fluidsynth")
     prov = {
         "hash_hex": spec.provenance.hash_hex,
         "mood": spec.provenance.mood,
@@ -67,23 +168,31 @@ def main(argv: list[str] | None = None) -> int:
         "fx_wet_scale": spec.fx_wet_scale,
     }
     wav = render_wav(midi, sample_rate=spec.render.sample_rate, provenance=prov)
-
-    if not args.quiet:
-        ts = f"{spec.time_sig[0]}/{spec.time_sig[1]}"
-        key_pc = "C C# D D# E F F# G G# A A# B".split()[spec.key_root]
-        print(f"♪ {args.file} → {spec.provenance.mood} {spec.tempo_bpm:.0f} BPM "
-              f"{key_pc} {spec.mode} {ts} ({len(spec.bars)} bars, "
-              f"{spec.total_duration_seconds():.1f}s)",
-              file=sys.stderr)
+    if progress:
+        progress.end("fluidsynth")
+        progress.end("fx+lufs")  # render_wav already applies fx+lufs
+        progress.end("ready")
+        progress.finish()
 
     if args.output or args.out:
-        out = args.out or (args.file + ".soundhash.wav")
+        # Default output path uses source filename if available, else uses
+        # the hash hex (stdin / chunk mode).
+        if args.out:
+            out = args.out
+        elif args.file and args.file != "-":
+            base = args.file
+            if "#chunk" in source_label:
+                # In chunk mode write a numbered file per chunk.
+                idx = source_label.split("#chunk", 1)[1].split("/", 1)[0]
+                base = f"{args.file}.chunk{idx}"
+            out = base + ".soundhash.wav"
+        else:
+            out = f"{spec.provenance.hash_hex[:12]}.soundhash.wav"
         Path(out).write_bytes(wav)
         if not args.quiet:
             print(f"  wrote {out}", file=sys.stderr)
         return 0
 
-    # Play path: write to a temp file (some players want a real file).
     fd, tmp = tempfile.mkstemp(suffix=".wav", prefix="mhash-")
     os.close(fd)
     try:
@@ -112,7 +221,6 @@ def _ensure_fluidsynth() -> bool:
 
 
 def _ensure_soundfont(quiet: bool = False) -> bool:
-    """Auto-download MS-Basic.sf3 on first run if missing."""
     from .render.audio import _find_soundfont
     try:
         _find_soundfont()
