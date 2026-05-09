@@ -34,8 +34,10 @@ MAX_GAIN_DB = 24.0           # safety cap on the loudness-correction gain
 # but is far from full GM. Override via SOUNDHASH_SOUNDFONT env var.
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO_SF2 = os.path.normpath(os.path.join(_HERE, "..", "..", "..", "assets", "v1", "sf2"))
+_WHEEL_SF2 = os.path.normpath(os.path.join(_HERE, "..", "_assets", "v1", "sf2"))
 _DEFAULT_SF2_CANDIDATES = [
     os.path.join(_REPO_SF2, "MS-Basic.sf3"),
+    os.path.join(_WHEEL_SF2, "MS-Basic.sf3"),
     "/usr/local/share/sounds/sf2/FluidR3_GM.sf2",
     "/usr/share/sounds/sf2/FluidR3_GM.sf2",
     # last resort: brew's tiny pad-only synth font (no drums)

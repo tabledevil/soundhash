@@ -2,20 +2,28 @@
 
 Deterministic musical hash. Convert a file's SHA-256 into ≤30 seconds of pleasant, music-theory-correct audio that is easily distinguishable between files. Same hash → identical MIDI, identical WAV.
 
+## Install
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate     # isolated env
+pip install -e .                                       # python deps
+brew install fluid-synth                               # mac; or: apt install fluidsynth
+mhash some/file                                        # auto-downloads the SoundFont (~50 MB) on first run
+```
+
 ## Quick demo
 
 ```bash
-# Render an audio fingerprint of a file (writes path/to/file.soundhash.{wav,mid,mp3}).
-PYTHONPATH=src python3 -m soundhash.cli --audio --mp3 path/to/file
+mhash path/to/file                  # hash + render + play (default)
+mhash -o path/to/file               # write path/to/file.soundhash.wav, no playback
+mhash --out my.wav path/to/file     # write to a specific path
+mhash --mood M14 path/to/file       # force a mood (M0..M14)
 
-# Force a specific mood regardless of MIME.
-PYTHONPATH=src python3 -m soundhash.cli --audio --mood M0 path/to/file
+# Power CLI (full flag surface — emits midi/mp3/flac, prints scores, etc.):
+soundhash --audio --mp3 --score path/to/file
 
-# Print quality scores after render.
-PYTHONPATH=src python3 -m soundhash.cli --audio --score --psy path/to/file
-
-# Build a per-mood demo: one sample per M0..M10, stitched into showcase/showcase.wav.
-PYTHONPATH=src python3 -m soundhash.showcase --score
+# Build a per-mood demo: one sample per M0..M14, stitched into showcase/showcase.wav.
+python3 -m soundhash.showcase --score
 ```
 
 ## What's wired
@@ -64,21 +72,12 @@ soundhash <file>
 
 See `DESIGN.md` for the full spec; per-dimension research lives in `research/`.
 
-## Setup
+## Setup notes
 
-```bash
-brew install fluid-synth lame flac           # mac; renderer + encoders
-pip install -e ".[dev,render]"               # python deps + tests
-pip install pyloudnorm pedalboard mosqito    # quality scoring (optional)
-```
-
-A CC0/permissive GM SoundFont must be at `assets/v1/sf2/MS-Basic.sf3`. Bootstrap with:
-
-```bash
-python -m soundhash.setup_assets   # ~50 MB MuseScore MS Basic SF3
-```
-
-The repo's `.gitignore` excludes the `sf2/` directory. To use a different soundfont, set `SOUNDHASH_SOUNDFONT=/path/to/your.sf2`.
+- `pip install -e .` pulls every Python dep (`mido`, `numpy`, `python-magic`, `pyloudnorm`, `pedalboard`).
+- Optional extras: `pip install -e ".[quality]"` for `mosqito` psychoacoustic scoring; `pip install -e ".[dev]"` for the test suite.
+- The `fluidsynth` system binary is required for audio render. macOS: `brew install fluid-synth`. Debian/Ubuntu: `apt install fluidsynth`. Windows: `scoop install fluidsynth`.
+- The default GM SoundFont (`MS-Basic.sf3`, ~50 MB) is auto-downloaded on first `mhash` run into `assets/v1/sf2/`. Override via `SOUNDHASH_SOUNDFONT=/path/to/your.sf2`.
 
 ## Repo layout
 

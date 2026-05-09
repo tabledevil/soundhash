@@ -18,7 +18,10 @@ from pathlib import Path
 _SF3_URL = "https://raw.githubusercontent.com/musescore/MuseScore/master/share/sound/MS%20Basic.sf3"
 _SF3_NAME = "MS-Basic.sf3"
 _HERE = Path(__file__).resolve().parent
-_TARGET_DIR = _HERE.parent.parent / "assets" / "v1" / "sf2"
+# Prefer the editable-tree path; fall back to the wheel-bundled `_assets` dir.
+_DEV_DIR = _HERE.parent.parent / "assets" / "v1" / "sf2"
+_WHEEL_DIR = _HERE / "_assets" / "v1" / "sf2"
+_TARGET_DIR = _DEV_DIR if _DEV_DIR.parent.parent.exists() else _WHEEL_DIR
 
 
 def _download(url: str, dest: Path) -> None:
