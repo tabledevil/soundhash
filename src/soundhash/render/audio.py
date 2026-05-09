@@ -36,6 +36,10 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO_SF2 = os.path.normpath(os.path.join(_HERE, "..", "..", "..", "assets", "v1", "sf2"))
 _WHEEL_SF2 = os.path.normpath(os.path.join(_HERE, "..", "_assets", "v1", "sf2"))
 _DEFAULT_SF2_CANDIDATES = [
+    # Prefer the decompressed SF2 — loads ~80 ms vs ~6000 ms for the SF3 (the
+    # OGG-Vorbis decode in fluidsynth runs once per invocation otherwise).
+    os.path.join(_REPO_SF2, "MS-Basic.sf2"),
+    os.path.join(_WHEEL_SF2, "MS-Basic.sf2"),
     os.path.join(_REPO_SF2, "MS-Basic.sf3"),
     os.path.join(_WHEEL_SF2, "MS-Basic.sf3"),
     "/usr/local/share/sounds/sf2/FluidR3_GM.sf2",

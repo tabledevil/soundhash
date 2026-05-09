@@ -46,17 +46,38 @@ def _download(url: str, dest: Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    target = _TARGET_DIR / _SF3_NAME
-    if target.exists():
-        sha = hashlib.sha256(target.read_bytes()).hexdigest()
-        size_mb = target.stat().st_size / 1e6
-        print(f"  ✓ {target} already present ({size_mb:.1f} MB, sha256={sha[:12]}…)",
+    sf3 = _TARGET_DIR / _SF3_NAME
+    sf2 = _TARGET_DIR / _SF3_NAME.replace(".sf3", ".sf2")
+
+    if not sf3.exists():
+        _download(_SF3_URL, sf3)
+        sha = hashlib.sha256(sf3.read_bytes()).hexdigest()
+        size_mb = sf3.stat().st_size / 1e6
+        print(f"  ✓ wrote {sf3} ({size_mb:.1f} MB, sha256={sha[:12]}…)", file=sys.stderr)
+    else:
+        sha = hashlib.sha256(sf3.read_bytes()).hexdigest()
+        size_mb = sf3.stat().st_size / 1e6
+        print(f"  ✓ {sf3} already present ({size_mb:.1f} MB, sha256={sha[:12]}…)",
               file=sys.stderr)
-        return 0
-    _download(_SF3_URL, target)
-    sha = hashlib.sha256(target.read_bytes()).hexdigest()
-    size_mb = target.stat().st_size / 1e6
-    print(f"  ✓ wrote {target} ({size_mb:.1f} MB, sha256={sha[:12]}…)", file=sys.stderr)
+
+    # Decompress SF3 → SF2 once. fluidsynth's per-invocation OGG decode adds
+    # ~6 s of startup tax on every render; the uncompressed SF2 loads in
+    # ~80 ms. Trades ~440 MB of disk for an 80× speedup.
+    if not sf2.exists():
+        print("  → converting SF3 → SF2 (one-time, decompresses OGG samples)…",
+              file=sys.stderr)
+        try:
+            from .sf3_to_sf2 import convert
+            n, sz = convert(sf3, sf2)
+            print(f"  ✓ wrote {sf2} ({sz/1e6:.0f} MB, {n} samples)",
+                  file=sys.stderr)
+        except Exception as e:
+            print(f"  ⚠ SF2 conversion failed ({e}); falling back to SF3 (slow load)",
+                  file=sys.stderr)
+            return 0
+    else:
+        print(f"  ✓ {sf2} already present ({sf2.stat().st_size/1e6:.0f} MB)",
+              file=sys.stderr)
     return 0
 
 

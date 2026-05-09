@@ -16,6 +16,9 @@ dependencies = [
     # remaining system dep is the `fluidsynth` CLI binary itself.
     "pyloudnorm>=0.1.1",
     "pedalboard>=0.9",
+    # OGG-Vorbis decoder for the one-time SF3 → SF2 conversion at install
+    # time (without it, fluidsynth pays a 6 s OGG decode on every render).
+    "soundfile>=0.12",
 ]
 
 [project.optional-dependencies]
