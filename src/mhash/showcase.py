@@ -125,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     rendered: list[tuple[str, bytes, dict]] = []
-    md_lines = ["# Soundhash showcase", ""]
+    md_lines = ["# mhash showcase", ""]
     md_lines.append("| Mood | Form | Tempo | Key | Groove | Curve | Bars | Sec | Score |")
     md_lines.append("|------|------|-------|-----|--------|-------|------|-----|-------|")
 
