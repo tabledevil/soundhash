@@ -205,14 +205,14 @@ def print_dashboard(spec, source_label: str, mime: str | None,
         f"{c('mix', 'gry')} {spec.mix_preset_id}",
     ]
     inner = max(_vlen(r) for r in rows) + 2          # 1 space pad each side
-    inner = max(inner, len("─[ soundhash ]") + 2)
+    inner = max(inner, len("─[ mhash ]") + 2)
     bar = "─" * inner
 
     def boxed(body: str) -> str:
         pad = max(0, inner - 2 - _vlen(body))
         return f"{side} {body}{' ' * pad} {side}"
 
-    pr(c(f"╭─[ soundhash ]{bar[14:]}╮", "cyan"))
+    pr(c(f"╭─[ mhash ]{bar[14:]}╮", "cyan"))
     for r in rows:
         pr(boxed(r))
     pr(c(f"╰{bar}╯", "cyan"))

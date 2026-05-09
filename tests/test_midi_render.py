@@ -3,7 +3,7 @@ import hashlib
 
 import pytest
 
-from soundhash.decode import hash_to_spec
+from mhash.decode import hash_to_spec
 
 
 def _h(s: bytes) -> bytes:
@@ -12,7 +12,7 @@ def _h(s: bytes) -> bytes:
 
 def test_midi_render_is_deterministic():
     mido = pytest.importorskip("mido")
-    from soundhash.render.midi import render_midi
+    from mhash.render.midi import render_midi
 
     spec = hash_to_spec(_h(b"determinism-1"))
     a = render_midi(spec)
@@ -22,7 +22,7 @@ def test_midi_render_is_deterministic():
 
 def test_midi_render_varies_per_hash():
     mido = pytest.importorskip("mido")
-    from soundhash.render.midi import render_midi
+    from mhash.render.midi import render_midi
 
     a = render_midi(hash_to_spec(_h(b"file-a")))
     b = render_midi(hash_to_spec(_h(b"file-b")))
@@ -32,7 +32,7 @@ def test_midi_render_varies_per_hash():
 def test_midi_has_expected_track_count():
     mido = pytest.importorskip("mido")
     import io
-    from soundhash.render.midi import render_midi
+    from mhash.render.midi import render_midi
 
     spec = hash_to_spec(_h(b"x"))
     data = render_midi(spec)
@@ -46,8 +46,8 @@ def test_audio_render_deterministic_when_fluidsynth_available():
     import shutil
     if shutil.which("fluidsynth") is None:
         pytest.skip("fluidsynth not on PATH")
-    from soundhash.render.audio import render_wav
-    from soundhash.render.midi import render_midi
+    from mhash.render.audio import render_wav
+    from mhash.render.midi import render_midi
 
     spec = hash_to_spec(_h(b"audio-test"))
     midi = render_midi(spec)
@@ -65,7 +65,7 @@ def test_audio_render_deterministic_when_fluidsynth_available():
 def test_midi_total_length_within_30s():
     mido = pytest.importorskip("mido")
     import io
-    from soundhash.render.midi import render_midi
+    from mhash.render.midi import render_midi
 
     for seed in (b"a", b"b", b"c", b"d"):
         spec = hash_to_spec(_h(seed))

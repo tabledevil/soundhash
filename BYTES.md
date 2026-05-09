@@ -1,4 +1,4 @@
-# Byte budget — soundhash v1
+# Byte budget — mhash v1
 
 How the SHA-256's 32 bytes (after HKDF expansion) map to musical decisions.
 

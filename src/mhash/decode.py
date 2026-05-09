@@ -53,6 +53,8 @@ class HashStream:
         self._version = version
 
     def take(self, label: str, n: int) -> bytes:
+        # Protocol namespace stays `soundhash/v1/...` regardless of distribution
+        # name — changing it would break determinism with prior releases.
         info = f"soundhash/{self._version}/{label}".encode("ascii")
         return _hkdf_expand(self._prk, info, n)
 
@@ -176,7 +178,7 @@ def _pick_activation_matrix(byte: int, form_id: int) -> dict:
     """Pick a layer-activation matrix that's compatible with the form.
 
     Filters out matrices whose A row silences the lead — for a 30-second
-    soundhash a lead-silent matrix produces a melody-less output across
+    mhash a lead-silent matrix produces a melody-less output across
     the whole song, which is uniformly drab. Section-specific intro/outro
     matrices (which only fire on those section letters) can still be
     picked because they're whitelisted via compatible_forms.

@@ -1,4 +1,4 @@
-"""soundhash — deterministic musical hash."""
+"""mhash — deterministic musical hash."""
 
 __version__ = "0.1.0"
 SPEC_VERSION = "v1"

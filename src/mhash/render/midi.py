@@ -25,7 +25,7 @@ _ENERGY_GATE = {"drums": 0.30, "comp": 0.20, "lead": 0.40, "bass": 0.0,
 
 # Per-mood gate overrides. Ambient (M0) uses flat-low curves whose energies
 # hover around 0.30 — without lower gates the lead/pad/counter/ear-candy
-# would never fire, leaving the soundhash an unmusical thump.
+# would never fire, leaving the mhash an unmusical thump.
 _MOOD_GATE_OVERRIDES = {
     "M0": {"drums": 0.10, "comp": 0.10, "lead": 0.18, "pad": 0.18,
            "counter": 0.30, "ear_candy": 0.22},
@@ -315,6 +315,8 @@ def render_midi(spec: SongSpec) -> bytes:
     meta.append(MetaMessage("set_tempo", tempo=bpm2tempo(spec.tempo_bpm), time=0))
     meta.append(MetaMessage("time_signature", numerator=num,
                             denominator=den_pow2, time=0))
+    # MIDI marker uses the protocol namespace `soundhash/v1` (stable across
+    # distribution renames so the self-test MIDI hash baseline is preserved).
     meta.append(MetaMessage("marker",
                             text=f"soundhash/v1 {spec.provenance.hash_hex[:16]} "
                                  f"{spec.provenance.mood} {spec.mode}",

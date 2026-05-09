@@ -173,7 +173,7 @@ def convert(sf3_path: str | Path, sf2_path: str | Path,
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("usage: python -m soundhash.sf3_to_sf2 <in.sf3> <out.sf2>",
+        print("usage: python -m mhash.sf3_to_sf2 <in.sf3> <out.sf2>",
               file=sys.stderr)
         sys.exit(2)
     n, sz = convert(sys.argv[1], sys.argv[2])

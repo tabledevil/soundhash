@@ -1,4 +1,4 @@
-# soundhash — Design Document (v1 draft)
+# mhash — Design Document (v1 draft)
 
 > Deterministically convert a file's SHA-256 hash (and optionally its MIME type) into ≤30 s of pleasant, music-theory-correct audio that is easily distinguishable between files. Same hash → bit-identical output.
 
@@ -155,7 +155,7 @@ Full proposals in `research/<NN>/`. One paragraph each:
 
 **#11 MIME → Mood** — 13 family taxonomy (text-code, image, audio, video, archive, document-pdf, spreadsheet, executable, font, model-3d, web-asset, database, unknown). MIME detected via pinned `python-magic 0.4.27` + frozen `magic.mgc`. Family pre-filters mood pool before byte 0 is consumed. CLI overrides: `--mime=auto|off|strict|<slug>`, `--mime-family=<id>`, `--mood=<M0..M10>`. Provenance: detected MIME, libmagic version, magic.mgc SHA, family, override — embedded in MIDI track-0 and WAV INFO chunks. No file-size or filename influence.
 
-**#12 Rendering** — Stage 1: `mido` (PPQ 480, Type 1, fixed event sort). Stage 2: FluidSynth `--fast-render` for general MIDI; sfizz for piano/strings; pure-Python numpy mixer for drum one-shots. Render flags: 44.1 kHz, `synth.interpolation=4`, `cpu-cores=1`, no internal reverb/chorus. Reverb via FIR convolution with pinned IRs (or `pedalboard.Reverb` Docker-only). Loudness: `pyloudnorm` to -16 LUFS, 8×-oversampled limiter at -1.5 dBTP. Default soundfont: build CC0 `soundhash_curated_v1.sf2` < 25 MB. Synth pool is mood-filtered per role; selection uses existing layer bytes.
+**#12 Rendering** — Stage 1: `mido` (PPQ 480, Type 1, fixed event sort). Stage 2: FluidSynth `--fast-render` for general MIDI; sfizz for piano/strings; pure-Python numpy mixer for drum one-shots. Render flags: 44.1 kHz, `synth.interpolation=4`, `cpu-cores=1`, no internal reverb/chorus. Reverb via FIR convolution with pinned IRs (or `pedalboard.Reverb` Docker-only). Loudness: `pyloudnorm` to -16 LUFS, 8×-oversampled limiter at -1.5 dBTP. Default soundfont: build CC0 `mhash_curated_v1.sf2` < 25 MB. Synth pool is mood-filtered per role; selection uses existing layer bytes.
 
 **#13 Hash Architecture** — HKDF-Expand(SHA-256) with 17 reserved domain-separated labels. 32-byte macro stream + per-bar / per-layer sub-streams. Static pre-filter strategy (build-time per (mood,mode) tables). Rejection sampling with 64-pull cap and HKDF top-up for non-power-of-2 tables when distinguishability matters. Decoder is pure: `hash_to_spec(hash, mime, version) -> SongSpec`. Pinned invariants I1–I10 (idempotence, no I/O, manifest integrity, label-registry membership, range guards, length ≤30 s, bit-flip sensitivity, no-empty-filter, salt scope).
 
@@ -224,13 +224,13 @@ Items the research surfaced that may justify their own design pass:
 ## 11. Repo layout
 
 ```
-soundhash/
+mhash/
   DESIGN.md                  ← this document
   README.md
   pyproject.toml
-  src/soundhash/
+  src/mhash/
     __init__.py
-    cli.py                   ← `soundhash <file>` entry point
+    cli.py                   ← `mhash <file>` entry point
     decode.py                ← hash_to_spec + HashStream + HKDF
     spec.py                  ← SongSpec dataclasses
     mime.py                  ← MIME → family resolver
@@ -285,7 +285,7 @@ soundhash/
 
 End-to-end pipeline working: SHA-256 → SongSpec → MIDI (up to 9 musical tracks) → WAV. 20 tests passing across 23 commits since milestone-1.
 
-### Wired in `src/soundhash/`
+### Wired in `src/mhash/`
 
 **Decode (`decode.hash_to_spec`)** — pure HKDF-driven walker over the 32-byte macro budget plus per-bar / per-section sub-streams. Picks:
 
@@ -357,7 +357,7 @@ Recently wired (since the post-adversarial-review batch):
 ### Repo footprint
 
 - 58 JSON tables under `assets/v1/` (all valid; one curated `MS-Basic.sf3` SoundFont 49 MB, gitignored).
-- ~1900 LOC of Python in `src/soundhash/`.
+- ~1900 LOC of Python in `src/mhash/`.
 - 14 dimensions of research findings in `research/`.
 - 5-area adversarial review summaries in `research/adv-review/`.
 - ~60 commits on `main` since initial scaffold.

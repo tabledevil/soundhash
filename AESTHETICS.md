@@ -1,6 +1,6 @@
 # Mood aesthetics
 
-Per-mood design intent. Useful for understanding what a soundhash is *trying* to do, separate from any one render's particular output.
+Per-mood design intent. Useful for understanding what a mhash is *trying* to do, separate from any one render's particular output.
 
 | Mood | Intent | Tempo | Modes | Groove pool | Form pool | FX chain |
 |---|---|---|---|---|---|---|

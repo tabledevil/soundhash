@@ -4,7 +4,7 @@ Downloads the default GM SoundFont (MuseScore MS Basic SF3, ~50 MB) into
 `assets/v1/sf2/` if it isn't already there. Idempotent.
 
 Run:
-    python -m soundhash.setup_assets
+    python -m mhash.setup_assets
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ _SF3_URL = "https://raw.githubusercontent.com/musescore/MuseScore/master/share/s
 _SF3_NAME = "MS-Basic.sf3"
 
 # Optional alternate SoundFont — bigger but more "stock GM" sounding.
-# Trigger via `mhash --sf fluidr3` or `python -m soundhash.setup_assets fluidr3`.
+# Trigger via `mhash --sf fluidr3` or `python -m mhash.setup_assets fluidr3`.
 _FLUIDR3_URL = "https://musical-artifacts.com/artifacts/738/FluidR3_GM.sf2"
 _FLUIDR3_NAME = "FluidR3_GM.sf2"
 _HERE = Path(__file__).resolve().parent
@@ -33,7 +33,7 @@ def _download(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     print(f"  → downloading {dest.name} from {url}", file=sys.stderr)
     # Some mirrors (e.g. musical-artifacts.com) 403 the default urllib UA.
-    req = urllib.request.Request(url, headers={"User-Agent": "soundhash/0.0.1"})
+    req = urllib.request.Request(url, headers={"User-Agent": "mhash/0.0.1"})
     with urllib.request.urlopen(req) as r, open(dest, "wb") as out:
         size = int(r.headers.get("Content-Length", "0"))
         chunk = 1 << 16

@@ -4,7 +4,7 @@ Usage:
     mhash <file>              # render and play
     mhash -                   # read from stdin (also auto-detected via pipe)
     cat foo | mhash           # ditto
-    mhash -o <file>           # write <file>.soundhash.wav, no playback
+    mhash -o <file>           # write <file>.mhash.wav, no playback
     mhash --out PATH <file>   # write to a specific path, no playback
     mhash -c 4 <file>         # split into 4-MB chunks, play one song per chunk
 """
@@ -44,7 +44,7 @@ def _main(argv: list[str] | None) -> int:
     p.add_argument("file", nargs="?", default=None,
                    help="file to hash (use '-' or pipe via stdin to read stdin)")
     p.add_argument("-o", "--output", action="store_true",
-                   help="write <file>.soundhash.wav next to the input and exit "
+                   help="write <file>.mhash.wav next to the input and exit "
                         "without playing")
     p.add_argument("--out", default=None, metavar="PATH",
                    help="like -o but write to a specific path")
@@ -199,9 +199,9 @@ def _render_one(data: bytes, source_label: str, args, mime_for_naming) -> int:
                 # In chunk mode write a numbered file per chunk.
                 idx = source_label.split("#chunk", 1)[1].split("/", 1)[0]
                 base = f"{args.file}.chunk{idx}"
-            out = base + ".soundhash.wav"
+            out = base + ".mhash.wav"
         else:
-            out = f"{spec.provenance.hash_hex[:12]}.soundhash.wav"
+            out = f"{spec.provenance.hash_hex[:12]}.mhash.wav"
         Path(out).write_bytes(wav)
         if not args.quiet:
             print(f"  wrote {out}", file=sys.stderr)

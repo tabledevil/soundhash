@@ -1,4 +1,4 @@
-"""soundhash CLI — turn a file into a deterministic 30s audio signature."""
+"""mhash CLI — turn a file into a deterministic 30s audio signature."""
 from __future__ import annotations
 
 import argparse
@@ -11,7 +11,7 @@ from .mime import detect_mime
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="soundhash", description=__doc__)
+    p = argparse.ArgumentParser(prog="mhash", description=__doc__)
     p.add_argument("file", nargs="?", help="file to hash (omit for --self-test)")
     p.add_argument("--midi", action="store_true", help="emit a .mid file")
     p.add_argument("--audio", action="store_true",
@@ -63,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     spec = hash_to_spec(digest, mime=mime, version=SPEC_VERSION,
                         mood_override=args.mood)
 
-    print(f"soundhash {__version__}  spec={spec.version}", file=sys.stderr)
+    print(f"mhash {__version__}  spec={spec.version}", file=sys.stderr)
     print(f"  hash    {digest.hex()}", file=sys.stderr)
     print(f"  mime    {mime}", file=sys.stderr)
     print(f"  mood    {spec.provenance.mood}", file=sys.stderr)
@@ -84,13 +84,13 @@ def main(argv: list[str] | None = None) -> int:
         from .render.midi import render_midi
         midi_bytes = render_midi(spec)
         if args.midi:
-            out_path = args.file + ".soundhash.mid"
+            out_path = args.file + ".mhash.mid"
             with open(out_path, "wb") as fh:
                 fh.write(midi_bytes)
             print(f"  wrote   {out_path}", file=sys.stderr)
         if args.audio:
             from .render.audio import render_wav
-            wav_path = args.file + ".soundhash.wav"
+            wav_path = args.file + ".mhash.wav"
             prov = {
                 "hash_hex": spec.provenance.hash_hex,
                 "mood": spec.provenance.mood,
@@ -124,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.mp3:
                 import shutil, subprocess
                 if shutil.which("lame"):
-                    mp3_path = args.file + ".soundhash.mp3"
+                    mp3_path = args.file + ".mhash.mp3"
                     subprocess.run(["lame", "-q", "2", "-b", "192",
                                     "--silent", wav_path, mp3_path], check=True)
                     print(f"  wrote   {mp3_path}", file=sys.stderr)
@@ -133,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.flac:
                 import shutil, subprocess
                 if shutil.which("flac"):
-                    flac_path = args.file + ".soundhash.flac"
+                    flac_path = args.file + ".mhash.flac"
                     subprocess.run(["flac", "-f", "-s", "-o", flac_path, wav_path],
                                    check=True)
                     print(f"  wrote   {flac_path}", file=sys.stderr)

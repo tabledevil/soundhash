@@ -25,7 +25,7 @@ _MIDI_CACHE: list = []
 def _build_corpus():
     if _CORPUS_CACHE:
         return _CORPUS_CACHE
-    from soundhash.decode import hash_to_spec
+    from mhash.decode import hash_to_spec
     for i in range(CORPUS_N):
         h = hashlib.sha256(f'corpus-{i}'.encode()).digest()
         _CORPUS_CACHE.append(hash_to_spec(h, mime=MIME_CYCLE[i % len(MIME_CYCLE)]))
@@ -35,7 +35,7 @@ def _build_corpus():
 def _build_midi():
     if _MIDI_CACHE:
         return _MIDI_CACHE
-    from soundhash.render.midi import render_midi
+    from mhash.render.midi import render_midi
     for s in _build_corpus():
         _MIDI_CACHE.append(render_midi(s))
     return _MIDI_CACHE
@@ -141,8 +141,8 @@ def test_heuristic_quality_baseline():
     import shutil
     if shutil.which("fluidsynth") is None:
         pytest.skip("fluidsynth not on PATH")
-    from soundhash.quality import score_wav
-    from soundhash.render.audio import render_wav
+    from mhash.quality import score_wav
+    from mhash.render.audio import render_wav
     midis = _build_midi()
     # Score a sub-sample (rendering 60 WAVs is slow). 8 hashes is enough
     # to flag a global regression.

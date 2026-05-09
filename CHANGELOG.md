@@ -1,10 +1,10 @@
 # Changelog
 
-All notable changes to the soundhash project. Format: reverse chronological, grouped by milestone.
+All notable changes to the mhash project. Format: reverse chronological, grouped by milestone.
 
 ## v0.0.1 — initial scaffold + research
 
-- Repo scaffold: pyproject, src/soundhash skeleton, asset stubs.
+- Repo scaffold: pyproject, src/mhash skeleton, asset stubs.
 - 14 dimensions of research under `research/<NN-slug>/`.
 - 58 curated JSON tables under `assets/v1/`.
 - Decoder skeleton consumes 32-byte HKDF macro stream.
@@ -16,11 +16,11 @@ All notable changes to the soundhash project. Format: reverse chronological, gro
 - Filled in PyPI metadata: authors, license, classifiers, project URLs,
   keywords, full README rendering.
 - Wheel build: pure-Python `py3-none-any` (~144 KB). Asset bundle ships
-  inside the wheel as `soundhash/_assets/v1/...`; SoundFonts are
+  inside the wheel as `mhash/_assets/v1/...`; SoundFonts are
   excluded and downloaded on first run.
 - All asset-loading modules (`tables`, `mime`, `render.audio`,
   `setup_assets`) check the dev path first and fall back to the wheel
-  layout, so `pip install soundhash` works the same as `-e .`.
+  layout, so `pip install mhash` works the same as `-e .`.
 - `dev` extra now pulls `build` + `twine` for release tooling.
 - Self-test SHA unchanged; 23/23 fast tests green on the wheel.
 
@@ -39,7 +39,7 @@ All notable changes to the soundhash project. Format: reverse chronological, gro
 - WAV render via `fluidsynth -ni` shell-out + MS-Basic.sf3 SoundFont.
 - LUFS norm to -16 / true-peak limit / cosine fades.
 - Per-mood pedalboard FX chains (reverb / delay / chorus / phaser / EQ).
-- 11-mood showcase generator (`python -m soundhash.showcase`) + browser HTML.
+- 11-mood showcase generator (`python -m mhash.showcase`) + browser HTML.
 - MP3 + FLAC export.
 - Heuristic (LUFS / crest / spectrum / width) + mosqito psychoacoustic scoring.
 - 4 new moods added per user feedback: M11 lofi, M12 chillout, M13 simple, M14 gameboy.

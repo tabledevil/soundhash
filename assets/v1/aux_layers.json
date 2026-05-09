@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "_doc": "Auxiliary layer roster for soundhash dim #09. Each layer has eligibility filters (mood, section, energy), volume budget, and per-byte selectors. Activation gated by clutter_budget below.",
+  "_doc": "Auxiliary layer roster for mhash dim #09. Each layer has eligibility filters (mood, section, energy), volume budget, and per-byte selectors. Activation gated by clutter_budget below.",
   "clutter_budget": {
     "_formula": "max_aux_active(energy)",
     "tiers": [

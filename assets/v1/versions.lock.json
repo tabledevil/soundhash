@@ -1,5 +1,5 @@
 {
-  "_comment": "Lockfile of versions actually used to render the canonical showcase. soundhash determinism contract requires matching these on render.",
+  "_comment": "Lockfile of versions actually used to render the canonical showcase. mhash determinism contract requires matching these on render.",
   "host": {
     "platform": "darwin",
     "python": "3.11.5"

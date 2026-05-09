@@ -43,7 +43,7 @@ def test_registry_is_nonempty():
 
 
 def test_all_labels_used_in_code_are_registered():
-    src_dir = os.path.join(_ROOT, "src", "soundhash")
+    src_dir = os.path.join(_ROOT, "src", "mhash")
     found: set[str] = set()
     for dirpath, _, files in os.walk(src_dir):
         # Skip the pseudocode reference doc.

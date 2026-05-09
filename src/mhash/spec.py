@@ -1,4 +1,4 @@
-"""SongSpec — the fully-resolved, deterministic description of a soundhash.
+"""SongSpec — the fully-resolved, deterministic description of a mhash.
 
 Renderers consume this; they make no decisions of their own.
 """

@@ -1,4 +1,4 @@
-"""Invariants I1-I10 from src/soundhash/_decoder_api_pseudocode.py.
+"""Invariants I1-I10 from src/mhash/_decoder_api_pseudocode.py.
 
 These tests run against the real decoder. Some are stubs until the full
 pipeline is wired up.
@@ -7,8 +7,8 @@ import hashlib
 
 import pytest
 
-from soundhash import SPEC_VERSION
-from soundhash.decode import hash_to_spec, UnsupportedVersionError
+from mhash import SPEC_VERSION
+from mhash.decode import hash_to_spec, UnsupportedVersionError
 
 
 def _h(s: bytes) -> bytes:

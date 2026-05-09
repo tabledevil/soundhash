@@ -1,16 +1,16 @@
-# soundhash
+# mhash
 
 > A deterministic **musical fingerprint** for any file. Pipe in some bytes, get back ≤30 seconds of pleasant, music-theory-correct audio. Same hash → identical track.
 
 Like an identicon — but for your ears.
 
 ```bash
-pip install soundhash
+pip install songhash
 mhash some/file        # plays a unique 30 s song for that file
 ```
 
 ```
-╭─[ soundhash ]──────────────────────────────────────────────────────────────────────╮
+╭─[ mhash ]──────────────────────────────────────────────────────────────────────╮
 │  hash    10d59bff…89f1    source LICENSE    mime text/plain                        │
 │  mood    M3 sub-flavor 1    tempo 106.6 BPM    key G ionian    meter 4/4           │
 │  form    theme_var    groove straight_4_4    voicing close_triad    curve terraces │
@@ -48,13 +48,13 @@ The dashboard shows everything the renderer is doing: the I-V-vi-IV roman numera
 
 ## Why
 
-You can show someone an identicon and they'll spot a wrong digit at a glance. soundhash does the same with sound: a deterministic, musical, *memorable* signature of a file's contents. Different files → different songs. Same file → exact same song, every time, on every machine.
+You can show someone an identicon and they'll spot a wrong digit at a glance. mhash does the same with sound: a deterministic, musical, *memorable* signature of a file's contents. Different files → different songs. Same file → exact same song, every time, on every machine.
 
 ## Install
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install soundhash
+pip install songhash
 brew install fluid-synth      # mac;  apt install fluidsynth  on debian/ubuntu
 mhash some/file               # auto-downloads a SoundFont (~50 MB) on first run
 ```
@@ -63,7 +63,7 @@ mhash some/file               # auto-downloads a SoundFont (~50 MB) on first run
 
 ```bash
 mhash path/to/file                  # hash + render + play (default)
-mhash -o path/to/file               # write path/to/file.soundhash.wav, no playback
+mhash -o path/to/file               # write path/to/file.mhash.wav, no playback
 mhash --out my.wav path/to/file     # write to a specific path
 mhash --mood M14 path/to/file       # force a mood (M0..M14)
 mhash -                             # read stdin
@@ -75,10 +75,10 @@ mhash --sf ~/my.sf2 path/to/file    # use any .sf2/.sf3 you already have
 mhash -q path/to/file               # silence dashboard + progress (just play)
 
 # Power CLI (full flag surface — emit midi/mp3/flac, scores, etc.):
-soundhash --audio --mp3 --score path/to/file
+mhash --audio --mp3 --score path/to/file
 
 # Per-mood demo: one sample per M0..M14, stitched into showcase/showcase.wav:
-python3 -m soundhash.showcase --score
+python3 -m mhash.showcase --score
 ```
 
 ## A taste of the spectrum
@@ -87,7 +87,7 @@ The same file rendered through three very different moods (forced via `--mood`).
 
 #### `--mood M14` — chiptune (LSDj-flavored)
 ```
-╭─[ soundhash ]───────────────────────────────────────────────────────────────────╮
+╭─[ mhash ]───────────────────────────────────────────────────────────────────╮
 │  hash    7c496489…65e5    source README.md    mime text/plain                   │
 │  mood    M14 sub-flavor 1    tempo 153.7 BPM    key C mixolydian    meter 4/4   │
 │  form    pyramid    groove straight_4_4    voicing sus_open    curve arc        │
@@ -113,7 +113,7 @@ The same file rendered through three very different moods (forced via `--mood`).
 
 #### `--mood M0` — ambient
 ```
-╭─[ soundhash ]─────────────────────────────────────────────────────────────────╮
+╭─[ mhash ]─────────────────────────────────────────────────────────────────╮
 │  hash    10d59bff…89f1    source LICENSE    mime text/plain                   │
 │  mood    M0 sub-flavor 1    tempo 65.0 BPM    key G ionian    meter 4/4       │
 │  form    pulse_only    groove straight_4_4    voicing power    curve flat_mid │
@@ -139,7 +139,7 @@ The same file rendered through three very different moods (forced via `--mood`).
 
 #### `--mood M11` — lofi (jazzy)
 ```
-╭─[ soundhash ]────────────────────────────────────────────────────────────────╮
+╭─[ mhash ]────────────────────────────────────────────────────────────────╮
 │  hash    c32a49aa…2e01    source BYTES.md    mime text/plain                 │
 │  mood    M11 sub-flavor 0    tempo 70.1 BPM    key A# dorian    meter 4/4    │
 │  form    AABA    groove dilla_feel    voicing open_triad    curve arc        │
@@ -178,19 +178,19 @@ The MIME type of the input file biases the mood selection, so `.json` and `.wav`
 
 ## Setup notes
 
-- `pip install soundhash` pulls every Python dep (`mido`, `numpy`, `python-magic`, `pyloudnorm`, `pedalboard`, `soundfile`).
-- Optional extras: `pip install soundhash[quality]` for `mosqito` psychoacoustic scoring; `pip install soundhash[dev]` for the test suite + `build`/`twine`.
+- `pip install songhash` pulls every Python dep (`mido`, `numpy`, `python-magic`, `pyloudnorm`, `pedalboard`, `soundfile`).
+- Optional extras: `pip install songhash[quality]` for `mosqito` psychoacoustic scoring; `pip install songhash[dev]` for the test suite + `build`/`twine`.
 - The `fluidsynth` system binary is required for audio render. macOS: `brew install fluid-synth`. Debian/Ubuntu: `apt install fluidsynth`. Windows: `scoop install fluidsynth`.
 - The default GM SoundFont (`MS-Basic.sf3`, ~50 MB) is auto-downloaded on first `mhash` run into `assets/v1/sf2/`. To skip the per-render OGG-decode tax, the installer also produces an uncompressed `MS-Basic.sf2` (~440 MB additional disk, ~12× faster renders). Override via `SOUNDHASH_SOUNDFONT=/path/to/your.sf2`.
 
 ## Dev
 
 ```bash
-git clone https://github.com/tabledevil/soundhash
-cd soundhash
+git clone https://github.com/tabledevil/mhash
+cd mhash
 pip install -e ".[dev]"
 pytest -q                      # 23 fast tests
-soundhash --self-test          # baseline MIDI SHA check
+mhash --self-test          # baseline MIDI SHA check
 python -m build                # builds dist/*.whl + .tar.gz
 ```
 

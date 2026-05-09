@@ -119,9 +119,9 @@ def _embed_wav_provenance(wav_bytes: bytes, prov: dict) -> bytes:
             data += b"\x00"
         return tag + struct.pack("<I", len(data)) + data
 
-    sw = "soundhash/v1"
+    sw = "mhash/v1"
     comment = (
-        f"soundhash/v1 sha={prov.get('hash_hex','?')[:64]} "
+        f"mhash/v1 sha={prov.get('hash_hex','?')[:64]} "
         f"mood={prov.get('mood','?')} mode={prov.get('mode','?')} "
         f"key={prov.get('key_root','?')} tempo={prov.get('tempo_bpm','?')} "
         f"form={prov.get('form_id','?')} bars={prov.get('bars','?')} "

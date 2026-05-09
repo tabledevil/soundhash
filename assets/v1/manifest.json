@@ -1,5 +1,5 @@
 {
-  "version": "soundhash/v1",
+  "version": "mhash/v1",
   "spec_version": "v1",
   "bundle_hash": "TODO-blake3-of-all-tables",
   "tables": {

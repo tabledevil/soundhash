@@ -5,7 +5,7 @@ limiter still owns the true-peak ceiling. Determinism is best-effort:
 pedalboard's algorithms are not bit-identical across builds, but with
 pinned `pedalboard==0.9.x` the output is stable on a given host.
 
-The chains are intentionally subtle. A soundhash is meant to be musical,
+The chains are intentionally subtle. A mhash is meant to be musical,
 not a synthwave demo reel — heavy modulation would obscure distinguishability.
 """
 from __future__ import annotations

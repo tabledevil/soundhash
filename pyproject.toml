@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "soundhash"
+name = "songhash"
 version = "0.1.0"
 description = "Deterministic musical hash — turn a file's SHA-256 into ≤30 s of pleasant, music-theory-correct audio."
 readme = "README.md"
@@ -13,7 +13,7 @@ authors = [
     { name = "tabledevil", email = "tabledevil@gmail.com" },
 ]
 keywords = [
-    "hash", "soundhash", "audio-fingerprint", "midi", "fluidsynth",
+    "hash", "songhash", "mhash", "audio-fingerprint", "midi", "fluidsynth",
     "deterministic", "music-theory", "identicon", "sonification",
 ]
 classifiers = [
@@ -40,7 +40,7 @@ dependencies = [
     "python-magic>=0.4.27",
     "numpy>=1.26",
     # Audio rendering + LUFS norm + per-mood FX chains: pulled by default so
-    # `pip install soundhash` gets a working `mhash` out of the box. The only
+    # `pip install mhash` gets a working `mhash` out of the box. The only
     # remaining system dep is the `fluidsynth` CLI binary itself.
     "pyloudnorm>=0.1.1",
     "pedalboard>=0.9",
@@ -68,11 +68,11 @@ Issues = "https://github.com/tabledevil/soundhash/issues"
 Changelog = "https://github.com/tabledevil/soundhash/blob/master/CHANGELOG.md"
 
 [project.scripts]
-soundhash = "soundhash.cli:main"
-mhash = "soundhash.mhash:main"
+mhash = "mhash.mhash:main"
+mhashx = "mhash.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/soundhash"]
+packages = ["src/mhash"]
 # SoundFonts (.sf2/.sf3) are huge (50–500 MB) and downloaded on first run by
 # setup_assets; everything else under assets/ ships with the wheel.
 exclude = ["**/*.sf2", "**/*.sf3", "**/__pycache__/**", "**/*.pyc"]
@@ -80,11 +80,11 @@ exclude = ["**/*.sf2", "**/*.sf3", "**/__pycache__/**", "**/*.pyc"]
 # Bundle the JSON tables / labels / progressions etc. into the wheel so an
 # installed copy can find its own assets.
 [tool.hatch.build.targets.wheel.force-include]
-"assets" = "soundhash/_assets"
+"assets" = "mhash/_assets"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "src/soundhash",
+    "src/mhash",
     "assets",
     "tests",
     "README.md",
