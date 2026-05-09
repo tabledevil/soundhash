@@ -23,6 +23,8 @@ cat foo.bin | mhash                 # ditto, auto-detected
 mhash -c 4 some.iso                 # chunk mode: split into 4-MB chunks,
                                     #   play one song per chunk in order
 mhash -q path/to/file               # silence dashboard + progress (just play)
+mhash --sf fluidr3 path/to/file     # try the FluidR3 SoundFont (auto-downloads ~141 MB)
+mhash --sf ~/my.sf2 path/to/file    # use any .sf2/.sf3 you already have
 
 # Power CLI (full flag surface — emits midi/mp3/flac, prints scores, etc.):
 soundhash --audio --mp3 --score path/to/file

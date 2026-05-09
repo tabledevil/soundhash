@@ -51,6 +51,10 @@ def _main(argv: list[str] | None) -> int:
     p.add_argument("-c", "--chunk", type=float, default=None, metavar="MB",
                    help="split input into MB-sized chunks; play one song per "
                         "chunk in order")
+    p.add_argument("--sf", default=None, metavar="SF",
+                   help="SoundFont override: a path to a .sf2/.sf3, or "
+                        "'fluidr3' to auto-download FluidR3_GM.sf2 "
+                        "(~141 MB) and use it for this run")
     p.add_argument("--mood", help="override mood (M0..M14)")
     p.add_argument("--mime", default="auto",
                    help="auto | off | <mime/type> (mime auto-detected from "
@@ -63,6 +67,11 @@ def _main(argv: list[str] | None) -> int:
 
     if not _ensure_fluidsynth():
         return 2
+    if args.sf:
+        sf_path = _resolve_sf_override(args.sf, quiet=args.quiet)
+        if sf_path is None:
+            return 4
+        os.environ["SOUNDHASH_SOUNDFONT"] = str(sf_path)
     if not _ensure_soundfont(quiet=args.quiet):
         return 3
 
@@ -218,6 +227,28 @@ def _ensure_fluidsynth() -> bool:
     print(f"mhash: fluidsynth not found on PATH. Install it:\n  {hint}",
           file=sys.stderr)
     return False
+
+
+def _resolve_sf_override(sf: str, quiet: bool = False) -> Path | None:
+    """Map --sf <value> → an absolute SoundFont path."""
+    if sf.lower() in ("fluidr3", "fluidr3_gm", "fluid"):
+        from .setup_assets import _TARGET_DIR, _FLUIDR3_NAME, fetch_fluidr3
+        target = _TARGET_DIR / _FLUIDR3_NAME
+        if not target.exists():
+            if not quiet:
+                print(f"mhash: --sf fluidr3 → downloading {_FLUIDR3_NAME} (~141 MB)…",
+                      file=sys.stderr)
+            try:
+                fetch_fluidr3()
+            except Exception as e:
+                print(f"mhash: FluidR3 download failed: {e}", file=sys.stderr)
+                return None
+        return target
+    p = Path(sf).expanduser()
+    if not p.is_file():
+        print(f"mhash: --sf {sf} not found", file=sys.stderr)
+        return None
+    return p.resolve()
 
 
 def _ensure_soundfont(quiet: bool = False) -> bool:

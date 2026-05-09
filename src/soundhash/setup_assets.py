@@ -17,6 +17,11 @@ from pathlib import Path
 
 _SF3_URL = "https://raw.githubusercontent.com/musescore/MuseScore/master/share/sound/MS%20Basic.sf3"
 _SF3_NAME = "MS-Basic.sf3"
+
+# Optional alternate SoundFont — bigger but more "stock GM" sounding.
+# Trigger via `mhash --sf fluidr3` or `python -m soundhash.setup_assets fluidr3`.
+_FLUIDR3_URL = "https://musical-artifacts.com/artifacts/738/FluidR3_GM.sf2"
+_FLUIDR3_NAME = "FluidR3_GM.sf2"
 _HERE = Path(__file__).resolve().parent
 # Prefer the editable-tree path; fall back to the wheel-bundled `_assets` dir.
 _DEV_DIR = _HERE.parent.parent / "assets" / "v1" / "sf2"
@@ -27,7 +32,9 @@ _TARGET_DIR = _DEV_DIR if _DEV_DIR.parent.parent.exists() else _WHEEL_DIR
 def _download(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     print(f"  → downloading {dest.name} from {url}", file=sys.stderr)
-    with urllib.request.urlopen(url) as r, open(dest, "wb") as out:
+    # Some mirrors (e.g. musical-artifacts.com) 403 the default urllib UA.
+    req = urllib.request.Request(url, headers={"User-Agent": "soundhash/0.0.1"})
+    with urllib.request.urlopen(req) as r, open(dest, "wb") as out:
         size = int(r.headers.get("Content-Length", "0"))
         chunk = 1 << 16
         read = 0
@@ -45,7 +52,21 @@ def _download(url: str, dest: Path) -> None:
             print("", file=sys.stderr)
 
 
+def fetch_fluidr3() -> Path:
+    """Download FluidR3_GM.sf2 to assets/v1/sf2/ if missing. Returns its path."""
+    target = _TARGET_DIR / _FLUIDR3_NAME
+    if target.exists():
+        return target
+    _download(_FLUIDR3_URL, target)
+    size_mb = target.stat().st_size / 1e6
+    print(f"  ✓ wrote {target} ({size_mb:.0f} MB)", file=sys.stderr)
+    return target
+
+
 def main(argv: list[str] | None = None) -> int:
+    if argv and argv[0] == "fluidr3":
+        fetch_fluidr3()
+        return 0
     sf3 = _TARGET_DIR / _SF3_NAME
     sf2 = _TARGET_DIR / _SF3_NAME.replace(".sf3", ".sf2")
 

@@ -20,6 +20,9 @@ def main(argv: list[str] | None = None) -> int:
                    help="also emit a .mp3 (requires lame on PATH)")
     p.add_argument("--flac", action="store_true",
                    help="also emit a .flac (requires flac on PATH)")
+    p.add_argument("--sf", default=None, metavar="SF",
+                   help="SoundFont override: a path to a .sf2/.sf3, or "
+                        "'fluidr3' to auto-download FluidR3_GM.sf2 (~141 MB)")
     p.add_argument("--mood", help="override mood (M0..M10)")
     p.add_argument("--mime", default="auto",
                    help="auto | off | strict | <mime/type>")
@@ -36,6 +39,14 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.self_test:
         return _self_test()
+
+    if args.sf:
+        from .mhash import _resolve_sf_override
+        sf_path = _resolve_sf_override(args.sf)
+        if sf_path is None:
+            return 4
+        import os as _os
+        _os.environ["SOUNDHASH_SOUNDFONT"] = str(sf_path)
 
     with open(args.file, "rb") as f:
         digest = hashlib.sha256(f.read()).digest()
