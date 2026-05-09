@@ -14,7 +14,10 @@ from typing import Optional
 
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_ASSETS = os.path.normpath(os.path.join(_HERE, "..", "..", "assets", "v1"))
+# Dev tree (../assets/v1) vs wheel layout (./_assets/v1).
+_DEV_ASSETS = os.path.normpath(os.path.join(_HERE, "..", "..", "assets", "v1"))
+_WHEEL_ASSETS = os.path.normpath(os.path.join(_HERE, "_assets", "v1"))
+_ASSETS = _DEV_ASSETS if os.path.isdir(_DEV_ASSETS) else _WHEEL_ASSETS
 
 
 @lru_cache(maxsize=1)

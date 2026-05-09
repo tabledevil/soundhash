@@ -10,6 +10,20 @@ All notable changes to the soundhash project. Format: reverse chronological, gro
 - Decoder skeleton consumes 32-byte HKDF macro stream.
 - DESIGN.md, README.md, MIME family resolver, soundfont bootstrap.
 
+## v0.1.0 — first PyPI release
+
+- Bumped version to 0.1.0; added MIT LICENSE.
+- Filled in PyPI metadata: authors, license, classifiers, project URLs,
+  keywords, full README rendering.
+- Wheel build: pure-Python `py3-none-any` (~144 KB). Asset bundle ships
+  inside the wheel as `soundhash/_assets/v1/...`; SoundFonts are
+  excluded and downloaded on first run.
+- All asset-loading modules (`tables`, `mime`, `render.audio`,
+  `setup_assets`) check the dev path first and fall back to the wheel
+  layout, so `pip install soundhash` works the same as `-e .`.
+- `dev` extra now pulls `build` + `twine` for release tooling.
+- Self-test SHA unchanged; 23/23 fast tests green on the wheel.
+
 ## Meter flexibility (post-M2)
 
 - New HKDF label `meter/timesig` drives `time_sig` from a dedicated 1-byte

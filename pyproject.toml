@@ -4,9 +4,37 @@ build-backend = "hatchling.build"
 
 [project]
 name = "soundhash"
-version = "0.0.1"
-description = "Deterministic musical hash: SHA-256 -> 30s of pleasant audio"
+version = "0.1.0"
+description = "Deterministic musical hash — turn a file's SHA-256 into ≤30 s of pleasant, music-theory-correct audio."
+readme = "README.md"
 requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "tabledevil", email = "tabledevil@gmail.com" },
+]
+keywords = [
+    "hash", "soundhash", "audio-fingerprint", "midi", "fluidsynth",
+    "deterministic", "music-theory", "identicon", "sonification",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: MIDI",
+    "Topic :: Multimedia :: Sound/Audio :: Sound Synthesis",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Utilities",
+]
 dependencies = [
     "mido>=1.3.0",
     "python-magic>=0.4.27",
@@ -16,7 +44,7 @@ dependencies = [
     # remaining system dep is the `fluidsynth` CLI binary itself.
     "pyloudnorm>=0.1.1",
     "pedalboard>=0.9",
-    # OGG-Vorbis decoder for the one-time SF3 → SF2 conversion at install
+    # OGG-Vorbis decoder for the one-time SF3 -> SF2 conversion at install
     # time (without it, fluidsynth pays a 6 s OGG decode on every render).
     "soundfile>=0.12",
 ]
@@ -29,7 +57,15 @@ quality = [
 dev = [
     "pytest>=8",
     "hypothesis>=6.100",
+    "build",
+    "twine",
 ]
+
+[project.urls]
+Homepage = "https://github.com/tabledevil/soundhash"
+Source = "https://github.com/tabledevil/soundhash"
+Issues = "https://github.com/tabledevil/soundhash/issues"
+Changelog = "https://github.com/tabledevil/soundhash/blob/master/CHANGELOG.md"
 
 [project.scripts]
 soundhash = "soundhash.cli:main"
@@ -37,9 +73,37 @@ mhash = "soundhash.mhash:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/soundhash"]
+# SoundFonts (.sf2/.sf3) are huge (50–500 MB) and downloaded on first run by
+# setup_assets; everything else under assets/ ships with the wheel.
+exclude = ["**/*.sf2", "**/*.sf3", "**/__pycache__/**", "**/*.pyc"]
 
+# Bundle the JSON tables / labels / progressions etc. into the wheel so an
+# installed copy can find its own assets.
 [tool.hatch.build.targets.wheel.force-include]
 "assets" = "soundhash/_assets"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/soundhash",
+    "assets",
+    "tests",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "DESIGN.md",
+    "BYTES.md",
+    "AESTHETICS.md",
+    "pyproject.toml",
+]
+exclude = [
+    "**/*.sf2",
+    "**/*.sf3",
+    "**/__pycache__",
+    "**/*.pyc",
+    "research/**",
+    "cross-mood/**",
+    "showcase/**",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
