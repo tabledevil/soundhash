@@ -32,6 +32,51 @@ def _coloriser(stream: IO):
 
 _PC_NAMES = "C C# D D# E F F# G G# A A# B".split()
 
+# Mood → accent colour for the header chip.
+_MOOD_TINT = {
+    "M0": "cyan", "M1": "yel", "M2": "mag", "M3": "blu",
+    "M4": "grn", "M5": "mag", "M6": "yel", "M7": "red",
+    "M8": "red", "M9": "mag", "M10": "blu", "M11": "yel",
+    "M12": "cyan", "M13": "grn", "M14": "grn",
+}
+
+# Diatonic scale-degree → roman numeral (major / minor variants).
+_ROMAN_MAJOR = ["I", "ii", "iii", "IV", "V", "vi", "vii°"]
+_ROMAN_MINOR = ["i", "ii°", "III", "iv", "v", "VI", "VII"]
+_MAJOR_SCALE_PCS = (0, 2, 4, 5, 7, 9, 11)
+_MINOR_SCALE_PCS = (0, 2, 3, 5, 7, 8, 10)
+
+
+def _roman_for(chord_root_pc: int, chord_quality: str,
+               key_root: int, mode: str) -> str:
+    """Best-effort roman numeral relative to the key. Falls back to ?."""
+    interval = (chord_root_pc - key_root) % 12
+    is_minor_mode = mode in ("aeolian", "phrygian", "locrian", "jazz_minor")
+    scale_pcs = _MINOR_SCALE_PCS if is_minor_mode else _MAJOR_SCALE_PCS
+    romans = _ROMAN_MINOR if is_minor_mode else _ROMAN_MAJOR
+    if interval in scale_pcs:
+        deg = scale_pcs.index(interval)
+        rn = romans[deg]
+    else:
+        # Chromatic — flat or sharp neighbour.
+        for d, p in enumerate(scale_pcs):
+            if (interval - p) % 12 == 1:
+                rn = "♭" + romans[(d + 1) % 7]
+                break
+        else:
+            rn = "?"
+    # Quality overlay (uppercase = major, lowercase = minor).
+    q = (chord_quality or "").lower()
+    if q in ("maj", "maj7", ""):
+        rn = rn.upper().replace("♭", "♭").replace("°", "")
+    elif q in ("min", "m", "min7", "m7"):
+        rn = rn.lower()
+    elif q in ("dim", "dim7", "ø", "m7b5"):
+        rn = rn.lower() + "°"
+    elif q in ("dom7", "7"):
+        rn = rn.upper() + "7"
+    return rn
+
 # Tiny GM-program label table for the rows we render most often.
 _GM_LABELS = {
     0: "Acoustic Piano", 4: "Electric Piano 1", 5: "Electric Piano 2",
@@ -63,28 +108,33 @@ def _spark(values: Iterable[float]) -> str:
     return "".join(out)
 
 
-def _drum_pattern_grid(pattern_id: str, kit_id: str, width: int = 32) -> str:
-    """One bar of the picked drum pattern as X / · cells."""
+def _drum_pattern_grid(pattern_id: str, kit_id: str) -> list[str]:
+    """One bar of the picked drum pattern as a list of `voice X·X···` lines."""
     if not pattern_id or not kit_id:
-        return ""
+        return []
     try:
         from . import tables
         pats = tables.load(f"drums/patterns/{kit_id}").get("patterns", [])
     except Exception:
-        return ""
+        return []
     pat = next((p for p in pats if p.get("id") == pattern_id), None)
     if not pat:
-        return ""
-    grid = pat.get("grid_steps", 16)
-    hits = pat.get("hits", [])
-    cells = ["·"] * grid
-    for h in hits:
-        step = h.get("step", -1)
-        if 0 <= step < grid:
-            cells[step] = "X"
-    # Render with light dividers every 4 cells, padded out to `width`.
-    body = "".join(c if (i % 4) else (" " + c) for i, c in enumerate(cells)).strip()
-    return f"{body}   ({grid}-step)"
+        return []
+    steps = pat.get("steps", pat.get("grid_steps", 16))
+    rows = pat.get("rows", {})
+    out = []
+    # Show up to 4 most-active voices so the grid stays compact.
+    voices = sorted(rows.items(), key=lambda kv: -len(kv[1]))[:4]
+    for name, cells in voices:
+        marks = ["·"] * steps
+        for hit in cells:
+            s = hit.get("s", -1) if isinstance(hit, dict) else hit
+            if 0 <= s < steps:
+                marks[s] = "X"
+        body = "".join(m if (i % 4) else (" " + m)
+                       for i, m in enumerate(marks)).strip()
+        out.append(f"{name:<11}{body}")
+    return out
 
 
 def _fx_summary(mood: str, wet_scale: float) -> str:
@@ -125,29 +175,59 @@ def print_dashboard(spec, source_label: str, mime: str | None,
     key = _PC_NAMES[spec.key_root]
     ts = f"{spec.time_sig[0]}/{spec.time_sig[1]}"
     hash_short = f"{spec.provenance.hash_hex[:8]}…{spec.provenance.hash_hex[-4:]}"
+    mood_tint = _MOOD_TINT.get(spec.provenance.mood, "yel")
 
     bar = "─" * 70
     pr(c(f"╭─[ soundhash ]{bar[14:]}╮", "cyan"))
-    pr(f"{c('│', 'cyan')}  hash    {c(hash_short, 'mag')}")
-    pr(f"{c('│', 'cyan')}  source  {source_label}")
-    pr(f"{c('│', 'cyan')}  mime    {mime or '—'}")
-    pr(f"{c('│', 'cyan')}  mood    {c(spec.provenance.mood, 'yel', 'bold')}    "
-       f"sub-flavor {spec.sub_flavor}")
-    pr(f"{c('│', 'cyan')}  tempo   {c(f'{spec.tempo_bpm:.1f} BPM', 'grn')}   "
-       f"key {c(key + ' ' + spec.mode, 'grn')}   "
-       f"meter {c(ts, 'grn')}   form {c(spec.form_id, 'grn')}")
-    pr(f"{c('│', 'cyan')}  groove  {spec.groove_template_id}    "
-       f"voicing {spec.voicing_style}    curve {spec.energy_curve_id}    "
-       f"matrix {spec.activation_matrix_id}")
+    pr(f"{c('│', 'cyan')}  hash    {c(hash_short, 'mag')}    "
+       f"{c('source', 'gry')} {source_label}    "
+       f"{c('mime', 'gry')} {mime or '—'}")
+    pr(f"{c('│', 'cyan')}  mood    {c(spec.provenance.mood, mood_tint, 'bold')}"
+       f" sub-flavor {spec.sub_flavor}    "
+       f"{c('tempo', 'gry')} {c(f'{spec.tempo_bpm:.1f} BPM', 'grn')}    "
+       f"{c('key', 'gry')} {c(key + ' ' + spec.mode, 'grn')}    "
+       f"{c('meter', 'gry')} {c(ts, 'grn')}")
+    pr(f"{c('│', 'cyan')}  form    {c(spec.form_id, 'grn')}    "
+       f"{c('groove', 'gry')} {spec.groove_template_id}    "
+       f"{c('voicing', 'gry')} {spec.voicing_style}    "
+       f"{c('curve', 'gry')} {spec.energy_curve_id}")
+    pr(f"{c('│', 'cyan')}  matrix  {spec.activation_matrix_id}    "
+       f"{c('humanize', 'gry')} {spec.humanization_profile} (jitter ±{spec.humanization_vel_jitter})    "
+       f"{c('mix', 'gry')} {spec.mix_preset_id}")
     pr(c(f"╰{bar}╯", "cyan"))
 
-    bars = " · ".join(b.section_letter for b in spec.bars)
-    pr(f"  {c('bars  ', 'gry')}  {bars}")
+    # ─── form / energy / chord run ──────────────────────────────────
+    bars_str = " · ".join(b.section_letter for b in spec.bars)
+    pr(f"  {c('bars   ', 'gry')} {bars_str}")
     if spec.bar_energies:
-        pr(f"  {c('energy', 'gry')}  {c(_spark(spec.bar_energies), 'mag')}")
+        pr(f"  {c('energy ', 'gry')} {c(_spark(spec.bar_energies), 'mag')}")
     chord_line = " | ".join(b.chord for b in spec.bars)
-    pr(f"  {c('chords', 'gry')}  {chord_line}")
+    pr(f"  {c('chords ', 'gry')} {chord_line}")
+    roman_line = " | ".join(_roman_for(b.chord_root_pc, b.chord_quality,
+                                       spec.key_root, spec.mode)
+                            for b in spec.bars)
+    pr(f"  {c('roman  ', 'gry')} {c(roman_line, 'yel')}")
     pr("")
+
+    # ─── per-section activation grid ────────────────────────────────
+    if spec.activation_rows:
+        layer_names = ("drums", "bass", "comp", "lead", "counter",
+                       "drone", "riser", "ad_lib")
+        sections = list(spec.activation_rows.keys())
+        cell_glyph = {"-": "·", "s": "▪", "n": "▣", "d": "█", "*": "◆"}
+        pr(f"  {c('arrangement (rows × sections):', 'gry')}")
+        header = "         " + "  ".join(f"{s:>4}" for s in sections)
+        pr(c(header, "gry"))
+        for li, lname in enumerate(layer_names):
+            cells = []
+            for sec in sections:
+                row = spec.activation_rows.get(sec, [])
+                glyph = cell_glyph.get(row[li] if li < len(row) else "-", "·")
+                col = "grn" if glyph in ("▣", "█") else \
+                      "yel" if glyph in ("▪", "◆") else "gry"
+                cells.append(c(f"{glyph:>4}", col))
+            pr(f"   {lname:<8} " + "  ".join(cells))
+        pr("")
 
     layers_by_name = {l.name: l for l in spec.layers}
 
@@ -166,9 +246,8 @@ def print_dashboard(spec, source_label: str, mime: str | None,
         fill = drum_layer.extra.get("fill_id", "")
         esc = drum_layer.extra.get("esc_algo", "")
         row("L1", "drums", f"kit={c(kit, 'yel')}  low={pat_low} / high={pat_high}  fill={fill}  esc={esc}")
-        grid = _drum_pattern_grid(pat_low or pat_high, kit)
-        if grid:
-            pr(f"          {c('▶', 'mag')} {c(grid, 'gry')}")
+        for line in _drum_pattern_grid(pat_low or pat_high, kit):
+            pr(f"          {c('▶', 'mag')} {c(line, 'gry')}")
 
     bass = layers_by_name.get("bass")
     if bass:
@@ -203,15 +282,55 @@ def print_dashboard(spec, source_label: str, mime: str | None,
         row("L7", "drone", f"prog {drone.program:03d} {c(_gm(drone.program), 'yel')}   tonic+5th pedal")
 
     pr("")
-    pr(f"  {c('fx     ', 'gry')} {_fx_summary(spec.provenance.mood, spec.fx_wet_scale)}")
-    pr(f"  {c('mix    ', 'gry')} {spec.mix_preset_id}    "
-       f"humanize {spec.humanization_profile} (jitter ±{spec.humanization_vel_jitter})    "
-       f"sr {spec.render.sample_rate}/{spec.render.bit_depth}-bit    "
-       f"target {spec.render.target_lufs:.0f} LUFS")
+    pr(f"  {c('fx     ', 'gry')} {_fx_summary(spec.provenance.mood, spec.fx_wet_scale)}    "
+       f"{c('audio', 'gry')} {spec.render.sample_rate}/{spec.render.bit_depth}-bit @ "
+       f"{spec.render.target_lufs:.0f} LUFS")
     pr("")
 
 
 # ─── progress bar ──────────────────────────────────────────────────────
+
+def print_render_stats(spec, midi_bytes: bytes, wav_bytes: bytes | None,
+                       elapsed_s: float, stream: IO = sys.stderr) -> None:
+    """One-line footer summarising what the renderer produced."""
+    c = _coloriser(stream)
+    pr = lambda *a, **k: print(*a, **k, file=stream)
+    n_notes, peak_poly = _midi_stats(midi_bytes)
+    parts = [
+        c("rendered", "grn", "bold"),
+        f"{c('notes', 'gry')} {n_notes}",
+        f"{c('peak-poly', 'gry')} {peak_poly}",
+        f"{c('midi', 'gry')} {len(midi_bytes)/1024:.1f} KB",
+    ]
+    if wav_bytes:
+        parts += [
+            f"{c('wav', 'gry')} {len(wav_bytes)/1e6:.1f} MB",
+            f"{c('dur', 'gry')} {spec.total_duration_seconds():.1f}s",
+        ]
+    parts.append(f"{c('took', 'gry')} {elapsed_s:.2f}s")
+    pr("  " + "    ".join(parts))
+
+
+def _midi_stats(midi_bytes: bytes) -> tuple[int, int]:
+    """Return (total_note_on_count, peak_simultaneous_polyphony) for a MIDI blob."""
+    try:
+        import io
+        import mido
+        mf = mido.MidiFile(file=io.BytesIO(midi_bytes))
+    except Exception:
+        return (0, 0)
+    n_notes = 0
+    peak_poly = cur_poly = 0
+    # Walk the merged event stream so polyphony reflects across-track concurrency.
+    for msg in mf:
+        if msg.type == "note_on" and msg.velocity > 0:
+            n_notes += 1
+            cur_poly += 1
+            peak_poly = max(peak_poly, cur_poly)
+        elif msg.type == "note_off" or (msg.type == "note_on" and msg.velocity == 0):
+            cur_poly = max(0, cur_poly - 1)
+    return n_notes, peak_poly
+
 
 class Progress:
     """Phase-labelled progress bar that overwrites a single stderr line."""

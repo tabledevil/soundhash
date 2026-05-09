@@ -1,17 +1,65 @@
 # soundhash
 
-Deterministic musical hash. Convert a file's SHA-256 into ≤30 seconds of pleasant, music-theory-correct audio that is easily distinguishable between files. Same hash → identical MIDI, identical WAV.
+> A deterministic **musical fingerprint** for any file. Pipe in some bytes, get back ≤30 seconds of pleasant, music-theory-correct audio. Same hash → identical track.
+
+Like an identicon — but for your ears.
+
+```bash
+pip install soundhash
+mhash some/file        # plays a unique 30 s song for that file
+```
+
+```
+╭─[ soundhash ]────────────────────────────────────────────────────────╮
+│  hash    10d59bff…89f1    source LICENSE    mime text/plain
+│  mood    M3 sub-flavor 1    tempo 106.6 BPM    key G ionian    meter 4/4
+│  form    theme_var    groove straight_4_4    voicing close_triad    curve terraces
+│  matrix  4floor_house    humanize machine (jitter ±0)    mix balanced
+╰──────────────────────────────────────────────────────────────────────╯
+  bars    A · A · A · A · Avar · Avar · Avar · Avar
+  energy  ▃▃▄▄▅▆▆▇
+  chords  Gmaj | Dmaj | Emin | Cmaj | Gmaj | Dmaj | Emin | Cmaj
+  roman   I | V | vi | IV | I | V | vi | IV
+
+  arrangement (rows × sections):
+            A     B  fill
+   drums       ◆     ◆     █
+   bass        ◆     ◆     ▪
+   comp        ▣     ▣     ·
+   lead        ◆     ◆     ·
+   riser       ▪     ▪     ·
+
+  L1 drums   ch10 kit=latin-conga  low=lc-d2-tumbao / high=lc-d4-peak-mambo
+          ▶ perc_1     X··X ··X· ··X· X···
+          ▶ tom_high   ···· ··XX ···· ··XX
+          ▶ tom_mid    X··· X··· ···· X···
+  L2 bass    ch1  prog 032 Acoustic Bass     pat=bossa_bass
+  L3 comp    ch2  prog 004 Electric Piano 1  pat=dotted_8th_pad   role=piano_stab
+  L4 lead    ch3  prog 011 Vibraphone        motif=m44_fnk_01
+  L5 pad     ch4  prog 089 Warm Pad
+  L6 counter ch5  prog 073 Flute             mode=parallel_6th
+
+  fx        Chorus(0.7Hz) → Delay(375ms) → Reverb(0.55)    audio 44100/16-bit @ -16 LUFS
+
+  rendered  notes 359    peak-poly 12    midi 3.1 KB    wav 4.1 MB    dur 18.0s    took 0.82s
+```
+
+The dashboard shows everything the renderer is doing: the I-V-vi-IV roman numerals next to chord names, an arrangement matrix for which layers play in which form sections (· silent, ▪ sparse, ▣ normal, █ dense, ◆ energy-scaled), a one-bar drum-pattern grid for L1, and a render-stats footer with note count, peak polyphony, and timings.
+
+## Why
+
+You can show someone an identicon and they'll spot a wrong digit at a glance. soundhash does the same with sound: a deterministic, musical, *memorable* signature of a file's contents. Different files → different songs. Same file → exact same song, every time, on every machine.
 
 ## Install
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate     # isolated env
-pip install -e .                                       # python deps
-brew install fluid-synth                               # mac; or: apt install fluidsynth
-mhash some/file                                        # auto-downloads the SoundFont (~50 MB) on first run
+python3 -m venv .venv && source .venv/bin/activate
+pip install soundhash
+brew install fluid-synth      # mac;  apt install fluidsynth  on debian/ubuntu
+mhash some/file               # auto-downloads a SoundFont (~50 MB) on first run
 ```
 
-## Quick demo
+## What you can do
 
 ```bash
 mhash path/to/file                  # hash + render + play (default)
@@ -20,91 +68,101 @@ mhash --out my.wav path/to/file     # write to a specific path
 mhash --mood M14 path/to/file       # force a mood (M0..M14)
 mhash -                             # read stdin
 cat foo.bin | mhash                 # ditto, auto-detected
-mhash -c 4 some.iso                 # chunk mode: split into 4-MB chunks,
+mhash -c 4 some.iso                 # chunk mode: split into 4-MB pieces,
                                     #   play one song per chunk in order
-mhash -q path/to/file               # silence dashboard + progress (just play)
 mhash --sf fluidr3 path/to/file     # try the FluidR3 SoundFont (auto-downloads ~141 MB)
 mhash --sf ~/my.sf2 path/to/file    # use any .sf2/.sf3 you already have
+mhash -q path/to/file               # silence dashboard + progress (just play)
 
-# Power CLI (full flag surface — emits midi/mp3/flac, prints scores, etc.):
+# Power CLI (full flag surface — emit midi/mp3/flac, scores, etc.):
 soundhash --audio --mp3 --score path/to/file
 
-# Build a per-mood demo: one sample per M0..M14, stitched into showcase/showcase.wav.
+# Per-mood demo: one sample per M0..M14, stitched into showcase/showcase.wav:
 python3 -m soundhash.showcase --score
 ```
 
-## What's wired
+## A taste of the spectrum
 
-- **Decode** (`src/soundhash/decode.py`) — pure HKDF-driven walker over a 32-byte macro budget plus per-bar / per-section sub-streams.
-- **9 musical layers** rendered from the SongSpec:
-  drums (channel 10, kit-mapped GM percussion), bass (degree-rhythm grid + per-synth octave window + portamento on octave shifts), comp (chord-rhythm pattern, voicing follows polyphony mode + arp shape), lead (motif × contour × scale subset, strong-beat chord-tone snap, per-bar mutation, CC11 swell, phrase-end pitch-bend fall, section-start velocity accent), pad (mid-energy chord wash), counter-melody (parallel-3rd shadow at high energy), drone (M0/M1/M10 tonic+5th pedal), riser (reverse cymbal on energy jumps), ear-candy (off-beat bell stabs).
-- **Per-mood biases**: 11 moods (M0 ambient → M10 cinematic), each with its own GM-program palette, groove template pool, energy-curve preferences, form preferences, layer-activation gates.
-- **Per-mood FX chain** (pedalboard): genre-appropriate reverb / delay / chorus / phaser / EQ.
-- **Master bus**: HighpassFilter@40Hz, low-shelf -1.5 dB, high-shelf +1.5 dB.
-- **LUFS normalisation** to -16 LUFS via pyloudnorm; peak ceiling -1.5 dBFS.
-- **Quality scoring**: heuristic (LUFS / crest / spectral balance / stereo width) + optional psychoacoustic (Zwicker loudness, DIN sharpness via mosqito).
-- **Provenance**: WAV LIST/INFO chunk with hash, mood, mode, key, tempo, form, bars, groove, curve.
-- **Form-driven structure**: 24+ forms drive bar count and section letters; per-section motifs / contours / chord-rhythm patterns; drum fills on section transitions; crash on new-section downbeats.
+The same file, rendered through three different moods (forced via `--mood`):
 
-## CLI flags
-
+#### `--mood M14` — chiptune (LSDj-flavored)
 ```
-soundhash <file>
-  --midi             write .mid
-  --audio            render .wav (requires fluidsynth on PATH)
-  --mp3              also write .mp3 (requires lame)
-  --flac             also write .flac (requires flac CLI)
-  --mood Mxx         override mood (M0..M10)
-  --mime auto|off|strict|<type>
-  --score            heuristic 0..1 quality summary after render
-  --psy              mosqito loudness + sharpness summary
-  -v, --verbose      dump SongSpec breakdown
+mood    M14    sub-flavor 1
+tempo   112.1 BPM   key B aeolian   meter 4/4   form pyramid
+groove  straight_4_4    voicing power    curve arc
+
+bars    i · A · A · B · B · B · B · A · A · o
+energy  ▃▄▅▆▆▆▆▅▄▃
+chords  Bmin | F#maj | G#maj | Bmin | …
+
+L1 drums  kit=trap-808   esc=snare_roll_crescendo
+L2 bass   prog 087 Bass+Lead    pat=rock_gallop
+L3 comp   prog 081 Saw Lead     pat=montuno_2_3
+L4 lead   prog 038 Synth Bass 1
+fx        HiShelf(-4dB) → Drive(2dB) → Reverb(0.10)
 ```
 
-## Status
+#### `--mood M0` — ambient
+```
+mood    M0    sub-flavor 1
+tempo   54.0 BPM   key G phrygian   meter 4/4   form through_composed
+groove  ambient_drift    voicing sus_open    curve arc
 
-| | |
-|---|---|
-| Tests | 20 passing (decode invariants + render + corpus regression) |
-| Layers | 9 musical (drums, bass, comp, lead, pad, counter, drone, riser, ear-candy) + meta |
-| Moods | 11 (M0–M10) |
-| Forms | 24 |
-| Energy curves | 16 |
-| Groove templates | 16 |
-| Drum kits | 12 |
-| Bass patterns | 36 |
-| Chord progressions | 90 |
-| Showcase score | heuristic 0.85 avg, psychoacoustic 0.98 avg |
-| Audio determinism | bit-identical within arch (Docker canonical pending) |
+bars    A · A · A · A · A · A · A
+energy  ▃▄▄▄▄▄▃
+chords  Gmin | Dmaj | Eb | F | Gmin | Dmaj | Eb
 
-See `DESIGN.md` for the full spec; per-dimension research lives in `research/`.
+L4 lead   prog 091 Choir Pad    motif=m44_amb_03
+L5 pad    prog 088 New-Age Pad
+L7 drone  tonic+5th pedal
+fx        Reverb(0.85) → Chorus(0.6Hz) → LoShelf(-1dB)
+```
+
+#### `--mood M11` — lofi
+```
+mood    M11    sub-flavor 1
+tempo   85.3 BPM   key G ionian   meter 4/4   form ostinato_layer
+groove  neo_soul    voicing power    curve terraces
+
+L1 drums  kit=jazz-kit       esc=reverse_cymbal_sweep
+L2 bass   prog 039 Synth Bass 2
+L3 comp   prog 004 Electric Piano 1
+L4 lead   prog 026 Jazz Guitar
+fx        Drive(6dB) → HiShelf(-3dB) → Chorus(0.4Hz) → Reverb(0.40)
+```
+
+## How it works
+
+1. **Hash.** SHA-256 of the input bytes.
+2. **Decode.** Walk a deterministic HKDF-SHA256 byte stream over 32 macro decisions: mood, tempo, key, mode, time-signature, form, energy curve, chord progression, voicing, drum kit / pattern, bass pattern, comp role, melody motif, contour, FX, mix… A lookup table is pre-filtered by all prior decisions, so every combination produces music-theory-correct output.
+3. **MIDI.** Render 9 simultaneous layers — drums (ch10), bass, comp, lead, pad, counter-melody, drone, riser, ear-candy stabs.
+4. **Audio.** `fluidsynth` synthesizes the MIDI through a General-MIDI SoundFont; `pedalboard` applies a per-mood FX chain (reverb / delay / chorus / saturation / EQ); `pyloudnorm` normalises to -16 LUFS.
+5. **Play.** macOS `afplay`, Linux `paplay`/`aplay`, Windows PowerShell SoundPlayer.
+
+15 moods (`M0` ambient → `M14` gameboy/chiptune), 16 forms, 16 energy curves, 16 grooves, 12 drum kits, 39 chord progressions, 10 voicing styles, 8 escalation algorithms, ~2200 GM samples — all selected deterministically from the hash.
+
+The MIME type of the input file biases the mood selection, so `.json` and `.wav` and `.mkv` *tend* to sound recognizably different even before content kicks in. (Override with `--mime off` for pure content-driven output.)
 
 ## Setup notes
 
-- `pip install -e .` pulls every Python dep (`mido`, `numpy`, `python-magic`, `pyloudnorm`, `pedalboard`).
-- Optional extras: `pip install -e ".[quality]"` for `mosqito` psychoacoustic scoring; `pip install -e ".[dev]"` for the test suite.
+- `pip install soundhash` pulls every Python dep (`mido`, `numpy`, `python-magic`, `pyloudnorm`, `pedalboard`, `soundfile`).
+- Optional extras: `pip install soundhash[quality]` for `mosqito` psychoacoustic scoring; `pip install soundhash[dev]` for the test suite + `build`/`twine`.
 - The `fluidsynth` system binary is required for audio render. macOS: `brew install fluid-synth`. Debian/Ubuntu: `apt install fluidsynth`. Windows: `scoop install fluidsynth`.
-- The default GM SoundFont (`MS-Basic.sf3`, ~50 MB) is auto-downloaded on first `mhash` run into `assets/v1/sf2/`. Override via `SOUNDHASH_SOUNDFONT=/path/to/your.sf2`.
+- The default GM SoundFont (`MS-Basic.sf3`, ~50 MB) is auto-downloaded on first `mhash` run into `assets/v1/sf2/`. To skip the per-render OGG-decode tax, the installer also produces an uncompressed `MS-Basic.sf2` (~440 MB additional disk, ~12× faster renders). Override via `SOUNDHASH_SOUNDFONT=/path/to/your.sf2`.
 
-## Repo layout
+## Dev
 
+```bash
+git clone https://github.com/tabledevil/soundhash
+cd soundhash
+pip install -e ".[dev]"
+pytest -q                      # 23 fast tests
+soundhash --self-test          # baseline MIDI SHA check
+python -m build                # builds dist/*.whl + .tar.gz
 ```
-DESIGN.md                  ← full spec
-research/                  ← 14 research dimensions (one folder each)
-src/soundhash/
-  decode.py                ← hash → SongSpec
-  spec.py                  ← SongSpec dataclasses
-  theory.py                ← Roman numeral resolution
-  mime.py                  ← MIME → mood family
-  quality.py               ← heuristic + psychoacoustic scoring
-  showcase.py              ← per-mood demo generator
-  cli.py                   ← entry point
-  render/
-    midi.py                ← SongSpec → .mid (9 layers)
-    audio.py               ← .mid → .wav (fluidsynth + LUFS + provenance)
-    fx.py                  ← per-mood FX chains + master EQ
-  tables/                  ← static-table loader
-assets/v1/                 ← 58 JSON tables (forms, drums, comp, melody, …)
-tests/                     ← decode invariants, render smoke, corpus regression
-showcase/                  ← demo output (gitignored)
-```
+
+See `DESIGN.md` for the full spec, `BYTES.md` for the byte-by-byte map of how each SHA-256 byte drives a musical decision, `AESTHETICS.md` for per-mood design intent, and `CHANGELOG.md` for the journey.
+
+## License
+
+MIT. © 2026 tabledevil.

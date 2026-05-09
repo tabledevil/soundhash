@@ -40,12 +40,13 @@ _DEFAULT_SF2_CANDIDATES = [
     # OGG-Vorbis decode in fluidsynth runs once per invocation otherwise).
     os.path.join(_REPO_SF2, "MS-Basic.sf2"),
     os.path.join(_WHEEL_SF2, "MS-Basic.sf2"),
+    os.path.join(_REPO_SF2, "FluidR3_GM.sf2"),
+    os.path.join(_WHEEL_SF2, "FluidR3_GM.sf2"),
     os.path.join(_REPO_SF2, "MS-Basic.sf3"),
     os.path.join(_WHEEL_SF2, "MS-Basic.sf3"),
-    "/usr/local/share/sounds/sf2/FluidR3_GM.sf2",
+    # Distro-installed FluidR3 (Debian / Ubuntu / Fedora bundle locations).
     "/usr/share/sounds/sf2/FluidR3_GM.sf2",
-    # last resort: brew's tiny pad-only synth font (no drums)
-    "/opt/homebrew/Cellar/fluid-synth/2.5.4/share/fluid-synth/sf2/VintageDreamsWaves-v2.sf2",
+    "/usr/local/share/sounds/sf2/FluidR3_GM.sf2",
 ]
 
 

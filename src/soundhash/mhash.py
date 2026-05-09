@@ -125,7 +125,9 @@ def _render_one(data: bytes, source_label: str, args, mime_for_naming) -> int:
     from .mime import detect_mime
     from .render.audio import render_wav
     from .render.midi import render_midi
-    from .dashboard import Progress, print_dashboard
+    from .dashboard import Progress, print_dashboard, print_render_stats
+    import time as _time
+    _t0 = _time.monotonic()
     from . import SPEC_VERSION
 
     show = not (args.quiet or args.no_show)
@@ -182,6 +184,9 @@ def _render_one(data: bytes, source_label: str, args, mime_for_naming) -> int:
         progress.end("fx+lufs")  # render_wav already applies fx+lufs
         progress.end("ready")
         progress.finish()
+
+    if show:
+        print_render_stats(spec, midi, wav, _time.monotonic() - _t0)
 
     if args.output or args.out:
         # Default output path uses source filename if available, else uses
