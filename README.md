@@ -163,6 +163,47 @@ python -m build                # builds dist/*.whl + .tar.gz
 
 See `DESIGN.md` for the full spec, `BYTES.md` for the byte-by-byte map of how each SHA-256 byte drives a musical decision, `AESTHETICS.md` for per-mood design intent, and `CHANGELOG.md` for the journey.
 
+## Publishing
+
+PyPI release flow (need an API token from <https://pypi.org/manage/account/token/>; first-time uploads use scope "Entire account", subsequent ones can be narrowed to this project):
+
+```bash
+# 1. Bump version
+#    - pyproject.toml `version = "0.1.1"`
+#    - src/soundhash/__init__.py `__version__ = "0.1.1"`
+#    - add a CHANGELOG.md entry
+
+# 2. Build fresh artifacts
+rm -rf dist && python3 -m build         # → dist/soundhash-X.Y.Z-py3-none-any.whl + .tar.gz
+python3 -m twine check dist/*           # sanity check
+
+# 3. (Optional) smoke-test on TestPyPI first
+python3 -m twine upload -r testpypi dist/*
+pip install -i https://test.pypi.org/simple/ soundhash
+
+# 4. Publish to real PyPI
+python3 -m twine upload dist/*
+
+# 5. Tag the release on GitHub
+git tag v0.1.1 && git push --tags
+gh release create v0.1.1 dist/* --title "v0.1.1" --notes-from-tag
+```
+
+Auth: either type the token at the prompt (`username: __token__`, `password: pypi-AgEI…`) or persist it in `~/.pypirc`:
+
+```ini
+[pypi]
+  username = __token__
+  password = pypi-AgEI...
+```
+
+After upload, anywhere on any platform:
+
+```bash
+pip install soundhash
+mhash some/file
+```
+
 ## License
 
 MIT. © 2026 tabledevil.
