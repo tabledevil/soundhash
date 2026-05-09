@@ -10,12 +10,12 @@ mhash some/file        # plays a unique 30 s song for that file
 ```
 
 ```
-╭─[ soundhash ]────────────────────────────────────────────────────────╮
-│  hash    10d59bff…89f1    source LICENSE    mime text/plain
-│  mood    M3 sub-flavor 1    tempo 106.6 BPM    key G ionian    meter 4/4
-│  form    theme_var    groove straight_4_4    voicing close_triad    curve terraces
-│  matrix  4floor_house    humanize machine (jitter ±0)    mix balanced
-╰──────────────────────────────────────────────────────────────────────╯
+╭─[ soundhash ]──────────────────────────────────────────────────────────────────────╮
+│  hash    10d59bff…89f1    source LICENSE    mime text/plain                        │
+│  mood    M3 sub-flavor 1    tempo 106.6 BPM    key G ionian    meter 4/4           │
+│  form    theme_var    groove straight_4_4    voicing close_triad    curve terraces │
+│  matrix  4floor_house    humanize machine (jitter ±0)    mix balanced              │
+╰────────────────────────────────────────────────────────────────────────────────────╯
   bars    A · A · A · A · Avar · Avar · Avar · Avar
   energy  ▃▃▄▄▅▆▆▇
   chords  Gmaj | Dmaj | Emin | Cmaj | Gmaj | Dmaj | Emin | Cmaj

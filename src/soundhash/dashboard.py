@@ -2,9 +2,17 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
 import time
 from typing import IO, Iterable
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _vlen(s: str) -> int:
+    """Visible (printable) length — strips ANSI SGR escapes."""
+    return len(_ANSI_RE.sub("", s))
 
 # ANSI palette — disabled when the stream is not a TTY or NO_COLOR is set.
 _C = {
@@ -177,23 +185,36 @@ def print_dashboard(spec, source_label: str, mime: str | None,
     hash_short = f"{spec.provenance.hash_hex[:8]}…{spec.provenance.hash_hex[-4:]}"
     mood_tint = _MOOD_TINT.get(spec.provenance.mood, "yel")
 
-    bar = "─" * 70
+    side = c("│", "cyan")
+    rows = [
+        f" hash    {c(hash_short, 'mag')}    "
+        f"{c('source', 'gry')} {source_label}    "
+        f"{c('mime', 'gry')} {mime or '—'}",
+        f" mood    {c(spec.provenance.mood, mood_tint, 'bold')}"
+        f" sub-flavor {spec.sub_flavor}    "
+        f"{c('tempo', 'gry')} {c(f'{spec.tempo_bpm:.1f} BPM', 'grn')}    "
+        f"{c('key', 'gry')} {c(key + ' ' + spec.mode, 'grn')}    "
+        f"{c('meter', 'gry')} {c(ts, 'grn')}",
+        f" form    {c(spec.form_id, 'grn')}    "
+        f"{c('groove', 'gry')} {spec.groove_template_id}    "
+        f"{c('voicing', 'gry')} {spec.voicing_style}    "
+        f"{c('curve', 'gry')} {spec.energy_curve_id}",
+        f" matrix  {spec.activation_matrix_id}    "
+        f"{c('humanize', 'gry')} {spec.humanization_profile} "
+        f"(jitter ±{spec.humanization_vel_jitter})    "
+        f"{c('mix', 'gry')} {spec.mix_preset_id}",
+    ]
+    inner = max(_vlen(r) for r in rows) + 2          # 1 space pad each side
+    inner = max(inner, len("─[ soundhash ]") + 2)
+    bar = "─" * inner
+
+    def boxed(body: str) -> str:
+        pad = max(0, inner - 2 - _vlen(body))
+        return f"{side} {body}{' ' * pad} {side}"
+
     pr(c(f"╭─[ soundhash ]{bar[14:]}╮", "cyan"))
-    pr(f"{c('│', 'cyan')}  hash    {c(hash_short, 'mag')}    "
-       f"{c('source', 'gry')} {source_label}    "
-       f"{c('mime', 'gry')} {mime or '—'}")
-    pr(f"{c('│', 'cyan')}  mood    {c(spec.provenance.mood, mood_tint, 'bold')}"
-       f" sub-flavor {spec.sub_flavor}    "
-       f"{c('tempo', 'gry')} {c(f'{spec.tempo_bpm:.1f} BPM', 'grn')}    "
-       f"{c('key', 'gry')} {c(key + ' ' + spec.mode, 'grn')}    "
-       f"{c('meter', 'gry')} {c(ts, 'grn')}")
-    pr(f"{c('│', 'cyan')}  form    {c(spec.form_id, 'grn')}    "
-       f"{c('groove', 'gry')} {spec.groove_template_id}    "
-       f"{c('voicing', 'gry')} {spec.voicing_style}    "
-       f"{c('curve', 'gry')} {spec.energy_curve_id}")
-    pr(f"{c('│', 'cyan')}  matrix  {spec.activation_matrix_id}    "
-       f"{c('humanize', 'gry')} {spec.humanization_profile} (jitter ±{spec.humanization_vel_jitter})    "
-       f"{c('mix', 'gry')} {spec.mix_preset_id}")
+    for r in rows:
+        pr(boxed(r))
     pr(c(f"╰{bar}╯", "cyan"))
 
     # ─── form / energy / chord run ──────────────────────────────────
