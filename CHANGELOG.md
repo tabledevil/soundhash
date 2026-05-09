@@ -10,6 +10,15 @@ All notable changes to the soundhash project. Format: reverse chronological, gro
 - Decoder skeleton consumes 32-byte HKDF macro stream.
 - DESIGN.md, README.md, MIME family resolver, soundfont bootstrap.
 
+## Meter flexibility (post-M2)
+
+- New HKDF label `meter/timesig` drives `time_sig` from a dedicated 1-byte
+  spillover. ~94% of hashes still land on 4/4; ~6% of opt-in moods land on
+  3/4, 6/8, or 12/8 (drawn from each mood's `time_sigs` list).
+- Self-test seed unchanged (byte = 147, below the 240 threshold).
+- 7/8 and 5/4 declared by some moods but held back until drum/comp/motif
+  banks have coverage; falls back to 4/4 transparently.
+
 ## Milestone 2 — vertical slice
 
 - 9-layer MIDI render: drums, bass, comp, lead, pad, counter, drone, riser, ear-candy.

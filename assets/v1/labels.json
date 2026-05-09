@@ -20,6 +20,7 @@
     "melody/scaleorder",
     "melody/accent_skeleton",
     "groove/microtiming",
+    "meter/timesig",
     "render/synthparams/L<n>",
     "dither"
   ]

@@ -88,6 +88,30 @@ def _pick_tempo(byte: int, mood: str) -> float:
     return round(base * (1.0 + nudge), 3)
 
 
+# Compound/triple meters that have at least drum+bass+motif coverage in the
+# v1 asset bundle. 7/8 and 5/4 are declared by some moods but lack drum/comp/
+# motif data, so they're held back until the banks fill in.
+_TIME_SIG_SAFE = ("3/4", "6/8", "12/8")
+# Threshold at which the meter byte switches from 4/4 to a compound/triple.
+# 240/256 ≈ 6.25% odd-meter rate — flexibility, not a flavor of the month.
+# Self-test seed lands at 147 (well below 240) so the baseline stays on 4/4.
+_ODD_METER_THRESHOLD = 240
+
+
+def _pick_time_sig(byte: int, mood: str) -> tuple[str, tuple[int, int]]:
+    """Bias hard toward 4/4; only pick a compound/triple meter when the mood
+    explicitly opts in via moods.json `time_sigs` AND the byte is in the top
+    ~6% of the range. Returns (display_str, (numerator, denominator))."""
+    sigs = tables.load("moods")["moods"][mood].get("time_sigs", ["4/4"])
+    safe_alts = [s for s in sigs if s in _TIME_SIG_SAFE]
+    if byte < _ODD_METER_THRESHOLD or not safe_alts:
+        chosen = "4/4"
+    else:
+        chosen = safe_alts[(byte - _ODD_METER_THRESHOLD) % len(safe_alts)]
+    num_s, den_s = chosen.split("/")
+    return chosen, (int(num_s), int(den_s))
+
+
 def _pick_mode(byte: int, mood: str) -> str:
     moods = tables.load("moods")["moods"]
     mood_modes = moods[mood]["modes"]
@@ -741,7 +765,10 @@ def hash_to_spec(
     bars = tuple(bars)
 
     # Per-layer picks (constraint propagation continues).
-    time_sig_str = "4/4"
+    # Time signature is biased hard toward 4/4 (~94%) so the vast majority of
+    # hashes feel familiar; only ~6% land on a compound/triple meter, and only
+    # for moods that explicitly opt in via moods.json `time_sigs`.
+    time_sig_str, time_sig_tuple = _pick_time_sig(s.take("meter/timesig", 1)[0], mood)
     drum_kit = _pick_drum_kit(macro[9], mood)
     drum_pat_low, drum_pat_high = _pick_drum_pattern_pair(macro[10], drum_kit["id"], time_sig_str)
     drum_pat = drum_pat_low or drum_pat_high or {}
@@ -868,7 +895,7 @@ def hash_to_spec(
         version=version,
         provenance=provenance,
         tempo_bpm=tempo,
-        time_sig=(4, 4),
+        time_sig=time_sig_tuple,
         swing="straight",
         key_root=key_root,
         mode=mode,

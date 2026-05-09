@@ -53,6 +53,7 @@ Spillover over the 32-byte macro budget; consumed via separate HKDF labels.
 | `aux/earcandy/main/<i>` | 4 B / bar | ear-candy stab positions per bar |
 | `expression/velocity/L<n>` | 256 B / layer | per-note velocity jitter |
 | `melody/accent_skeleton` | 5 B | song-wide accent skeleton + 4 strong-beat targets |
+| `meter/timesig` | 1 B | time-signature pick (94% bias to 4/4, else mood's `time_sigs` ∩ {3/4, 6/8, 12/8}) |
 
 ## Dimension → byte mapping
 
@@ -99,5 +100,13 @@ matrix:   arp_lead, 4floor_house, bass_lead_duo, band_basic, band_full,
 
 Every macro byte 0..31 now drives at least one observable decision (recorded on SongSpec or directly affecting render). Byte 21's `phrase_shape_id` is surfaced on SongSpec but not yet consulted at render time — render uses form-driven section letters for phrase structure today.
 
-The pending invasive work tracked separately:
-- **#84** de-hardcode `time_sig` and `swing` (currently both forced to `4/4` straight; render touches dozens of places that assume 4/4).
+**#84** Meter is now hash-driven via the dedicated `meter/timesig` HKDF label:
+- 4/4 stays the overwhelming default (~94% of hashes overall, ~98% in
+  4/4-only moods like M2/M5/M11/M13/M14, ~6% odd-meter in opt-in moods like
+  M0/M1/M4/M9/M10/M12).
+- Render is fully parameterized on `spec.time_sig` already; pattern banks
+  filter by `valid_time_sigs`/`time_sigs` and fall back to 4/4 when a meter
+  has no matching pattern in a given bank.
+- Swing remains carried by `groove_template_id` (the groove-template's
+  per-step PPQ offsets are the actual swing implementation); no separate
+  `swing` enum byte is consumed.
