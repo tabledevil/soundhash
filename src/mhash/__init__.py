@@ -1,6 +1,6 @@
 """mhash — deterministic musical hash."""
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 SPEC_VERSION = "v1"
 
 from .decode import hash_to_spec  # noqa: F401

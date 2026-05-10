@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "songhash"
-version = "0.1.0"
+version = "0.1.1"
 description = "Deterministic musical hash — turn a file's SHA-256 into ≤30 s of pleasant, music-theory-correct audio."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -69,6 +69,7 @@ Changelog = "https://github.com/tabledevil/soundhash/blob/master/CHANGELOG.md"
 
 [project.scripts]
 mhash = "mhash.mhash:main"
+songhash = "mhash.mhash:main"        # alias matching the PyPI dist name
 mhashx = "mhash.cli:main"
 
 [tool.hatch.build.targets.wheel]

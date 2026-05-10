@@ -10,6 +10,11 @@ All notable changes to the mhash project. Format: reverse chronological, grouped
 - Decoder skeleton consumes 32-byte HKDF macro stream.
 - DESIGN.md, README.md, MIME family resolver, soundfont bootstrap.
 
+## v0.1.1 — songhash alias
+
+- Added `songhash` console-script alias so `pip install songhash; songhash file`
+  works alongside the existing `mhash file`. Both invoke the same code.
+
 ## v0.1.0 — first PyPI release
 
 - Bumped version to 0.1.0; added MIT LICENSE.
